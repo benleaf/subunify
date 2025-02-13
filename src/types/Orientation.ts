@@ -1,0 +1,1 @@
+export type Orientation = 'y' | 'x'
