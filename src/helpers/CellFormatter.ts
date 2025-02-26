@@ -1,8 +1,8 @@
 import { Cell, CellFormulaValue, ValueType } from "exceljs";
 
 export class CellFormatter {
-    public static getHeaderCellText(cell: Cell) {
-        return cell.type === ValueType.String ? cell.value : 'ERROR'
+    public static getHeaderCellText(cell: Cell): string {
+        return cell.type === ValueType.String ? cell.value as string : 'ERROR'
     }
 
     public static getCellText(cell: Cell) {
@@ -15,6 +15,8 @@ export class CellFormatter {
                 return (new Date(cell.value as Date)).toLocaleDateString()
             case ValueType.String:
                 return (cell.value as string)
+            case ValueType.Hyperlink:
+                return cell?.hyperlink ?? "LINK"
             case ValueType.RichText:
                 if (typeof cell.value === 'object' && cell.value && 'richText' in cell.value) {
                     return cell?.value?.richText.map(richText => richText.text).join('')
@@ -24,7 +26,7 @@ export class CellFormatter {
             case ValueType.Formula:
                 return (cell?.value as CellFormulaValue).formula
             default:
-                return (cell?.value ? JSON.stringify(cell?.value) : "")
+                return (cell?.value ? JSON.stringify(cell?.value).slice(0, 20) + cell.type : "")
         }
     }
 }

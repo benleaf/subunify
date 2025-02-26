@@ -1,0 +1,1 @@
+export type Dto = { [key: string]: string | number }

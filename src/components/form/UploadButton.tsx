@@ -1,4 +1,4 @@
-import { CloudUpload } from '@mui/icons-material';
+import { TableChart } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import form from './form.module.css';
 
@@ -12,8 +12,9 @@ const UploadButton = ({ onClick, children }: Props) => {
         component="label"
         role={undefined}
         variant="contained"
+        style={{ color: 'white', width: '100%' }}
         tabIndex={-1}
-        startIcon={<CloudUpload />}
+        startIcon={<TableChart />}
     >
         {children}
         <input

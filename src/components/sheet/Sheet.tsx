@@ -1,26 +1,26 @@
 import { Worksheet } from "exceljs"
 import SheetCell from "./SheetCell"
-import { ElementRef, useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { SheetTable } from "@/types/SheetTable"
+import { ElementRef, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { SheetTable } from "@/types/spreadsheet/SheetTable"
 import { StateMachineDispatch } from "./SheetTabs"
-import { Dimension } from "@/types/Dimension"
+import { Dimension } from "@/types/spreadsheet/Dimension"
 import { CellFormatter } from "../../helpers/CellFormatter"
-import { Coordinate } from "@/types/Coordinate"
+import { Coordinate } from "@/types/spreadsheet/Coordinate"
 import ScrollableTableContainer from "./ScrollableTableContainer"
 import tableStyle from './table.module.css';
 import { BoundingBox } from "@/helpers/BoundingBox"
+import GlassText from "../glassmorphism/GlassText"
 
 type Props = {
     sheetTables: SheetTable[]
     possition: Coordinate,
-    selectedCell?: Coordinate,
     worksheet?: Worksheet
     selectedTableIndex?: number,
     worksheetId?: number,
 }
 
-const Sheet = ({ sheetTables, possition, selectedCell, worksheet, worksheetId, selectedTableIndex }: Props) => {
-    const dispatch = useContext(StateMachineDispatch)!
+const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIndex }: Props) => {
+    const { dispatch } = useContext(StateMachineDispatch)!
 
     const getCellByDisplayCoord = (x: number, y: number) => worksheet?.getRow(getGlobalY(y)).getCell(getGlobalX(x))
     const getGlobalX = (x: number) => x + Math.floor(possition.x)
@@ -104,7 +104,7 @@ const Sheet = ({ sheetTables, possition, selectedCell, worksheet, worksheetId, s
     const tableContainerRef = useRef<ElementRef<'div'>>(null)
     const firstCellRef = useRef<ElementRef<'td'>>(null)
 
-    const defaultCellDimension = { width: 100, height: 30 }
+    const defaultCellDimension = { width: 150, height: 40 }
     const [firstCellDimension, setFirstCellDimension] = useState<Dimension>(defaultCellDimension)
     const screenDimension = tableContainerRef.current?.getBoundingClientRect() ?? { width: 0, height: 0 }
 
@@ -117,12 +117,17 @@ const Sheet = ({ sheetTables, possition, selectedCell, worksheet, worksheetId, s
         worksheetId,
         sheetTables,
         selectedTableIndex !== undefined && sheetTables[selectedTableIndex].columnOverides,
+        screenDimension
     ]
 
     const displayableGrid = useMemo(
         () => visibleRows.map(y => visibleCols.map(x => getTableCellDisplayData(x, y))),
         tableRerenderDependencies
     )
+
+    // triger initial render, this is bad practice and another method should be found: TODO
+    useEffect(() => dispatch({ action: "mouseMoved", data: { x: 10, y: 10 } }), [])
+
 
     const hiddenOverlapX = -(possition.x - Math.floor(possition.x)) * firstCellDimension.width
     const hiddenOverlapY = -(possition.y - Math.floor(possition.y)) * firstCellDimension.height
@@ -140,9 +145,11 @@ const Sheet = ({ sheetTables, possition, selectedCell, worksheet, worksheetId, s
             }}
         >
             {displayableGrid?.map((rows, y) =>
-                <tr key={y}>
+                <tr key={y} style={{ maxHeight: 10, margin: 0, padding: 0 }}>
                     <td className={tableStyle.tableSideAxis} >
-                        {getGlobalY(y)}
+                        <GlassText size="small">
+                            {getGlobalY(y)}
+                        </GlassText>
                     </td>
                     {rows.map((cellDisplayData, x) => <SheetCell
                         key={x}
@@ -164,7 +171,11 @@ const Sheet = ({ sheetTables, possition, selectedCell, worksheet, worksheetId, s
         >
             <tr>
                 <td className={tableStyle.tableCorner}></td>
-                {visibleCols.map(x => <td className={tableStyle.tableTopAxis} key={x} >{getGlobalX(x)}</td>)}
+                {visibleCols.map(x => <td className={tableStyle.tableTopAxis} key={x} >
+                    <GlassText size="small">
+                        {getGlobalX(x)}
+                    </GlassText>
+                </td>)}
             </tr>
         </thead>
     </ScrollableTableContainer>

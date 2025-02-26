@@ -1,6 +1,7 @@
 import { Close } from '@mui/icons-material'
 import { Modal, Card, Fab } from '@mui/material'
 import React, { CSSProperties } from 'react'
+import GlassCard from '../glassmorphism/GlassCard'
 
 const style: CSSProperties = {
     position: 'absolute' as 'absolute',
@@ -9,32 +10,34 @@ const style: CSSProperties = {
     transform: 'translate(-50%, -50%)',
     width: "95%",
     maxWidth: 800,
+    backgroundColor: '#fff0'
 }
 
 type Props = {
     children: React.ReactNode,
     state: "open" | "closed"
-    close: () => void
+    close?: () => void
 }
 
 const BaseModal = ({ children, close, state }: Props) => {
     return <Modal
+        hideBackdrop
         open={state === "open"}
         onClose={close}
     >
         <>
             <div style={{ ...style, position: "relative" }}>
-                <Fab
+                {close && <Fab
                     color="primary"
                     onClick={close}
                     size='small'
                     style={{ position: "absolute", right: -5, top: -5 }}
                 >
                     <Close />
-                </Fab>
-                <Card style={{ padding: 30, maxHeight: '95vh', overflow: 'scroll' }}>
+                </Fab>}
+                <GlassCard>
                     {children}
-                </Card>
+                </GlassCard>
             </div>
         </>
     </Modal>

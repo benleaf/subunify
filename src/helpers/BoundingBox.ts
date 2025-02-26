@@ -1,7 +1,8 @@
-import { Orientation } from "@/types/Orientation";
-import { Direction } from "../types/Direction";
-import { Coordinate } from "@/types/Coordinate";
+import { Orientation } from "@/types/spreadsheet/Orientation";
+import { Direction } from "../types/spreadsheet/Direction";
+import { Coordinate } from "@/types/spreadsheet/Coordinate";
 import { CSSProperties } from "react";
+import { Colours } from "@/constants/Colours";
 
 export type Box = {
     ['bl']: Coordinate,
@@ -170,10 +171,10 @@ export class BoundingBox {
         }
 
         return {
-            borderTopColor: cellEdge.t ? '#f00' : 'lightgray',
-            borderRightColor: cellEdge.r ? '#f00' : 'lightgray',
-            borderBottomColor: cellEdge.b ? '#f00' : 'lightgray',
-            borderLeftColor: cellEdge.l ? '#f00' : 'lightgray',
+            borderTopColor: cellEdge.t ? Colours.primary : 'lightgray',
+            borderRightColor: cellEdge.r ? Colours.primary : 'lightgray',
+            borderBottomColor: cellEdge.b ? Colours.primary : 'lightgray',
+            borderLeftColor: cellEdge.l ? Colours.primary : 'lightgray',
             borderTopWidth: cellEdge.t ? 2 : 1,
             borderRightWidth: cellEdge.r ? 2 : 1,
             borderBottomWidth: cellEdge.b ? 2 : 1,
@@ -182,7 +183,7 @@ export class BoundingBox {
             borderRightStyle: cellEdge.r && selected ? 'dashed' : 'solid',
             borderBottomStyle: cellEdge.b && selected ? 'dashed' : 'solid',
             borderLeftStyle: cellEdge.l && selected ? 'dashed' : 'solid',
-            backgroundColor: this.inBoundingBox(cell) ? '#f001' : '#0000',
+            backgroundColor: this.inBoundingBox(cell) ? Colours.primaryTransparent : '#0000',
         }
     }
 }

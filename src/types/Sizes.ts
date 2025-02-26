@@ -1,0 +1,1 @@
+export type Sizes = 'gigantic' | 'huge' | 'large' | 'modrate' | 'small' | 'tiny' | 'hairpin'

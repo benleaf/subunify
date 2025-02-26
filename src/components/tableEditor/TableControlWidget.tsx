@@ -1,9 +1,14 @@
-import { SheetTable } from "@/types/SheetTable"
-import { Button, Card, Chip, IconButton, Input, Paper, Stack } from "@mui/material"
+import { SheetTable } from "@/types/spreadsheet/SheetTable"
+import { Chip, IconButton, Stack } from "@mui/material"
 import { Cell, Worksheet } from "exceljs"
 import { useContext, useEffect, useState } from "react"
 import { StateMachineDispatch } from "../sheet/SheetTabs"
 import { Edit } from "@mui/icons-material"
+import GlassCard from "../glassmorphism/GlassCard"
+import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
+import { CellFormatter } from "@/helpers/CellFormatter"
+import GlassSpace from "../glassmorphism/GlassSpace"
+import GlassText from "../glassmorphism/GlassText"
 
 type Props = {
     table: Partial<SheetTable>
@@ -12,7 +17,7 @@ type Props = {
 }
 
 const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
-    const dispatch = useContext(StateMachineDispatch)!
+    const { dispatch } = useContext(StateMachineDispatch)!
     const [header, setHeader] = useState<string[]>([])
     const [body, setBody] = useState<string[][]>([[]])
 
@@ -41,7 +46,7 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
                 .map(xPos => worksheet.getRow(bottomRight.y).getCell(xPos))
         }
 
-        return cells.map(cell => JSON.stringify(cell?.value))
+        return cells.map(cell => CellFormatter.getHeaderCellText(cell))
     }
 
     const getData = (header: string[]) => {
@@ -58,14 +63,14 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
                 newBody[key] = [...Array(bottomRight.y - topLeft.y + 1).keys()]
                     .map(index => index + topLeft.y)
                     .map(yPos => worksheet.getRow(yPos).getCell(+key + topLeft.x))
-                    .map(cell => JSON.stringify(cell?.value))
+                    .map(cell => CellFormatter.getCellText(cell))
             }
         } else if (bottomRight.y - topLeft.y + 1 === header.length && topLeft.y == headTopLeft.y) {
             for (const key in newBody) {
                 newBody[key] = [...Array(bottomRight.x - topLeft.x + 1).keys()]
                     .map(index => index + topLeft.x)
                     .map(xPos => worksheet.getRow(+key + topLeft.y).getCell(xPos))
-                    .map(cell => JSON.stringify(cell?.value))
+                    .map(cell => CellFormatter.getCellText(cell))
             }
         }
 
@@ -73,27 +78,35 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
         return newBody
     }
 
-    return <Card component={Paper} sx={{ margin: '0.5em', padding: '1em', width: '20em' }}>
-        <Stack spacing={1}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2>{table.name}</h2>
-                <div>
-                    <IconButton onClick={() => dispatch({ action: "editTable", data: tableIndex })}>
-                        <Edit />
-                    </IconButton>
-                </div>
+    return <GlassCard marginSize="tiny" paddingSize="modrate" flex={1}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <GlassText size="large">{table.name}</GlassText>
+            <div>
+                <IconButton onClick={() => dispatch({ action: "editTable", data: tableIndex })}>
+                    <Edit />
+                </IconButton>
             </div>
-            <Stack spacing={1} direction='row'>
-                <Chip label={`${header.length} field${header.length != 1 ? 's' : ''}`} />
-                {body[0] && <Chip label={`${body[0].length} record${body[0].length != 1 ? 's' : ''}`} />}
+        </div>
+        <GlassSpaceBox>
+            <Stack spacing={1} width='100%'>
+                {header.slice(Math.max(header.length - 5, 0)).map((colVal, index) => <GlassCard marginSize="small" paddingSize="small">
+                    <GlassSpace size="tiny">
+                        <GlassText size="modrate">{colVal}</GlassText>
+                        <GlassText size="small">
+                            Values: {body.length == header.length && body[index].slice(Math.max(body[index].length - 2, 0)).join(', ')}
+                        </GlassText>
+                        <div></div>
+                    </GlassSpace>
+                </GlassCard>)}
+                <GlassText size="modrate">
+                    <Stack spacing={1} direction='row'>
+                        <Chip label={`${header.length} field${header.length != 1 ? 's' : ''}`} />
+                        {body[0] && <Chip label={`${body[0].length} record${body[0].length != 1 ? 's' : ''}`} />}
+                    </Stack>
+                </GlassText>
             </Stack>
-
-            {header.slice(Math.max(header.length - 5, 0)).map((colVal, index) => <Card sx={{ padding: '0.5em' }}>
-                <div>{colVal}</div>
-                <div>Values: {body.length == header.length && body[index].slice(Math.max(body[index].length - 2, 0)).join(', ')}</div>
-            </Card>)}
-        </Stack>
-    </Card>
+        </GlassSpaceBox>
+    </GlassCard>
 }
 
 export default TableControlWidget

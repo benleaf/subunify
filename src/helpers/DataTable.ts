@@ -1,5 +1,5 @@
-import { Coordinate } from "@/types/Coordinate";
-import { SheetTable } from "@/types/SheetTable";
+import { Coordinate } from "@/types/spreadsheet/Coordinate";
+import { SheetTable } from "@/types/spreadsheet/SheetTable";
 import { Cell, ValueType, Worksheet } from "exceljs";
 import { DataField } from "@/types/DataField";
 import { DataFormat } from "@/types/DataFormat";

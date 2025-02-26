@@ -1,4 +1,4 @@
-import { Dimension } from "@/types/Dimension";
+import { Dimension } from "@/types/spreadsheet/Dimension";
 import { Cell, Worksheet } from "exceljs";
 import { CellFormatter } from "./CellFormatter";
 

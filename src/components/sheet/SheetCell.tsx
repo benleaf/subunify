@@ -1,5 +1,7 @@
 import { ElementRef } from "react"
 import tableStyle from './table.module.css';
+import GlassText from "../glassmorphism/GlassText";
+import { Colours } from "@/constants/Colours";
 
 type Props = {
     cornerVisible?: boolean,
@@ -14,9 +16,9 @@ const SheetCell = ({ cornerVisible, innerRef, value, style, onMouseEnter, onCorn
     return <td
         style={{
             ...style,
-            padding: '0.2em',
+            padding: '0.5em',
             position: "relative",
-            overflow: 'hidden',
+            overflow: 'hidden'
         }}
         className={tableStyle.tableCell}
         ref={innerRef}
@@ -39,11 +41,13 @@ const SheetCell = ({ cornerVisible, innerRef, value, style, onMouseEnter, onCorn
                 <div style={{
                     width: '50%',
                     height: '50%',
-                    backgroundColor: 'red',
+                    backgroundColor: Colours.primary,
                 }} />
             </div>
         }
-        {value}
+        <GlassText size="small">
+            {value}
+        </GlassText>
     </td >
 }
 

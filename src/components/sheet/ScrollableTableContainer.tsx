@@ -8,7 +8,7 @@ type Props = {
 }
 
 const ScrollableTableContainer = ({ tableRef, children }: Props) => {
-    const dispatch = useContext(StateMachineDispatch)!
+    const { dispatch } = useContext(StateMachineDispatch)!
 
     const defaultCellDimension = { width: 100, height: 30 }
     const screenDimension = tableRef.current?.getBoundingClientRect() ?? { width: 0, height: 0 }

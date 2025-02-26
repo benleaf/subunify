@@ -1,5 +1,5 @@
 import { DataTable } from "../../helpers/DataTable"
-import { SheetTable } from "@/types/SheetTable"
+import { SheetTable } from "@/types/spreadsheet/SheetTable"
 import { Chip, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import { Worksheet } from "exceljs"
 import { useContext, useEffect, useState } from "react"
@@ -16,7 +16,7 @@ type Props = {
 type EditModalProps = { state: 'open', selectedFieldId: number } | { state: 'closed' }
 
 const TableEditorTable = ({ table, worksheets }: Props) => {
-    const dispatch = useContext(StateMachineDispatch)!
+    const { dispatch } = useContext(StateMachineDispatch)!
     const [modalState, setModalState] = useState<EditModalProps>({ state: 'closed' })
 
     const [dataTable, setDataTable] = useState<DataTable>(new DataTable(table, worksheets[table.parentWorksheetId ?? 0]))
