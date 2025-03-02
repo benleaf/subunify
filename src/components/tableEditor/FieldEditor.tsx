@@ -2,7 +2,7 @@ import { DataField } from "@/types/DataField"
 import { DataFormat } from "@/types/DataFormat"
 import { StateMachineDispatch } from "../sheet/SheetTabs"
 import { useContext } from "react"
-import { Input, TextField } from "@mui/material"
+import { TextField } from "@mui/material"
 
 type Props = {
     dataFormat: DataFormat,
@@ -10,7 +10,7 @@ type Props = {
     selectedFieldId: number
 }
 
-const FieldEditor = ({ dataFormat, headderField, selectedFieldId }: Props) => {
+const FieldEditor = ({ headderField, selectedFieldId }: Props) => {
     const { dispatch } = useContext(StateMachineDispatch)!
     const renameColumn = (value: string) => {
         dispatch({

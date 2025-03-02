@@ -2,6 +2,7 @@ import { IngestTable } from "@/types/IngestTable";
 import { SheetTable } from "@/types/spreadsheet/SheetTable";
 import { Worksheet } from "exceljs";
 import { DataTable } from "./DataTable";
+import { apiAction } from "@/api/apiAction";
 
 export class TablesDeployer {
     public static deploy(tables: SheetTable[], worksheets: Worksheet[]) {
@@ -42,16 +43,14 @@ export class TablesDeployer {
     }
 
     private static deployTable(ingestTables: IngestTable[]) {
-        return fetch(
-            'http://localhost:3000/ingest',
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    tables: ingestTables,
-                    organisationId: '5126203c-19db-4903-9d28-885423d86d7b'
-                }),
-                headers: { 'Content-Type': 'application/json' }
-            }
+        return apiAction(
+            'ingest',
+            'POST',
+            JSON.stringify({
+                tables: ingestTables,
+                // TODO remove this!
+                organisationId: '5126203c-19db-4903-9d28-885423d86d7b'
+            }),
         )
     }
 }

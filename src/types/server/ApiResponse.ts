@@ -1,3 +1,3 @@
 import { ApiError } from "./ApiError";
 
-export type ApiResponse<T> = T | ApiError
+export type ApiResponse<T> = T | Partial<ApiError>

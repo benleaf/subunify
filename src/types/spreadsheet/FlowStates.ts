@@ -1,0 +1,1 @@
+export type FlowStates = 'login' | 'payment' | 'dashboard' | 'editing'

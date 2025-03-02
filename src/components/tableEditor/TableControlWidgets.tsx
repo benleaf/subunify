@@ -1,6 +1,6 @@
-import { Stack, Card, Paper, Button } from "@mui/material"
+import { Button } from "@mui/material"
 import TableControlWidget from "./TableControlWidget"
-import { Workbook, Worksheet } from "exceljs"
+import { Worksheet } from "exceljs"
 import { useContext } from "react"
 import { StateMachineDispatch } from "../sheet/SheetTabs"
 import { SheetTable } from "@/types/spreadsheet/SheetTable"
@@ -10,8 +10,10 @@ import { useNavigate } from "react-router"
 import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
 import GlassText from "../glassmorphism/GlassText"
-import FloatingGlassCircle from "../glassmorphism/FloatingGlassCircle"
 import { CssSizes } from "@/constants/CssSizes"
+import AuthModal from "@/stateManagment/auth/AuthModal"
+import { useAuth } from "@/stateManagment/auth/AuthContext"
+import PaymentModal from "../payments/PaymentModal"
 
 
 type Props = {
@@ -21,10 +23,34 @@ type Props = {
 
 const TableControlWidgets = ({ worksheets, tables }: Props) => {
     const navigate = useNavigate();
+    const auth = useAuth()
     const { dispatch, state } = useContext(StateMachineDispatch)!
 
-    const deployTables = async () => {
+    const requestDeployment = async () => {
+        dispatch({ action: "setFlowState", data: 'editing' })
         if (!worksheets) return
+
+        if (!auth.user) {
+            dispatch({ action: "setFlowState", data: 'login' })
+        } else {
+            forcePayment()
+        }
+    }
+
+    const forcePayment = async () => {
+        if (!worksheets) return
+        dispatch({ action: "setFlowState", data: 'payment' })
+    }
+
+    const onFormCompleate = async (result: "success" | "incompleate") => {
+        dispatch({ action: "setFlowState", data: 'dashboard' })
+
+        if (result == 'success') {
+            deploy()
+        }
+    }
+
+    const deploy = async () => {
         await TablesDeployer.deploy(state.data.tables, worksheets)
         navigate("/dashboard")
     }
@@ -36,7 +62,7 @@ const TableControlWidgets = ({ worksheets, tables }: Props) => {
             </GlassText>
             <Button
                 component="label"
-                onClick={deployTables}
+                onClick={requestDeployment}
                 variant="contained"
                 startIcon={<CloudUpload />}
                 style={{ color: 'white' }}
@@ -63,6 +89,14 @@ const TableControlWidgets = ({ worksheets, tables }: Props) => {
                 </GlassSpaceBox>
             </GlassCard>
         </div>
+        <AuthModal
+            overideState={state.data.flowState == 'login'}
+            onLogin={forcePayment}
+            onAccountCreationCompleate={requestDeployment}
+            onClose={() => dispatch({ action: "setFlowState", data: 'editing' })}
+            hideButton
+        />
+        <PaymentModal overideState={state.data.flowState == 'payment'} onFinish={onFormCompleate} />
     </GlassCard>
 }
 

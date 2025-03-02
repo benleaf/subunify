@@ -6,14 +6,26 @@ import { useContext, useEffect } from "react"
 import GlassText from "../glassmorphism/GlassText"
 import { ComponentSizes } from "@/constants/ComponentSizes"
 import { CssSizes } from "@/constants/CssSizes"
+import { useAuth } from "@/stateManagment/auth/AuthContext"
 
 const Sidebar = () => {
     const { height } = useSize()
+    const auth = useAuth()
     const { dispatch, state } = useContext(ApplicationDispatch)!
 
     useEffect(() => {
-        dispatch({ action: 'loadData', data: { resource: 'table' } })
-    }, [])
+        dispatch({ action: 'loadData', data: { request: 'tableGetAll' } })
+    }, [auth])
+
+    useEffect(() => {
+        if (state.tables && state.tables.length > 0) {
+            dispatch({
+                action: 'loadData',
+
+                data: { request: 'tableGetBodyById', resources: { params: { tableId: state.tables[0].id } } }
+            })
+        }
+    }, [state.tables === undefined])
 
     const tableClicked = (tableId: string) => {
         if (state.selectedScreen != 'Tables') {
@@ -24,7 +36,8 @@ const Sidebar = () => {
         }
         dispatch({
             action: 'loadData',
-            data: { resource: 'table/body', dto: { tableId: tableId } }
+
+            data: { request: 'tableGetBodyById', resources: { params: { tableId } } }
         })
     }
 

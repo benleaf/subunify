@@ -10,6 +10,8 @@ import TablesTable from "@/components/TablesDataTable/TablesTable";
 import { useSize } from "@/hooks/useSize";
 import { ComponentSizes } from "@/constants/ComponentSizes";
 import CreateChartForm from "@/components/charts/CreateChartForm";
+import AuthModal from "@/stateManagment/auth/AuthModal";
+import { useAuth } from "@/stateManagment/auth/AuthContext";
 
 export const ApplicationDispatch = createContext<{
     dispatch: Dispatch<ApplicationEvents>,
@@ -17,6 +19,8 @@ export const ApplicationDispatch = createContext<{
 } | undefined>(undefined);
 
 const Dashboard = () => {
+    const auth = useAuth()
+    // auth.logout()
     const { height, width } = useSize()
     const [state, dispatch] = useReducer(applicationReducer, {
         selectedScreen: 'Tables'
@@ -25,12 +29,9 @@ const Dashboard = () => {
     useEffect(() => {
         const runFetch = async () => {
             if (state.loadingData) {
-                const resource = await getResource(
-                    state.loadingData.resource,
-                    state.loadingData.method,
-                    state.loadingData.dto
-                )
-                dispatch({ action: state.loadingData.resource, data: resource } as ApplicationEvents)
+                console.log(state.loadingData)
+                const resource = await getResource(state.loadingData)
+                dispatch({ action: state.loadingData.request, data: resource })
             }
         }
 
@@ -54,6 +55,7 @@ const Dashboard = () => {
                 </GlassCard>
             </div>
         </div>
+        <AuthModal overideState={auth.user === null} />
     </ApplicationDispatch.Provider>
 }
 

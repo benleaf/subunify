@@ -1,4 +1,8 @@
+import glass from '../components/glassmorphism/glass.module.css'
+
 export const Colours = {
-    primary: '#ff742a',
-    primaryTransparent: '#ff742a10',
+    primary: glass.colorPrimary,
+    primaryLight: glass.colorPrimaryLight,
+    secondary: glass.colorSecondary,
+    primaryTransparent: glass.colorPrimaryTransparent,
 }

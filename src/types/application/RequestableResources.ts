@@ -1,8 +1,13 @@
 import { TableResult } from "../server/TableResult"
 import { GetTableBodyDto } from "./GetTableBodyDto"
-import { Table } from "./Table"
+import { ServerTable } from "./ServerTable"
 
 export type RequestableResources = {
-    'table': { result?: TableResult[] },
-    'table/body': { result?: Table, dto: GetTableBodyDto }
+    tableGetAll: {
+        result?: TableResult[]
+    },
+    tableGetBodyById: {
+        params: GetTableBodyDto,
+        result?: ServerTable,
+    }
 }

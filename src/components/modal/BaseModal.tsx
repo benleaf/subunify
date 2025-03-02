@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material'
-import { Modal, Card, Fab } from '@mui/material'
+import { Modal, Fab } from '@mui/material'
 import React, { CSSProperties } from 'react'
 import GlassCard from '../glassmorphism/GlassCard'
 

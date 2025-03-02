@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, Stack, Button } from "@mui/material";
+import { Box, Tabs, Tab, Stack, Backdrop, CircularProgress } from "@mui/material";
 import { Worksheet } from "exceljs"
 import { createContext, Dispatch, useReducer } from "react";
 import Sheet from "./Sheet";
@@ -8,7 +8,6 @@ import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
 import TableControlWidgets from "../tableEditor/TableControlWidgets";
 import TableEditor from "../tableEditor/TableEditor";
 import GlassCard from "../glassmorphism/GlassCard";
-import FloatingGlassCircle from "../glassmorphism/FloatingGlassCircle";
 
 type Props = {
     worksheets?: Worksheet[]
@@ -24,7 +23,8 @@ const SheetTabs = ({ worksheets }: Props) => {
         scroll: { x: 1, y: 1 },
         mousePossition: { x: 1, y: 1 },
         tables: [],
-        worksheetId: 0
+        worksheetId: 0,
+        flowState: 'editing'
     }));
 
     return <StateMachineDispatch.Provider value={{ dispatch, state }}>
@@ -64,6 +64,12 @@ const SheetTabs = ({ worksheets }: Props) => {
                 </div>
             </Stack>
         </Box>
+        <Backdrop
+            sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+            open={!!state.data.loading}
+        >
+            <CircularProgress color="inherit" />
+        </Backdrop>
     </StateMachineDispatch.Provider>
 }
 

@@ -44,7 +44,11 @@ const TableEditorTable = ({ table, worksheets }: Props) => {
 
 
     return <Stack spacing={1}>
-        <Pagination count={Math.ceil(dataTable.header.length / itemsOnPage)} page={fieldPagination} onChange={e => updatePagination(+e.target.textContent)} />
+        <Pagination
+            count={Math.ceil(dataTable.header.length / itemsOnPage)}
+            page={fieldPagination}
+            onChange={e => updatePagination(+(e.target as TODO).textContent)}
+        />
         <TableContainer component={Paper} >
             <Table stickyHeader size="small">
                 <TableHead>
@@ -64,7 +68,7 @@ const TableEditorTable = ({ table, worksheets }: Props) => {
                             <TableCell variant="head" >
                                 <div>{colVal.name}</div>
                             </TableCell>
-                            {displayableBody && displayableBody[index].map((value, x) => <TableCell>{value.name}</TableCell>)}
+                            {displayableBody && displayableBody[index].map(value => <TableCell>{value.name}</TableCell>)}
                             <TableCell
                                 style={{ position: "sticky", right: 0 }}
                                 variant="head"
@@ -81,7 +85,7 @@ const TableEditorTable = ({ table, worksheets }: Props) => {
         {dataTable.body && <Pagination
             count={Math.ceil(dataTable.body[0].length / recordsOnPage)}
             page={recordPagination}
-            onChange={e => updateRecordPagination(+e.target.textContent)}
+            onChange={e => updateRecordPagination(+(e.target as TODO).textContent)}
         />}
         <BaseModal state={modalState.state} close={() => setModalState({ state: 'closed' })}>
             {

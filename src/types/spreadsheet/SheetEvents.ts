@@ -1,5 +1,6 @@
 import { Coordinate } from "./Coordinate";
 import { Direction } from "./Direction";
+import { FlowStates } from "./FlowStates";
 import { TableCorner } from "./TableCorner";
 
 export type SheetEvents =
@@ -11,8 +12,10 @@ export type SheetEvents =
     { action: "mouseMoved", data: Coordinate } |
     { action: "mouseDown", data: Coordinate } |
     { action: "createTable" } |
+    { action: "setFlowState", data: FlowStates } |
     { action: "finishEditing" } |
     { action: "editTable", data: number } |
+    { action: "loading", data: boolean } |
     { action: "addTableColumnNames", data: number } |
     { action: "addTableData", data: number } |
     { action: "setWorksheet", data: number } |

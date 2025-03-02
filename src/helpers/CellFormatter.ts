@@ -1,11 +1,16 @@
-import { Cell, CellFormulaValue, ValueType } from "exceljs";
+import { Cell, CellFormulaValue, CellRichTextValue, CellValue, ValueType } from "exceljs";
 
 export class CellFormatter {
     public static getHeaderCellText(cell: Cell): string {
-        return cell.type === ValueType.String ? cell.value as string : 'ERROR'
+        if (cell.type === ValueType.String) {
+            return cell.value as string
+        } else if (CellFormatter.isRichText(cell.value)) {
+            return CellFormatter.handleRichText(cell.value)
+        }
+        return 'ERROR'
     }
 
-    public static getCellText(cell: Cell) {
+    public static getCellText(cell: Cell): string {
         switch (cell.type) {
             case ValueType.Boolean:
                 return !!cell.value ? "true" : "false"
@@ -18,15 +23,27 @@ export class CellFormatter {
             case ValueType.Hyperlink:
                 return cell?.hyperlink ?? "LINK"
             case ValueType.RichText:
-                if (typeof cell.value === 'object' && cell.value && 'richText' in cell.value) {
-                    return cell?.value?.richText.map(richText => richText.text).join('')
-                } else {
-                    return 'test'
-                }
+                return CellFormatter.handleRichText(cell.value)
             case ValueType.Formula:
                 return (cell?.value as CellFormulaValue).formula
+            case ValueType.Null:
+                return ''
+            case ValueType.Merge:
+                return CellFormatter.getCellText({ ...cell, type: cell.effectiveType, value: cell.value })
             default:
-                return (cell?.value ? JSON.stringify(cell?.value).slice(0, 20) + cell.type : "")
+                return "Unknown Value"
         }
+    }
+
+    private static handleRichText(value: CellValue) {
+        if (CellFormatter.isRichText(value)) {
+            return value.richText.map(richText => richText.text).join('\n')
+        } else {
+            return 'ERROR'
+        }
+    }
+
+    private static isRichText(value: CellValue): value is CellRichTextValue {
+        return !!(typeof value === 'object' && value && 'richText' in value)
     }
 }

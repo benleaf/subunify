@@ -1,14 +1,13 @@
 import { TableResult } from "../server/TableResult";
+import { LoadDataRequests } from "./ApplicationEvents";
 import { DashboardScreens } from "./DashboardScreens";
-import { Dto } from "./Dto";
-import { RequestableResources } from "./RequestableResources";
-import { Table } from "./Table";
+import { ServerTable } from "./ServerTable";
 
 export type ApplicationState = {
-    loadingData?: { resource: keyof RequestableResources, method: TODO, dto?: Dto },
+    loadingData?: LoadDataRequests['data'],
     organisationId?: string,
     userId?: string,
     tables?: TableResult[],
-    selectedTable?: Table,
+    selectedTable?: ServerTable,
     selectedScreen?: DashboardScreens,
 }

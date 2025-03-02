@@ -18,6 +18,11 @@ export class ViewerState extends SheetState {
                     ...this.data,
                     mousePossition: { x: event.data.x, y: event.data.y }
                 })
+            case "setFlowState":
+                return new ViewerState({
+                    ...this.data,
+                    flowState: event.data
+                })
             case "mouseMoved":
                 return new ViewerState({
                     ...this.data,
@@ -89,6 +94,11 @@ export class ViewerState extends SheetState {
                 return new ViewerState({
                     ...this.data,
                     tables: this.data.tables
+                })
+            case "loading":
+                return new ViewerState({
+                    ...this.data,
+                    loading: event.data
                 })
             case "renameColumn":
                 const tablesClone = [...this.data.tables]

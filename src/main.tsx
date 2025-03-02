@@ -13,15 +13,17 @@ import Dashboard from './pages/Dashboard';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import TopBar from './components/navigation/TopBar';
-
+import { AuthProvider } from './stateManagment/auth/AuthContext';
+import { Colours } from './constants/Colours';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#ff742a'
+      main: Colours.primary,
+      light: Colours.primaryLight
     },
     secondary: {
-      main: '#ffae00'
+      main: Colours.secondary
     }
   }
 });
@@ -31,16 +33,18 @@ declare global {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <ThemeProvider theme={theme}>
-    <StrictMode>
-      <TopBar />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/excel-importer" element={<ExcelImportPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
-      </BrowserRouter>
-    </StrictMode>
-  </ThemeProvider>
+  <AuthProvider>
+    <ThemeProvider theme={theme}>
+      <StrictMode>
+        <TopBar />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/excel-importer" element={<ExcelImportPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </BrowserRouter>
+      </StrictMode>
+    </ThemeProvider>
+  </AuthProvider>
 )

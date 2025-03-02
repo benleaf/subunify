@@ -1,9 +1,10 @@
-import { apiAction } from '@/api/apiFetch'
+import { apiAction } from '@/api/apiAction'
 import { Column } from '@/types/application/Column'
 import { Select, InputLabel, MenuItem } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { BarChart } from "@mui/x-charts"
 import GlassText from '../glassmorphism/GlassText'
+import { isError } from '@/api/getResource'
 
 type Props = {
     tableId: string
@@ -19,10 +20,9 @@ const CreateBarChart = ({ tableId }: Props) => {
             const result = await apiAction<Column[]>(
                 `table-column/by-table/${tableId}`,
                 'GET',
-                'TODO'
             )
-            if ('message' in result) {
-                console.log(console.error(result.message))
+            if (isError(result)) {
+                console.error(result.message)
             } else {
                 const validColumns = result.filter(column => column.type == 'text' || column.type == 'number' || column.type == 'date')
                 setColumns({ all: validColumns })
@@ -35,10 +35,9 @@ const CreateBarChart = ({ tableId }: Props) => {
         const result = await apiAction<{ id: string, value: string, tableRow: { id: string } }[]>(
             `table-data/column-data/${columnId}`,
             'GET',
-            'TODO'
         )
-        if ('message' in result) {
-            console.log(console.error(result.message))
+        if (isError(result)) {
+            console.error(result.message)
         } else {
             return result
         }

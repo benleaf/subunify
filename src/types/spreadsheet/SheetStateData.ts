@@ -1,4 +1,5 @@
 import { Coordinate } from "./Coordinate"
+import { FlowStates } from "./FlowStates"
 import { SheetTable } from "./SheetTable"
 import { TableCorner } from "./TableCorner"
 
@@ -11,5 +12,7 @@ export type SheetStateData = {
     selectedCell?: Coordinate
     worksheetId: number
     scrollAcceleration?: number
+    loading?: boolean
     selectedTableCorner?: TableCorner
+    flowState: FlowStates
 }
