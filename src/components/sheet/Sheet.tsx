@@ -108,8 +108,8 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
     const [firstCellDimension, setFirstCellDimension] = useState<Dimension>(defaultCellDimension)
     const screenDimension = tableContainerRef.current?.getBoundingClientRect() ?? { width: 0, height: 0 }
 
-    const visibleRows = [...Array(Math.floor(screenDimension.height / defaultCellDimension.height)).keys()]
-    const visibleCols = [...Array(Math.floor(screenDimension.width / defaultCellDimension.width)).keys()]
+    const visibleRows = [...Array(Math.floor(screenDimension.height / defaultCellDimension.height + 1)).keys()]
+    const visibleCols = [...Array(Math.floor(screenDimension.width / defaultCellDimension.width) + 1).keys()]
 
     const tableRerenderDependencies = [
         Math.floor(possition.x),

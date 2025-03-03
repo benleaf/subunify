@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, Stack, Backdrop, CircularProgress } from "@mui/material";
+import { Box, Tabs, Tab, Backdrop, CircularProgress } from "@mui/material";
 import { Worksheet } from "exceljs"
 import { createContext, Dispatch, useReducer } from "react";
 import Sheet from "./Sheet";
@@ -8,6 +8,8 @@ import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
 import TableControlWidgets from "../tableEditor/TableControlWidgets";
 import TableEditor from "../tableEditor/TableEditor";
 import GlassCard from "../glassmorphism/GlassCard";
+import DynamicStack from "../glassmorphism/DynamicStack";
+import DynamicDrawer from "../glassmorphism/DynamicDrawer";
 
 type Props = {
     worksheets?: Worksheet[]
@@ -29,8 +31,8 @@ const SheetTabs = ({ worksheets }: Props) => {
 
     return <StateMachineDispatch.Provider value={{ dispatch, state }}>
         <Box sx={{ width: '100%' }}>
-            <Stack direction="row">
-                <div style={{ flex: 1, height: '80vh' }}>
+            <DynamicStack>
+                <div style={{ height: '80vh', flex: 1 }}>
                     <GlassCard marginSize="small" paddingSize="small">
                         <Tabs
                             value={state.data.worksheetId}
@@ -39,7 +41,7 @@ const SheetTabs = ({ worksheets }: Props) => {
                             {worksheets?.map((sheet, key) => <Tab key={key} label={sheet.name} />)}
                         </Tabs>
                     </GlassCard>
-                    <GlassCard grow marginSize="small" paddingSize="small">
+                    <GlassCard height='80vh' marginSize="small" paddingSize="small">
                         {state.data.tables &&
                             <Sheet
                                 worksheet={worksheets && worksheets[state.data.worksheetId]}
@@ -52,17 +54,19 @@ const SheetTabs = ({ worksheets }: Props) => {
                     </GlassCard>
                 </div>
                 <div style={{ flex: 1 }}>
-                    {worksheets && (
-                        state.data.selectedTableIndex !== undefined ?
-                            <TableEditor
-                                table={state.data.tables[state.data.selectedTableIndex]}
-                                worksheets={worksheets}
-                                tableIndex={state.data.selectedTableIndex}
-                            /> :
-                            <TableControlWidgets tables={state.data.tables} worksheets={worksheets} />
-                    )}
+                    <DynamicDrawer drawLabel="Table Editor">
+                        {worksheets && (
+                            state.data.selectedTableIndex !== undefined ?
+                                <TableEditor
+                                    table={state.data.tables[state.data.selectedTableIndex]}
+                                    worksheets={worksheets}
+                                    tableIndex={state.data.selectedTableIndex}
+                                /> :
+                                <TableControlWidgets tables={state.data.tables} worksheets={worksheets} />
+                        )}
+                    </DynamicDrawer>
                 </div>
-            </Stack>
+            </DynamicStack>
         </Box>
         <Backdrop
             sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}

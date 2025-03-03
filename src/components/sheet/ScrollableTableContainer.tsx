@@ -1,6 +1,7 @@
-import { useContext, useEffect } from "react"
+import React, { useContext, useEffect } from "react"
 import { StateMachineDispatch } from "./SheetTabs"
 import { TableContainer, Paper, Table } from "@mui/material"
+import { Coordinate } from "@/types/spreadsheet/Coordinate"
 
 type Props = {
     tableRef: React.RefObject<HTMLDivElement>,
@@ -22,13 +23,14 @@ const ScrollableTableContainer = ({ tableRef, children }: Props) => {
     }, [tableRef])
 
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        dispatch({ action: "mouseMoved", data: { x: e.clientX, y: e.clientY } })
+    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent, coordinate: Coordinate) => {
+        e.preventDefault()
+        dispatch({ action: "mouseMoved", data: coordinate })
 
         if (tableRef.current) {
             const { top, left, width, height } = tableRef.current.getBoundingClientRect()
-            const mousePosProportionX = (e.clientX - left) / width
-            const mousePosProportionY = (e.clientY - top) / height
+            const mousePosProportionX = (coordinate.x - left) / width
+            const mousePosProportionY = (coordinate.y - top) / height
 
             if (mousePosProportionX < 0.2) dispatch({ action: "mouseNearEdge", data: 'l' })
             if (mousePosProportionX > 0.8) dispatch({ action: "mouseNearEdge", data: 'r' })
@@ -57,9 +59,12 @@ const ScrollableTableContainer = ({ tableRef, children }: Props) => {
         }}
         ref={tableRef}
         onMouseDown={e => dispatch({ action: "mouseDown", data: { x: e.clientX, y: e.clientY } })}
+        onTouchStart={e => dispatch({ action: "mouseDown", data: { x: e.touches[0].clientX, y: e.touches[0].clientY } })}
         onMouseUp={_ => dispatch({ action: "mouseUp" })}
+        onTouchEnd={_ => dispatch({ action: "mouseUp" })}
         onMouseLeave={_ => dispatch({ action: "mouseUp" })}
-        onMouseMove={e => handleMouseMove(e)}
+        onMouseMove={e => handleMouseMove(e, { x: e.clientX, y: e.clientY })}
+        onTouchMove={e => handleMouseMove(e, { x: e.touches[0].clientX, y: e.touches[0].clientY })}
     >
         <Table
             style={{

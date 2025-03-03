@@ -9,7 +9,7 @@ type Props = {
     value?: string,
     style?: React.CSSProperties,
     onMouseEnter?: React.MouseEventHandler<HTMLTableCellElement> | undefined,
-    onCornerMouseDown?: React.MouseEventHandler<HTMLDivElement>,
+    onCornerMouseDown?: () => void,
 }
 
 const SheetCell = ({ cornerVisible, innerRef, value, style, onMouseEnter, onCornerMouseDown }: Props) => {
@@ -37,6 +37,7 @@ const SheetCell = ({ cornerVisible, innerRef, value, style, onMouseEnter, onCorn
                     display: 'flex',
                 }}
                 onMouseDown={onCornerMouseDown}
+                onTouchStart={onCornerMouseDown}
             >
                 <div style={{
                     width: '50%',
