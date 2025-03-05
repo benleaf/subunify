@@ -29,9 +29,13 @@ const AuthModal = ({ overideState, onLogin, onAccountCreationCompleate, onClose,
         setAuthPage('confirm')
     }
 
+    const defaultClose = () => {
+        setAuthModalOpen(false)
+    }
+
     return <>
         {!hideButton && <Button onClick={() => setAuthModalOpen(true)}>Login</Button>}
-        <BaseModal state={authModalOpen ? 'open' : 'closed'} close={onClose}>
+        <BaseModal state={authModalOpen ? 'open' : 'closed'} close={onClose ?? defaultClose}>
             <GlassSpace size="large">
                 <Stack spacing={2}>
                     {authPage == 'login' && <>

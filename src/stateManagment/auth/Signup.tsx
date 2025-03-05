@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
 import { useAuth } from "./AuthContext";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
@@ -6,16 +6,13 @@ import React from "react";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { cognitoSignUp } from "./AuthService";
 import { Credentials } from "@/types/Credentials";
-import { StateMachineDispatch } from "@/components/sheet/SheetTabs";
 
 type Props = {
     goToConformation: (credentials: Credentials) => void
 }
 
 const Signup = ({ goToConformation }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
     const [showPassword, setShowPassword] = React.useState(false);
-
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const { } = useAuth();
@@ -30,12 +27,9 @@ const Signup = ({ goToConformation }: Props) => {
             return
         }
         try {
-            dispatch({ action: 'loading', data: true })
             await cognitoSignUp(email, password);
-            dispatch({ action: 'loading', data: false })
             goToConformation({ email, password })
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
             setMessage(err.message)
         }
     };
