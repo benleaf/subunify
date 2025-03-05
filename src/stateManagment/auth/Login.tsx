@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
 import { useAuth } from "./AuthContext";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
@@ -6,7 +6,6 @@ import React from "react";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { Credentials } from "@/types/Credentials";
 import { cognitoResendConfirm } from "./AuthService";
-import { StateMachineDispatch } from "@/components/sheet/SheetTabs";
 
 
 type Props = {
@@ -15,7 +14,6 @@ type Props = {
 }
 
 const Login = ({ goToConformation, onLogin }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -27,24 +25,18 @@ const Login = ({ goToConformation, onLogin }: Props) => {
 
     const handleAccountConfirmation = async () => {
         try {
-            dispatch({ action: 'loading', data: true })
             await cognitoResendConfirm(email)
-            dispatch({ action: 'loading', data: false })
             goToConformation({ email, password })
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
             setMessage(err.message || "Login failed.");
         }
     };
 
     const handleLogin = async () => {
         try {
-            dispatch({ action: 'loading', data: true })
             await login(email, password);
-            dispatch({ action: 'loading', data: false })
             onLogin && onLogin()
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
             if (err.code == "UserNotConfirmedException") {
                 handleAccountConfirmation()
             } else {

@@ -158,7 +158,7 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
                         {...(x == 0 && y == 0 ? { innerRef: firstCellRef } : {})}
                         style={cellDisplayData.style}
                         onMouseEnter={() => cellDisplayData.cell && dispatch({ action: "cellSelected", data: { x: getGlobalX(x), y: getGlobalY(y) } })}
-                        onCornerMouseDown={_ => boundingBoxCornerHit(getGlobalX(x), getGlobalY(y))}
+                        onCornerMouseDown={() => boundingBoxCornerHit(getGlobalX(x), getGlobalY(y))}
                     />)}
                 </tr>
             )}

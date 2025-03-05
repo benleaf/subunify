@@ -48,8 +48,6 @@ export class TablesDeployer {
             'POST',
             JSON.stringify({
                 tables: ingestTables,
-                // TODO remove this!
-                organisationId: '5126203c-19db-4903-9d28-885423d86d7b'
             }),
         )
     }

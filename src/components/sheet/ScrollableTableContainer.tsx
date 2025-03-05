@@ -24,7 +24,6 @@ const ScrollableTableContainer = ({ tableRef, children }: Props) => {
 
 
     const handleMouseMove = (e: React.MouseEvent | React.TouchEvent, coordinate: Coordinate) => {
-        e.preventDefault()
         dispatch({ action: "mouseMoved", data: coordinate })
 
         if (tableRef.current) {

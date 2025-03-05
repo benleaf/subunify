@@ -40,7 +40,7 @@ const ExcelImportPage = () => {
                                 Create a new SUBUNIFY table and give it a name
                             </li>
                             <li>
-                                Give the new table a headder by selecting a row or column of your excel document
+                                Give the new table a header by selecting a row or column of your excel document
                             </li>
                             <li>
                                 Select data that should be loaded into your new table

@@ -8,7 +8,7 @@ type Props = {
     innerRef?: React.Ref<ElementRef<'td'>> | undefined,
     value?: string,
     style?: React.CSSProperties,
-    onMouseEnter?: React.MouseEventHandler<HTMLTableCellElement> | undefined,
+    onMouseEnter?: () => void,
     onCornerMouseDown?: () => void,
 }
 
@@ -23,6 +23,7 @@ const SheetCell = ({ cornerVisible, innerRef, value, style, onMouseEnter, onCorn
         className={tableStyle.tableCell}
         ref={innerRef}
         onMouseEnter={onMouseEnter}
+        onTouchMoveCapture={onMouseEnter}
     >
         {cornerVisible &&
             <div
