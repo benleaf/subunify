@@ -5,7 +5,7 @@ import FloatingGlassCircle from "@/components/glassmorphism/FloatingGlassCircle"
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import GlassIconText from "@/components/glassmorphism/GlassIconText";
-import { Article, Backup, BallotOutlined, BorderTop, CreateNewFolder, Dashboard, Note, Square } from "@mui/icons-material";
+import { Article, Backup, BallotOutlined, BorderTop, CreateNewFolder, Dashboard } from "@mui/icons-material";
 
 const LandingPage = () => {
     return <div>
