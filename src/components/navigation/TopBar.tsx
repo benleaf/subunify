@@ -14,7 +14,7 @@ const TopBar = () => {
         }}
     >
         <GlassSpace size="tiny">
-            <GlassText size="huge">• SUBUNIFY</GlassText>
+            <GlassText size="huge">SUBUNIFY</GlassText>
         </GlassSpace>
         <GlassSpace size="tiny">
             <GlassText size="modrate">LOGIN</GlassText>

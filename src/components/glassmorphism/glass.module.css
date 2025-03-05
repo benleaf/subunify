@@ -2,16 +2,16 @@
 @value colorPrimaryLight: #D1B889;
 @value colorPrimaryDark: #675128;
 @value colorPrimaryTransparent: #ff742a10;
-@value colorSecondary: #769389;
+@value colorSecondary: #96bbae;
 
 .mediumCircle {
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
     border-radius: 100%;
-    box-shadow: -5px -5px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: -5px -5px 30px rgba(0, 0, 0, 0.1);
     background-image:
         radial-gradient(farthest-side at 33% 66%, #ffffff80, #0000),
-        linear-gradient(to bottom right, colorPrimary, colorSecondary);
+        linear-gradient(to bottom, colorPrimaryTransparent, colorSecondary);
 }
 
 .smallCircle {

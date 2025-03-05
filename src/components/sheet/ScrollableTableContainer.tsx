@@ -23,7 +23,7 @@ const ScrollableTableContainer = ({ tableRef, children }: Props) => {
     }, [tableRef])
 
 
-    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent, coordinate: Coordinate) => {
+    const handleMouseMove = (coordinate: Coordinate) => {
         dispatch({ action: "mouseMoved", data: coordinate })
 
         if (tableRef.current) {
@@ -62,8 +62,8 @@ const ScrollableTableContainer = ({ tableRef, children }: Props) => {
         onMouseUp={_ => dispatch({ action: "mouseUp" })}
         onTouchEnd={_ => dispatch({ action: "mouseUp" })}
         onMouseLeave={_ => dispatch({ action: "mouseUp" })}
-        onMouseMove={e => handleMouseMove(e, { x: e.clientX, y: e.clientY })}
-        onTouchMove={e => handleMouseMove(e, { x: e.touches[0].clientX, y: e.touches[0].clientY })}
+        onMouseMove={e => handleMouseMove({ x: e.clientX, y: e.clientY })}
+        onTouchMove={e => handleMouseMove({ x: e.touches[0].clientX, y: e.touches[0].clientY })}
     >
         <Table
             style={{
