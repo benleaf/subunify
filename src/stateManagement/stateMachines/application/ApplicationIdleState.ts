@@ -3,7 +3,7 @@ import { TableState } from "../dashboard/TableState";
 import { ViewerState } from "../excelImporter/ViewerState";
 import { ApplicationEvents } from "./types/ApplicationEvents";
 
-export class ApplicationIdelState extends BaseState {
+export class ApplicationIdleState extends BaseState {
     public handleAction(event: ApplicationEvents): BaseState {
         switch (event.action) {
             case "startExcelImporter":
@@ -20,7 +20,7 @@ export class ApplicationIdelState extends BaseState {
                     machine: 'dashboard',
                 })
             default:
-                return new ApplicationIdelState({
+                return new ApplicationIdleState({
                     ...this.data,
                     ...this.handleUniversalActions(event)
                 })

@@ -8,10 +8,10 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
 import GlassText from "../glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
-import AuthModal from "@/stateManagment/auth/AuthModal"
-import { useAuth } from "@/stateManagment/auth/AuthContext"
+import AuthModal from "@/stateManagement/auth/AuthModal"
+import { useAuth } from "@/stateManagement/auth/AuthContext"
 import PaymentModal from "../payments/PaymentModal"
-import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 import { TablesDeployer } from "@/helpers/TablesDeployer"
 
 
@@ -79,7 +79,7 @@ const TableControlWidgets = ({ tables }: Props) => {
             </GlassCard>
         </div>
         <AuthModal
-            overideState={state.data.flowState == 'login'}
+            overrideState={state.data.flowState == 'login'}
             onLogin={forcePayment}
             onAccountCreationCompleate={requestDeployment}
             onClose={() => dispatch({ action: "setFlowState", data: 'editing' })}

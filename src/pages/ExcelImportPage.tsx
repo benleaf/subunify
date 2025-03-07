@@ -7,7 +7,7 @@ import GlassText from "@/components/glassmorphism/GlassText";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { Divider } from "@mui/material";
 import { StateMachineDispatch } from "@/App";
-import { isExcelImporter } from "@/stateManagment/stateMachines/getContext";
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext";
 
 const ExcelImportPage = () => {
     const context = useContext(StateMachineDispatch)!
@@ -28,6 +28,7 @@ const ExcelImportPage = () => {
             wb.xlsx.load(buffer as Buffer).then(workbook => {
                 context.dispatch({ action: 'setWorksheets', data: workbook.worksheets })
                 reader.abort()
+                context.dispatch({ action: 'popup', data: { colour: 'success', message: 'File uploaded' } })
             })
         }
     }, [file, context.state.data.machine])
@@ -37,7 +38,7 @@ const ExcelImportPage = () => {
             <GlassSpace size={"small"}>
                 <GlassText size="huge">Select an Excel File</GlassText>
                 <GlassSpace size={"small"}>
-                    <GlassText size="modrate">
+                    <GlassText size="moderate">
                         <ol>
                             <li>
                                 Upload an Excel file you want to get data from

@@ -10,7 +10,7 @@ type Props = {
     style?: React.CSSProperties
 }
 
-const GlassText = ({ children, style, size = 'modrate' }: Props) => {
+const GlassText = ({ children, style, size = 'moderate' }: Props) => {
     return <p className={classes(glass.glassText)} style={{ ...style, fontSize: CssSizes[size] }}>{children}</p>
 }
 

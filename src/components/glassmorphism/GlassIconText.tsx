@@ -11,7 +11,7 @@ type Props = {
     style?: React.CSSProperties
 }
 
-const GlassIconText = ({ children, icon, style, size = 'modrate' }: Props) => {
+const GlassIconText = ({ children, icon, style, size = 'moderate' }: Props) => {
     return <div style={{ display: 'flex' }}>
         <div style={{ paddingRight: '1em' }}>{icon}</div>
         <p className={classes(glass.glassText)} style={{ ...style, fontSize: CssSizes[size] }}>{children}</p>

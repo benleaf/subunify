@@ -65,7 +65,7 @@ const CreateLineChart = ({ tableId }: Props) => {
     return <>
         <div style={{ display: 'flex' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flex: 1, padding: 10 }}>
-                <GlassText size="modrate">Primary Column</GlassText>
+                <GlassText size="moderate">Primary Column</GlassText>
                 <Select
                     label="Tables"
                     onChange={event => setColumns({ ...columns, primaryId: event.target.value as string })}
@@ -75,7 +75,7 @@ const CreateLineChart = ({ tableId }: Props) => {
                 </Select>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flex: 1, padding: 10 }}>
-                <GlassText size="modrate">Secondary Columns</GlassText>
+                <GlassText size="moderate">Secondary Columns</GlassText>
                 <Select
                     label="Tables"
                     multiple

@@ -7,7 +7,7 @@ import { StateMachineDispatch } from "@/App"
 import { Edit } from "@mui/icons-material"
 import BaseModal from "../modal/BaseModal"
 import FieldEditor from "./FieldEditor"
-import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 
 type Props = {
     table: SheetTable
@@ -43,7 +43,7 @@ const TableEditorTable = ({ table }: Props) => {
     useEffect(() => {
         const newDataTable = new DataTable(table, state.data.worksheets![table.parentWorksheetId ?? 0])
         setDataTable(newDataTable)
-    }, [table.head, table.body, table.columnOverides])
+    }, [table.head, table.body, table.columnOverrides])
 
 
     return <Stack spacing={1}>

@@ -5,8 +5,8 @@ import { useContext, useEffect } from "react"
 import GlassText from "../glassmorphism/GlassText"
 import { ComponentSizes } from "@/constants/ComponentSizes"
 import { CssSizes } from "@/constants/CssSizes"
-import { useAuth } from "@/stateManagment/auth/AuthContext"
-import { isDashboard } from "@/stateManagment/stateMachines/getContext"
+import { useAuth } from "@/stateManagement/auth/AuthContext"
+import { isDashboard } from "@/stateManagement/stateMachines/getContext"
 import { StateMachineDispatch } from "@/App"
 
 const Sidebar = () => {

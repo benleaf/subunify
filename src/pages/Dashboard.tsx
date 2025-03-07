@@ -7,10 +7,10 @@ import TablesTable from "@/components/TablesDataTable/TablesTable";
 import { useSize } from "@/hooks/useSize";
 import { ComponentSizes } from "@/constants/ComponentSizes";
 import CreateChartForm from "@/components/charts/CreateChartForm";
-import AuthModal from "@/stateManagment/auth/AuthModal";
-import { useAuth } from "@/stateManagment/auth/AuthContext";
+import AuthModal from "@/stateManagement/auth/AuthModal";
+import { useAuth } from "@/stateManagement/auth/AuthContext";
 import { StateMachineDispatch } from "@/App";
-import { isDashboard } from "@/stateManagment/stateMachines/getContext";
+import { isDashboard } from "@/stateManagement/stateMachines/getContext";
 
 const Dashboard = () => {
     const context = useContext(StateMachineDispatch)!
@@ -36,7 +36,7 @@ const Dashboard = () => {
         <div style={{ display: 'flex' }}>
             <Sidebar />
             <div style={{ height: height - ComponentSizes.topBar, width: width - ComponentSizes.sideBar }}>
-                <GlassCard marginSize="modrate" paddingSize="modrate" height={(height - ComponentSizes.topBar) - 45}>
+                <GlassCard marginSize="moderate" paddingSize="moderate" height={(height - ComponentSizes.topBar) - 45}>
                     {context.state.data.selectedScreen == 'Tables' && <>
                         <GlassText size='huge'>{context.state.data.selectedTable?.name ?? 'No Table Selected'}</GlassText>
                         <div style={{ height: height - ComponentSizes.topBar - 120 }}>
@@ -49,7 +49,7 @@ const Dashboard = () => {
                 </GlassCard>
             </div>
         </div>
-        <AuthModal overideState={auth.user === null} />
+        <AuthModal overrideState={auth.user === null} />
     </>
 }
 

@@ -3,7 +3,7 @@ import { DataFormat } from "@/types/DataFormat"
 import { StateMachineDispatch } from "@/App"
 import { useContext } from "react"
 import { TextField } from "@mui/material"
-import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 
 type Props = {
     dataFormat: DataFormat,

@@ -9,7 +9,7 @@ import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
 import { CellFormatter } from "@/helpers/CellFormatter"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
-import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 
 type Props = {
     table: Partial<SheetTable>
@@ -26,14 +26,14 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
     const [body, setBody] = useState<string[][]>([[]])
 
     useEffect(() => {
-        const headderTemp = getHeadder()
-        setHeader(headderTemp)
-        const bodyData = getData(headderTemp)
+        const headerTemp = getHeader()
+        setHeader(headerTemp)
+        const bodyData = getData(headerTemp)
         setBody(bodyData)
     }, [table.head, table.body])
 
 
-    const getHeadder = () => {
+    const getHeader = () => {
         if (!table.head) return []
 
         let cells: Cell[] = []
@@ -82,7 +82,7 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
         return newBody
     }
 
-    return <GlassCard marginSize="tiny" paddingSize="modrate" flex={1}>
+    return <GlassCard marginSize="tiny" paddingSize="moderate" flex={1}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <GlassText size="large">{table.name}</GlassText>
             <div>
@@ -95,14 +95,14 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
             <Stack spacing={1} width='100%'>
                 {header.slice(Math.max(header.length - 5, 0)).map((colVal, index) => <GlassCard marginSize="small" paddingSize="small">
                     <GlassSpace size="tiny">
-                        <GlassText size="modrate">{colVal}</GlassText>
+                        <GlassText size="moderate">{colVal}</GlassText>
                         <GlassText size="small">
                             Values: {body.length == header.length && body[index].slice(Math.max(body[index].length - 2, 0)).join(', ')}
                         </GlassText>
                         <div></div>
                     </GlassSpace>
                 </GlassCard>)}
-                <GlassText size="modrate">
+                <GlassText size="moderate">
                     <Stack spacing={1} direction='row'>
                         <Chip label={`${header.length} field${header.length != 1 ? 's' : ''}`} />
                         {body[0] && <Chip label={`${body[0].length} record${body[0].length != 1 ? 's' : ''}`} />}

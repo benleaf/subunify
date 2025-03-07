@@ -34,11 +34,11 @@ export class DataTable {
         if (this.internalBody == undefined || this.internalBody[0].length == 0) return this.internalHeader.map(_ => ({ type: "unknown" }))
 
         const columns: DataFormat[] = []
-        for (const headder of this.internalHeader) {
-            let currentType = this.internalBody[headder.id][0].dataFormat
-            for (let index = 0; index < this.internalBody[headder.id].length; index++) {
-                if (this.internalBody[headder.id][index].dataFormat.type != 'unknown') {
-                    currentType = this.internalBody[headder.id][index].dataFormat
+        for (const header of this.internalHeader) {
+            let currentType = this.internalBody[header.id][0].dataFormat
+            for (let index = 0; index < this.internalBody[header.id].length; index++) {
+                if (this.internalBody[header.id][index].dataFormat.type != 'unknown') {
+                    currentType = this.internalBody[header.id][index].dataFormat
                     break
                 }
             }
@@ -80,17 +80,17 @@ export class DataTable {
         return cells.map((cell, index) => ({
             id: index,
             dataFormat: { type: 'unknown' },
-            name: this.getColumnOverideData(index) ?? CellFormatter.getHeaderCellText(cell),
+            name: this.getColumnOverrideData(index) ?? CellFormatter.getHeaderCellText(cell),
             linkedCell: cell
         } as DataField))
     }
 
-    private getColumnOverideData(headerIndex: number) {
-        if (!this.sheetTable.columnOverides) return undefined
-        return this.sheetTable.columnOverides[headerIndex]
+    private getColumnOverrideData(headerIndex: number) {
+        if (!this.sheetTable.columnOverrides) return undefined
+        return this.sheetTable.columnOverrides[headerIndex]
     }
 
-    private getCellDataformat(cell?: Cell): DataFormat {
+    private getCellDataFormat(cell?: Cell): DataFormat {
         switch (cell?.type) {
             case ValueType.Boolean:
                 return { type: 'boolean', options: {} }
@@ -125,7 +125,7 @@ export class DataTable {
                     .map(yPos => this.worksheet.getRow(yPos).getCell(column.id + topLeft.x))
                     .map((cell, index) => ({
                         id: index,
-                        dataFormat: this.getCellDataformat(cell),
+                        dataFormat: this.getCellDataFormat(cell),
                         name: CellFormatter.getCellText(cell),
                         linkedCell: cell
                     } as DataField))
@@ -138,7 +138,7 @@ export class DataTable {
                     .map(xPos => this.worksheet.getRow(column.id + topLeft.y).getCell(xPos))
                     .map((cell, index) => ({
                         id: index,
-                        dataFormat: this.getCellDataformat(cell),
+                        dataFormat: this.getCellDataFormat(cell),
                         name: CellFormatter.getCellText(cell),
                         linkedCell: cell
                     } as DataField))

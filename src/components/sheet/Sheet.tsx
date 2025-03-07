@@ -89,8 +89,8 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
 
         if (selectedTableIndex !== undefined && cellData.boxIndex !== undefined && cellData.type == 'head') {
             const table = sheetTables[selectedTableIndex]
-            if (table.columnOverides && table.columnOverides[cellData.boxIndex])
-                cellName = table.columnOverides[cellData.boxIndex]
+            if (table.columnOverrides && table.columnOverrides[cellData.boxIndex])
+                cellName = table.columnOverrides[cellData.boxIndex]
         }
 
         return {
@@ -116,7 +116,7 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
         Math.floor(possition.y),
         worksheetId,
         sheetTables,
-        selectedTableIndex !== undefined && sheetTables[selectedTableIndex].columnOverides,
+        selectedTableIndex !== undefined && sheetTables[selectedTableIndex].columnOverrides,
         screenDimension
     ]
 

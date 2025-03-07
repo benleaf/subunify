@@ -1,1 +1,1 @@
-export type Sizes = 'gigantic' | 'huge' | 'large' | 'modrate' | 'small' | 'tiny' | 'hairpin'
+export type Sizes = 'gigantic' | 'huge' | 'large' | 'moderate' | 'small' | 'tiny' | 'hairpin'

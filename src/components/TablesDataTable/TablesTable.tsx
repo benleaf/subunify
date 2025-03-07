@@ -12,7 +12,7 @@ import { ServerColumn } from "@/types/application/ServerColumn"
 import GlassText from "../glassmorphism/GlassText"
 import { isError } from "@/api/getResource"
 import { StateMachineDispatch } from "@/App"
-import { isDashboard } from "@/stateManagment/stateMachines/getContext"
+import { isDashboard } from "@/stateManagement/stateMachines/getContext"
 
 
 declare module '@mui/x-data-grid' {
@@ -159,7 +159,7 @@ const TablesTable = () => {
         type: 'actions',
         headerName: 'Actions',
         filterable: false,
-        hideable: false,
+        hidable: false,
         width: 100,
         cellClassName: 'actions',
         getActions: ({ id }) => {
@@ -208,7 +208,7 @@ const TablesTable = () => {
             field: 'id',
             type: 'string',
             headerName: 'ID',
-            hideable: false,
+            hidable: false,
             width: 100,
         },
         {
@@ -250,7 +250,7 @@ const TablesTable = () => {
             <GlassSpace size="large">
                 <Stack direction='column' spacing={2}>
                     <GlassText size="large">
-                        Are you sure you wish to performe this ({modalState.state == 'open' && modalState.action}) action?
+                        Are you sure you wish to perform this ({modalState.state == 'open' && modalState.action}) action?
                     </GlassText>
                     <Divider />
                     <Stack direction='row' spacing={2}>

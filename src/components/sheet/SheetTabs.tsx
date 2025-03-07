@@ -7,7 +7,7 @@ import DynamicStack from "../glassmorphism/DynamicStack";
 import DynamicDrawer from "../glassmorphism/DynamicDrawer";
 import { StateMachineDispatch } from "@/App";
 import { useContext } from "react";
-import { isExcelImporter } from "@/stateManagment/stateMachines/getContext";
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext";
 
 const SheetTabs = () => {
     const context = useContext(StateMachineDispatch)!

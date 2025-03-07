@@ -1,7 +1,7 @@
 import { BoundingBox } from "../../../helpers/BoundingBox";
 import { CreateTableDataState } from "./CreateTableDataState";
 import { SheetState } from "./SheetState";
-import { SheetEvents } from "@/stateManagment/stateMachines/excelImporter/types/SheetEvents";
+import { SheetEvents } from "@/stateManagement/stateMachines/excelImporter/types/SheetEvents";
 
 export class CreateTableAnchorDataState extends SheetState {
     public handleAction(event: SheetEvents): SheetState {

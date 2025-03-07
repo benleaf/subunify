@@ -10,7 +10,7 @@ import { Article, Backup, BallotOutlined, BarChart, BorderTop, CreateNewFolder, 
 const LandingPage = () => {
     return <div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GlassSpace size='modrate'>
+            <GlassSpace size='moderate'>
                 <GlassText size="gigantic" style={{ letterSpacing: '0.15em' }}>ENTERPRISE DASHBOARDS...</GlassText>
             </GlassSpace>
         </div>
@@ -21,21 +21,21 @@ const LandingPage = () => {
                     <div style={{ maxWidth: 400, height: 500, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                         <GlassSpace size={"tiny"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                             <GlassText size="large">FROM EXCEL:</GlassText>
-                            <GlassText size="modrate">
+                            <GlassText size="moderate">
                                 <Stack spacing={3} margin='1em'>
-                                    <GlassIconText size={"modrate"} icon={<Article color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<Article color="primary" fontSize="medium" />}>
                                         Use any excel file that you want to collect data from
                                     </GlassIconText>
-                                    <GlassIconText size={"modrate"} icon={<BorderTop color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<BorderTop color="primary" fontSize="medium" />}>
                                         Select your tables headder and body
                                     </GlassIconText>
-                                    <GlassIconText size={"modrate"} icon={<Backup color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<Backup color="primary" fontSize="medium" />}>
                                         Deploy to a secure cloud server
                                     </GlassIconText>
-                                    <GlassIconText size={"modrate"} icon={<BallotOutlined color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<BallotOutlined color="primary" fontSize="medium" />}>
                                         Enjoy painless data access using the power of web forms
                                     </GlassIconText>
-                                    <GlassIconText size={"modrate"} icon={<BarChart color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<BarChart color="primary" fontSize="medium" />}>
                                         Create charts effortlessly using your own web data
                                     </GlassIconText>
                                 </Stack>
@@ -44,19 +44,19 @@ const LandingPage = () => {
                         </GlassSpace>
                     </div>
                 </GlassCard>
-                <Divider orientation="vertical" flexItem><GlassText size="modrate">OR</GlassText></Divider>
+                <Divider orientation="vertical" flexItem><GlassText size="moderate">OR</GlassText></Divider>
                 <GlassCard marginSize="small">
                     <div style={{ maxWidth: 400, height: 500, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                         <GlassSpace size={"tiny"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                            <GlassText size="large">FROM SCRATCH:</GlassText><GlassText size="modrate">
+                            <GlassText size="large">FROM SCRATCH:</GlassText><GlassText size="moderate">
                                 <Stack spacing={3} margin='1em'>
-                                    <GlassIconText size={"modrate"} icon={<BallotOutlined color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<BallotOutlined color="primary" fontSize="medium" />}>
                                         Start with a blank dashboard and create tables manually
                                     </GlassIconText>
-                                    <GlassIconText size={"modrate"} icon={<Backup color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<Backup color="primary" fontSize="medium" />}>
                                         Add tables from Excel at any point
                                     </GlassIconText>
-                                    <GlassIconText size={"modrate"} icon={<PieChart color="primary" fontSize="medium" />}>
+                                    <GlassIconText size={"moderate"} icon={<PieChart color="primary" fontSize="medium" />}>
                                         Start right and structure your data how you want
                                     </GlassIconText>
                                 </Stack>

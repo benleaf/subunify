@@ -109,8 +109,8 @@ export class ViewerState extends SheetState {
                 })
             case "renameColumn":
                 const tablesClone = [...this.data.tables]
-                const columnOverides = tablesClone[this.data.selectedTableIndex!].columnOverides
-                tablesClone[this.data.selectedTableIndex!].columnOverides = {
+                const columnOverides = tablesClone[this.data.selectedTableIndex!].columnOverrides
+                tablesClone[this.data.selectedTableIndex!].columnOverrides = {
                     ...columnOverides,
                     [event.data.columnId]: event.data.value
                 }

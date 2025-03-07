@@ -10,7 +10,7 @@ import GlassText from "../glassmorphism/GlassText"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import BaseModal from "../modal/BaseModal"
 import { Edit } from "@mui/icons-material"
-import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 
 type Props = {
     table: SheetTable

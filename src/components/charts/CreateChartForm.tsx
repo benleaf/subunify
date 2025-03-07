@@ -16,7 +16,7 @@ const CreateChartForm = ({ tables }: Props) => {
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ display: 'flex' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flex: 1, padding: 10 }}>
-                <GlassText size="modrate">Table</GlassText>
+                <GlassText size="moderate">Table</GlassText>
                 <Select
                     value={tableId}
                     label="Tables"
@@ -27,7 +27,7 @@ const CreateChartForm = ({ tables }: Props) => {
                 </Select>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flex: 1, padding: 10 }}>
-                <GlassText size="modrate">Table Type</GlassText>
+                <GlassText size="moderate">Table Type</GlassText>
                 <Select
                     value={chartType}
                     label="Chart Type"

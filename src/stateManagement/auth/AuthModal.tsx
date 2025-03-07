@@ -8,14 +8,14 @@ import Confirm from "./Confirm";
 import { Credentials } from "@/types/Credentials";
 
 type Props = {
-    overideState?: boolean
+    overrideState?: boolean
     hideButton?: boolean
     onLogin?: () => void
     onAccountCreationCompleate?: () => void
     onClose?: () => void
 }
 
-const AuthModal = ({ overideState, onLogin, onAccountCreationCompleate, onClose, hideButton = false }: Props) => {
+const AuthModal = ({ overrideState: overideState, onLogin, onAccountCreationCompleate, onClose, hideButton = false }: Props) => {
     const [authModalOpen, setAuthModalOpen] = useState(false)
     const [credentials, setCredentials] = useState<Credentials>()
     const [authPage, setAuthPage] = useState<'login' | 'signup' | 'confirm'>('login')

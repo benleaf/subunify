@@ -1,6 +1,6 @@
 import { StateMachineDispatch } from "@/App"
 import { Snackbar, Alert } from "@mui/material"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 
 const UniversalAlert = () => {
     const { dispatch, state } = useContext(StateMachineDispatch)!
@@ -9,17 +9,10 @@ const UniversalAlert = () => {
         dispatch({ action: 'popup' })
     }
 
-    useEffect(() => {
-        setTimeout(() => {
-            close()
-        }, 5000)
-    }, [state.data.popup?.message])
-
-
     return <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={!!state.data.popup?.message}
-        autoHideDuration={2000}
+        open={!!state.data.popup}
+        autoHideDuration={4000}
         onClose={close}
     >
         <Alert

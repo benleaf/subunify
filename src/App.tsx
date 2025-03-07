@@ -1,13 +1,13 @@
-import { createContext, Dispatch, useReducer } from 'react'
+import { createContext, useReducer } from 'react'
 import { Routes, BrowserRouter, Route } from 'react-router';
 import LandingPage from './pages/LandingPage';
 import ExcelImportPage from './pages/ExcelImportPage';
 import Dashboard from './pages/Dashboard';
 import TopBar from './components/navigation/TopBar';
-import { ApplicationIdelState } from './stateManagment/stateMachines/application/ApplicationIdleState';
-import { reducer } from './stateManagment/stateMachines/StateMachineReducer';
+import { ApplicationIdleState } from './stateManagement/stateMachines/application/ApplicationIdleState';
+import { reducer } from './stateManagement/stateMachines/StateMachineReducer';
 import { Backdrop, CircularProgress } from '@mui/material';
-import { StateMachineContext } from './stateManagment/stateMachines/StateMachineContext';
+import { StateMachineContext } from './stateManagement/stateMachines/StateMachineContext';
 import DataUpload from './pages/DataUpload';
 import UniversalAlert from './components/modal/UniversalAlert';
 
@@ -15,7 +15,7 @@ import UniversalAlert from './components/modal/UniversalAlert';
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
 
 const App = () => {
-  const [state, dispatch] = useReducer(reducer, new ApplicationIdelState({ machine: 'idle' }));
+  const [state, dispatch] = useReducer(reducer, new ApplicationIdleState({ machine: 'idle' }));
 
   return <StateMachineDispatch.Provider value={{ dispatch, state }}>
     <UniversalAlert />

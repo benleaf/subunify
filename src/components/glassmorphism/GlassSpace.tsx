@@ -8,7 +8,7 @@ type Props = {
     style?: React.CSSProperties
 }
 
-const GlassSpace = ({ children, style, size = 'modrate' }: Props) => {
+const GlassSpace = ({ children, style, size = 'moderate' }: Props) => {
     return <div style={{ ...style, padding: CssSizes[size], margin: CssSizes[size] }}>{children}</div>
 }
 
