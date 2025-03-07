@@ -1,13 +1,20 @@
-import { SheetState } from "./SheetState";
 import { PanningState } from "./PanningState";
-import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
 import { CreateTableHeadState } from "./CreateTableHeadState";
 import { CreateTableAnchorDataState } from "./CreateTableAnchorDataState";
 import { EditTableSizeState } from "./EditTableSizeState";
+import { BaseState } from "../BaseState";
+import { SheetState } from "./SheetState";
+import { SheetEvents } from "./types/SheetEvents";
+import { ApplicationEvents } from "../application/types/ApplicationEvents";
 
 export class ViewerState extends SheetState {
-    public handleAction(event: SheetEvents): SheetState {
+    public handleAction(event: SheetEvents): BaseState {
         switch (event.action) {
+            case "setWorksheets":
+                return new ViewerState({
+                    ...this.data,
+                    worksheets: event.data
+                })
             case "goToCell":
                 return new ViewerState({
                     ...this.data,
@@ -113,7 +120,10 @@ export class ViewerState extends SheetState {
                     tables: this.data.tables
                 })
             default:
-                return this
+                return new ViewerState({
+                    ...this.data,
+                    ...this.handleUniversalActions(event as ApplicationEvents)
+                })
         }
     }
 }

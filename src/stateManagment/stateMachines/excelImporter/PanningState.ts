@@ -1,6 +1,6 @@
 import { SheetState } from "./SheetState";
 import { ViewerState } from "./ViewerState";
-import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
+import { SheetEvents } from "@/stateManagment/stateMachines/excelImporter/types/SheetEvents";
 
 export class PanningState extends SheetState {
     public handleAction(event: SheetEvents): SheetState {

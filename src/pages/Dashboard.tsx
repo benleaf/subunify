@@ -1,8 +1,5 @@
-import { applicationReducer } from "../stateManagment/reducers/ApplicationReducer";
-import { createContext, Dispatch, useEffect, useReducer } from "react";
+import { useContext, useEffect } from "react";
 import { getResource } from "../api/getResource";
-import { ApplicationEvents } from "@/types/application/ApplicationEvents";
-import { ApplicationState } from "@/types/application/ApplicationState";
 import Sidebar from "@/components/navigation/Sidebar";
 import GlassCard from "@/components/glassmorphism/GlassCard";
 import GlassText from "@/components/glassmorphism/GlassText";
@@ -12,51 +9,48 @@ import { ComponentSizes } from "@/constants/ComponentSizes";
 import CreateChartForm from "@/components/charts/CreateChartForm";
 import AuthModal from "@/stateManagment/auth/AuthModal";
 import { useAuth } from "@/stateManagment/auth/AuthContext";
-
-export const ApplicationDispatch = createContext<{
-    dispatch: Dispatch<ApplicationEvents>,
-    state: ApplicationState
-} | undefined>(undefined);
+import { StateMachineDispatch } from "@/App";
+import { isDashboard } from "@/stateManagment/stateMachines/getContext";
 
 const Dashboard = () => {
+    const context = useContext(StateMachineDispatch)!
     const auth = useAuth()
-    // auth.logout()
     const { height, width } = useSize()
-    const [state, dispatch] = useReducer(applicationReducer, {
-        selectedScreen: 'Tables'
-    })
+
+    useEffect(() => {
+        context.dispatch({ action: 'startDashboard' })
+    }, [])
 
     useEffect(() => {
         const runFetch = async () => {
-            if (state.loadingData) {
-                console.log(state.loadingData)
-                const resource = await getResource(state.loadingData)
-                dispatch({ action: state.loadingData.request, data: resource })
+            if (isDashboard(context) && context.state.data.loadingData) {
+                const resource = await getResource(context.state.data.loadingData)
+                context.dispatch({ action: context.state.data.loadingData.request, data: resource })
             }
         }
 
         runFetch()
-    }, [state.loadingData])
+    }, [isDashboard(context) && context.state.data.loadingData])
 
-    return <ApplicationDispatch.Provider value={{ dispatch, state }}>
+    return isDashboard(context) && <>
         <div style={{ display: 'flex' }}>
             <Sidebar />
             <div style={{ height: height - ComponentSizes.topBar, width: width - ComponentSizes.sideBar }}>
                 <GlassCard marginSize="modrate" paddingSize="modrate" height={(height - ComponentSizes.topBar) - 45}>
-                    {state.selectedScreen == 'Tables' && <>
-                        <GlassText size='huge'>{state.selectedTable?.name ?? 'No Table Selected'}</GlassText>
+                    {context.state.data.selectedScreen == 'Tables' && <>
+                        <GlassText size='huge'>{context.state.data.selectedTable?.name ?? 'No Table Selected'}</GlassText>
                         <div style={{ height: height - ComponentSizes.topBar - 120 }}>
                             <TablesTable />
                         </div>
                     </>}
-                    {state.selectedScreen == 'Charts' && state.tables && <>
-                        <CreateChartForm tables={state.tables} />
+                    {context.state.data.selectedScreen == 'Charts' && context.state.data.tables && <>
+                        <CreateChartForm tables={context.state.data.tables} />
                     </>}
                 </GlassCard>
             </div>
         </div>
         <AuthModal overideState={auth.user === null} />
-    </ApplicationDispatch.Provider>
+    </>
 }
 
 export default Dashboard

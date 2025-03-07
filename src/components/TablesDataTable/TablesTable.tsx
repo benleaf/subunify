@@ -1,4 +1,3 @@
-import { ApplicationDispatch } from "@/pages/Dashboard"
 import { Add, Cancel, Delete, Edit, Save } from "@mui/icons-material"
 import { Button, Divider, Stack } from "@mui/material"
 import { GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlotProps, GridToolbarContainer } from "@mui/x-data-grid"
@@ -12,6 +11,8 @@ import { apiAction } from "@/api/apiAction"
 import { ServerColumn } from "@/types/application/ServerColumn"
 import GlassText from "../glassmorphism/GlassText"
 import { isError } from "@/api/getResource"
+import { StateMachineDispatch } from "@/App"
+import { isDashboard } from "@/stateManagment/stateMachines/getContext"
 
 
 declare module '@mui/x-data-grid' {
@@ -26,11 +27,14 @@ declare module '@mui/x-data-grid' {
 type EditModalProps = { state: 'open', selectedFieldId: string, action: 'delete' } | { state: 'closed' }
 
 const TablesTable = () => {
-    const { state, dispatch } = useContext(ApplicationDispatch)!
+    const context = useContext(StateMachineDispatch)!
+    if (!isDashboard(context)) throw new Error("TablesTable can only be used within the dashboard context");
+    const { dispatch, state } = context
+
     const [modalState, setModalState] = useState<EditModalProps>({ state: 'closed' })
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
-    const rows: ServerRow[] = state.selectedTable?.rows ?? []
-    const columns: ServerColumn[] = state.selectedTable?.columns ?? []
+    const rows: ServerRow[] = state.data.selectedTable?.rows ?? []
+    const columns: ServerColumn[] = state.data.selectedTable?.columns ?? []
 
     function EditToolbar(props: GridSlotProps['toolbar']) {
 
@@ -47,14 +51,16 @@ const TablesTable = () => {
             `table-row`,
             'POST',
             JSON.stringify({
-                tableId: state.selectedTable?.id,
+                tableId: state.data.selectedTable?.id,
             })
         )
 
         if (newRow.message) {
             console.error(newRow.message)
+            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to create record' } })
         } else {
-            setRows([...state.selectedTable?.rows ?? [], newRow])
+            setRows([...state.data.selectedTable?.rows ?? [], newRow])
+            dispatch({ action: 'popup', data: { colour: 'success', message: 'Record created' } })
         }
     }
 
@@ -108,11 +114,13 @@ const TablesTable = () => {
 
         if (isError(result)) {
             console.error(result.message)
+            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to update record' } })
             return
         }
 
         const newRowWithModified: GridRowModel & { modified: Date } = { ...newRow, modified: result.modified }
         setRows(rows.map((row) => (row.id === newRowWithModified.id ? newRowWithModified as ServerRow : row)))
+        dispatch({ action: 'popup', data: { colour: 'success', message: 'Record Updated' } })
 
         return newRowWithModified
     }
@@ -133,14 +141,15 @@ const TablesTable = () => {
             const result = await apiAction<UpdateTableRowResult>(
                 `table-row/${modalState.selectedFieldId}`,
                 'DELETE',
-                'TODO',
             )
 
             if ('message' in result) {
                 console.log(result.message)
+                dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to delete record' } })
             } else {
                 setRows(rows.filter((row) => row.id !== modalState.selectedFieldId));
                 setModalState({ state: 'closed' })
+                dispatch({ action: 'popup', data: { colour: 'success', message: 'Record Deleted' } })
             }
         }
     }
@@ -216,14 +225,14 @@ const TablesTable = () => {
         },
     ]
 
-    const cleanedColumnData = state.selectedTable?.columns.map(column => column.type == 'date' ? ({
+    const cleanedColumnData = state.data.selectedTable?.columns.map(column => column.type == 'date' ? ({
         ...column, valueFormatter: (dateString: string | undefined) => dateString && (new Date(dateString)).toLocaleString()
     }) : column) as GridColDef[] | undefined
 
     return cleanedColumnData && <>
         <DataGridPro
             columns={[...columnMetadata, ...cleanedColumnData, columnActions]}
-            rows={state.selectedTable?.rows ?? []}
+            rows={state.data.selectedTable?.rows ?? []}
             pagination
             initialState={{
                 density: 'compact',

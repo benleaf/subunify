@@ -1,6 +1,9 @@
-import { DashboardScreens } from "./DashboardScreens";
-import { RequestableResources } from "./RequestableResources";
-import { ServerRow } from "./ServerRow";
+import { DashboardScreens } from "@/types/application/DashboardScreens"
+import { RequestableResources } from "@/types/application/RequestableResources"
+import { ServerRow } from "@/types/application/ServerRow"
+import { ApplicationEvents } from "../../application/types/ApplicationEvents"
+
+export type DashboardEvents = DashboardExclusiveEvents | ApplicationEvents
 
 type LoadAction = {
     [K in keyof RequestableResources]: { action: K, data: RequestableResources[K]['result'] }
@@ -10,7 +13,7 @@ export type LoadDataRequests = {
     [K in keyof RequestableResources]: { action: "loadData", data: { request: K, resources?: RequestableResources[K] } }
 }[keyof RequestableResources]
 
-export type ApplicationEvents =
+type DashboardExclusiveEvents =
     { action: "setSelectedTableRows", data: ServerRow[] } |
     { action: "setSelectedScreen", data: DashboardScreens } |
     LoadDataRequests |

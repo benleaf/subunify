@@ -1,35 +1,20 @@
-import { Box, Tabs, Tab, Backdrop, CircularProgress } from "@mui/material";
-import { Worksheet } from "exceljs"
-import { createContext, Dispatch, useReducer } from "react";
+import { Box, Tabs, Tab } from "@mui/material";
 import Sheet from "./Sheet";
-import { reducer } from "../../stateManagment/reducers/SheetStateMachineReducer";
-import { ViewerState } from "../../stateManagment/stateMachine/ViewerState";
-import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
 import TableControlWidgets from "../tableEditor/TableControlWidgets";
 import TableEditor from "../tableEditor/TableEditor";
 import GlassCard from "../glassmorphism/GlassCard";
 import DynamicStack from "../glassmorphism/DynamicStack";
 import DynamicDrawer from "../glassmorphism/DynamicDrawer";
+import { StateMachineDispatch } from "@/App";
+import { useContext } from "react";
+import { isExcelImporter } from "@/stateManagment/stateMachines/getContext";
 
-type Props = {
-    worksheets?: Worksheet[]
-}
+const SheetTabs = () => {
+    const context = useContext(StateMachineDispatch)!
+    if (!isExcelImporter(context)) throw new Error("SheetTabs can only be used within the excelImporter context");
+    const { dispatch, state } = context
 
-export const StateMachineDispatch = createContext<{
-    dispatch: Dispatch<SheetEvents>,
-    state: ViewerState
-} | undefined>(undefined);
-
-const SheetTabs = ({ worksheets }: Props) => {
-    const [state, dispatch] = useReducer(reducer, new ViewerState({
-        scroll: { x: 1, y: 1 },
-        mousePossition: { x: 1, y: 1 },
-        tables: [],
-        worksheetId: 0,
-        flowState: 'editing'
-    }));
-
-    return <StateMachineDispatch.Provider value={{ dispatch, state }}>
+    return state.data.machine == 'excelImporter' && <>
         <Box sx={{ width: '100%' }}>
             <DynamicStack>
                 <div style={{ height: '80vh', flex: 1 }}>
@@ -38,13 +23,13 @@ const SheetTabs = ({ worksheets }: Props) => {
                             value={state.data.worksheetId}
                             onChange={(_: React.SyntheticEvent, newValue: number) => dispatch({ action: "setWorksheet", data: newValue })}
                         >
-                            {worksheets?.map((sheet, key) => <Tab key={key} label={sheet.name} />)}
+                            {state.data.worksheets?.map((sheet, key) => <Tab key={key} label={sheet.name} />)}
                         </Tabs>
                     </GlassCard>
                     <GlassCard height='80vh' marginSize="small" paddingSize="small">
                         {state.data.tables &&
                             <Sheet
-                                worksheet={worksheets && worksheets[state.data.worksheetId]}
+                                worksheet={state.data.worksheets && state.data.worksheets[state.data.worksheetId]}
                                 worksheetId={state.data.worksheetId}
                                 selectedTableIndex={state.data.selectedTableIndex}
                                 sheetTables={state.data.tables}
@@ -55,26 +40,18 @@ const SheetTabs = ({ worksheets }: Props) => {
                 </div>
                 <div style={{ flex: 1 }}>
                     <DynamicDrawer drawLabel="Table Editor">
-                        {worksheets && (
-                            state.data.selectedTableIndex !== undefined ?
-                                <TableEditor
-                                    table={state.data.tables[state.data.selectedTableIndex]}
-                                    worksheets={worksheets}
-                                    tableIndex={state.data.selectedTableIndex}
-                                /> :
-                                <TableControlWidgets tables={state.data.tables} worksheets={worksheets} />
-                        )}
+                        {state.data.selectedTableIndex !== undefined ?
+                            <TableEditor
+                                table={state.data.tables[state.data.selectedTableIndex]}
+                                tableIndex={state.data.selectedTableIndex}
+                            /> :
+                            <TableControlWidgets tables={state.data.tables} />
+                        }
                     </DynamicDrawer>
                 </div>
             </DynamicStack>
         </Box>
-        <Backdrop
-            sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-            open={!!state.data.loading}
-        >
-            <CircularProgress color="inherit" />
-        </Backdrop>
-    </StateMachineDispatch.Provider>
+    </>
 }
 
 export default SheetTabs

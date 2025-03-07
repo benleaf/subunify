@@ -3,23 +3,26 @@ import { SheetTable } from "@/types/spreadsheet/SheetTable"
 import { Chip, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import { Worksheet } from "exceljs"
 import { useContext, useEffect, useState } from "react"
-import { StateMachineDispatch } from "../sheet/SheetTabs"
+import { StateMachineDispatch } from "@/App"
 import { Edit } from "@mui/icons-material"
 import BaseModal from "../modal/BaseModal"
 import FieldEditor from "./FieldEditor"
+import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
 
 type Props = {
     table: SheetTable
-    worksheets: Worksheet[],
 }
 
 type EditModalProps = { state: 'open', selectedFieldId: number } | { state: 'closed' }
 
-const TableEditorTable = ({ table, worksheets }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
+const TableEditorTable = ({ table }: Props) => {
+    const context = useContext(StateMachineDispatch)!
+    if (!isExcelImporter(context)) throw new Error("TableEditorTable can only be used within the excelImporter context");
+    const { dispatch, state } = context
+
     const [modalState, setModalState] = useState<EditModalProps>({ state: 'closed' })
 
-    const [dataTable, setDataTable] = useState<DataTable>(new DataTable(table, worksheets[table.parentWorksheetId ?? 0]))
+    const [dataTable, setDataTable] = useState<DataTable>(new DataTable(table, state.data.worksheets![table.parentWorksheetId ?? 0]))
     const itemsOnPage = 8
     const recordsOnPage = 4
     const [fieldPagination, setFieldPagination] = useState<number>(1)
@@ -38,7 +41,7 @@ const TableEditorTable = ({ table, worksheets }: Props) => {
     }
 
     useEffect(() => {
-        const newDataTable = new DataTable(table, worksheets[table.parentWorksheetId ?? 0])
+        const newDataTable = new DataTable(table, state.data.worksheets![table.parentWorksheetId ?? 0])
         setDataTable(newDataTable)
     }, [table.head, table.body, table.columnOverides])
 

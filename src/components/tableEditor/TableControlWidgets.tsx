@@ -1,12 +1,9 @@
 import { Button } from "@mui/material"
 import TableControlWidget from "./TableControlWidget"
-import { Worksheet } from "exceljs"
 import { useContext } from "react"
-import { StateMachineDispatch } from "../sheet/SheetTabs"
+import { StateMachineDispatch } from "@/App"
 import { SheetTable } from "@/types/spreadsheet/SheetTable"
-import { TablesDeployer } from "@/helpers/TablesDeployer"
 import { CloudUpload } from "@mui/icons-material"
-import { useNavigate } from "react-router"
 import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
 import GlassText from "../glassmorphism/GlassText"
@@ -14,21 +11,25 @@ import { CssSizes } from "@/constants/CssSizes"
 import AuthModal from "@/stateManagment/auth/AuthModal"
 import { useAuth } from "@/stateManagment/auth/AuthContext"
 import PaymentModal from "../payments/PaymentModal"
+import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
+import { TablesDeployer } from "@/helpers/TablesDeployer"
 
 
 type Props = {
-    worksheets: Worksheet[],
     tables: SheetTable[],
 }
 
-const TableControlWidgets = ({ worksheets, tables }: Props) => {
-    const navigate = useNavigate();
+const TableControlWidgets = ({ tables }: Props) => {
     const auth = useAuth()
-    const { dispatch, state } = useContext(StateMachineDispatch)!
+
+    const context = useContext(StateMachineDispatch)!
+    if (!isExcelImporter(context)) throw new Error("TableControlWidgets can only be used within the excelImporter context");
+    const { dispatch, state } = context
+
 
     const requestDeployment = async () => {
         dispatch({ action: "setFlowState", data: 'editing' })
-        if (!worksheets) return
+        if (!state.data.worksheets) return
 
         if (!auth.user) {
             dispatch({ action: "setFlowState", data: 'login' })
@@ -38,21 +39,9 @@ const TableControlWidgets = ({ worksheets, tables }: Props) => {
     }
 
     const forcePayment = async () => {
-        if (!worksheets) return
+        if (!state.data.worksheets) return
         dispatch({ action: "setFlowState", data: 'payment' })
-    }
-
-    const onFormCompleate = async (result: "success" | "incompleate") => {
-        dispatch({ action: "setFlowState", data: 'dashboard' })
-
-        if (result == 'success') {
-            deploy()
-        }
-    }
-
-    const deploy = async () => {
-        await TablesDeployer.deploy(state.data.tables, worksheets)
-        navigate("/dashboard")
+        TablesDeployer.saveToLocalStore(state.data.tables, state.data.worksheets ?? [])
     }
 
     return <GlassCard marginSize="small" paddingSize="small">
@@ -71,11 +60,11 @@ const TableControlWidgets = ({ worksheets, tables }: Props) => {
             </Button>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', height: '77vh', overflow: 'scroll', scrollbarWidth: 'none' }}>
-            {tables.map((table, index) =>
+            {tables.map((table, index) => state.data.worksheets &&
                 <TableControlWidget
                     table={table}
                     tableIndex={index}
-                    worksheet={worksheets[table.parentWorksheetId]}
+                    worksheet={state.data.worksheets[table.parentWorksheetId]}
                 />
             )}
             <GlassCard marginSize="small" paddingSize="small" flex={1} >
@@ -96,7 +85,10 @@ const TableControlWidgets = ({ worksheets, tables }: Props) => {
             onClose={() => dispatch({ action: "setFlowState", data: 'editing' })}
             hideButton
         />
-        <PaymentModal overideState={state.data.flowState == 'payment'} onFinish={onFormCompleate} />
+        <PaymentModal
+            state={state.data.flowState == 'payment' ? 'open' : 'closed'}
+            onClose={() => dispatch({ action: "setFlowState", data: 'editing' })}
+        />
     </GlassCard>
 }
 

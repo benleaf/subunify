@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
 import { useAuth } from "./AuthContext";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
@@ -6,6 +6,7 @@ import React from "react";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { Credentials } from "@/types/Credentials";
 import { cognitoResendConfirm } from "./AuthService";
+import { StateMachineDispatch } from "@/App";
 
 
 type Props = {
@@ -14,8 +15,8 @@ type Props = {
 }
 
 const Login = ({ goToConformation, onLogin }: Props) => {
+    const { dispatch } = useContext(StateMachineDispatch)!
     const [showPassword, setShowPassword] = React.useState(false);
-
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const { login } = useAuth();
@@ -25,21 +26,32 @@ const Login = ({ goToConformation, onLogin }: Props) => {
 
     const handleAccountConfirmation = async () => {
         try {
+            dispatch({ action: 'loading', data: true })
             await cognitoResendConfirm(email)
+            dispatch({ action: 'loading', data: false })
             goToConformation({ email, password })
+            dispatch({ action: 'popup', data: { colour: 'success', message: 'Conformation Successful' } })
         } catch (err: any) {
+            dispatch({ action: 'loading', data: false })
+            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to confirm account' } })
             setMessage(err.message || "Login failed.");
         }
     };
 
     const handleLogin = async () => {
         try {
+            dispatch({ action: 'loading', data: true })
             await login(email, password);
+            dispatch({ action: 'loading', data: false })
+            dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })
             onLogin && onLogin()
         } catch (err: any) {
             if (err.code == "UserNotConfirmedException") {
                 handleAccountConfirmation()
+                dispatch({ action: 'popup', data: { colour: 'info', message: 'Account confirmation required' } })
             } else {
+                dispatch({ action: 'loading', data: false })
+                dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to login' } })
                 setMessage(err.message || "Login failed.");
             }
         }

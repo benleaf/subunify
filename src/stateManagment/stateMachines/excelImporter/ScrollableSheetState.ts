@@ -1,5 +1,5 @@
 import { Coordinate } from "@/types/spreadsheet/Coordinate";
-import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
+import { SheetEvents } from "@/stateManagment/stateMachines/excelImporter/types/SheetEvents";
 import { SheetState } from "./SheetState";
 
 export abstract class ScrollableSheetState extends SheetState {

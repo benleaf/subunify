@@ -1,5 +1,5 @@
 import { SheetState } from "./SheetState";
-import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
+import { SheetEvents } from "@/stateManagment/stateMachines/excelImporter/types/SheetEvents";
 import { CreateTableHeadSetSizeState } from "./CreateTableHeadSetSizeState";
 
 export class CreateTableHeadState extends SheetState {

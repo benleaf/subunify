@@ -1,5 +1,4 @@
 import { useSize } from "../../hooks/useSize"
-import { ApplicationDispatch } from "../../pages/Dashboard"
 import { ExpandMore, TableChart } from "@mui/icons-material"
 import { Accordion, AccordionDetails, AccordionSummary, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack } from "@mui/material"
 import { useContext, useEffect } from "react"
@@ -7,28 +6,33 @@ import GlassText from "../glassmorphism/GlassText"
 import { ComponentSizes } from "@/constants/ComponentSizes"
 import { CssSizes } from "@/constants/CssSizes"
 import { useAuth } from "@/stateManagment/auth/AuthContext"
+import { isDashboard } from "@/stateManagment/stateMachines/getContext"
+import { StateMachineDispatch } from "@/App"
 
 const Sidebar = () => {
     const { height } = useSize()
     const auth = useAuth()
-    const { dispatch, state } = useContext(ApplicationDispatch)!
+
+    const context = useContext(StateMachineDispatch)!
+    if (!isDashboard(context)) throw new Error("Sidebar can only be used within the dashboard context");
+    const { dispatch, state } = context
 
     useEffect(() => {
         dispatch({ action: 'loadData', data: { request: 'tableGetAll' } })
     }, [auth])
 
     useEffect(() => {
-        if (state.tables && state.tables.length > 0) {
+        if (state.data.tables && state.data.tables.length > 0) {
             dispatch({
                 action: 'loadData',
 
-                data: { request: 'tableGetBodyById', resources: { params: { tableId: state.tables[0].id } } }
+                data: { request: 'tableGetBodyById', resources: { params: { tableId: state.data.tables[0].id } } }
             })
         }
-    }, [state.tables === undefined])
+    }, [state.data.tables === undefined])
 
     const tableClicked = (tableId: string) => {
-        if (state.selectedScreen != 'Tables') {
+        if (state.data.selectedScreen != 'Tables') {
             dispatch({
                 action: 'setSelectedScreen',
                 data: 'Tables'
@@ -61,7 +65,7 @@ const Sidebar = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <List sx={{ padding: 0 }}>
-                        {state.tables?.map(table =>
+                        {state.data.tables?.map(table =>
                             <ListItem disablePadding>
                                 <ListItemButton onClick={() => tableClicked(table.id)}>
                                     <ListItemIcon>

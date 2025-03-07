@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react"
-import { StateMachineDispatch } from "./SheetTabs"
 import { TableContainer, Paper, Table } from "@mui/material"
 import { Coordinate } from "@/types/spreadsheet/Coordinate"
+import { StateMachineDispatch } from "@/App"
 
 type Props = {
     tableRef: React.RefObject<HTMLDivElement>,

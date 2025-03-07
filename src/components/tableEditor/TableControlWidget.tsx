@@ -2,13 +2,14 @@ import { SheetTable } from "@/types/spreadsheet/SheetTable"
 import { Chip, IconButton, Stack } from "@mui/material"
 import { Cell, Worksheet } from "exceljs"
 import { useContext, useEffect, useState } from "react"
-import { StateMachineDispatch } from "../sheet/SheetTabs"
+import { StateMachineDispatch } from "@/App"
 import { Edit } from "@mui/icons-material"
 import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
 import { CellFormatter } from "@/helpers/CellFormatter"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
+import { isExcelImporter } from "@/stateManagment/stateMachines/getContext"
 
 type Props = {
     table: Partial<SheetTable>
@@ -17,7 +18,10 @@ type Props = {
 }
 
 const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
+    const context = useContext(StateMachineDispatch)!
+    if (!isExcelImporter(context)) throw new Error("TableControlWidget can only be used within the excelImporter context");
+    const { dispatch } = context
+
     const [header, setHeader] = useState<string[]>([])
     const [body, setBody] = useState<string[][]>([[]])
 

@@ -1,11 +1,16 @@
-import { Coordinate } from "./Coordinate";
-import { Direction } from "./Direction";
-import { FlowStates } from "./FlowStates";
-import { TableCorner } from "./TableCorner";
+import { Coordinate } from "@/types/spreadsheet/Coordinate";
+import { Direction } from "@/types/spreadsheet/Direction";
+import { FlowStates } from "@/types/spreadsheet/FlowStates";
+import { TableCorner } from "@/types/spreadsheet/TableCorner";
+import { ApplicationEvents } from "../../application/types/ApplicationEvents";
+import { Worksheet } from "exceljs";
 
-export type SheetEvents =
+export type SheetEvents = SheetExclusiveEvents | ApplicationEvents
+
+type SheetExclusiveEvents =
     { action: "goToCell", data: Partial<Coordinate> } |
     { action: "cellSelected", data: Coordinate } |
+    { action: "setWorksheets", data: Worksheet[] } |
     { action: "setScroll", data: Coordinate } |
     { action: "scroll", data: Coordinate } |
     { action: "mouseUp" } |
@@ -15,7 +20,6 @@ export type SheetEvents =
     { action: "setFlowState", data: FlowStates } |
     { action: "finishEditing" } |
     { action: "editTable", data: number } |
-    { action: "loading", data: boolean } |
     { action: "addTableColumnNames", data: number } |
     { action: "addTableData", data: number } |
     { action: "setWorksheet", data: number } |

@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
-import { useAuth } from "./AuthContext";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import React from "react";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { cognitoSignUp } from "./AuthService";
 import { Credentials } from "@/types/Credentials";
+import { StateMachineDispatch } from "@/App";
 
 type Props = {
     goToConformation: (credentials: Credentials) => void
 }
 
 const Signup = ({ goToConformation }: Props) => {
+    const { dispatch } = useContext(StateMachineDispatch)!
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const { } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,9 +27,14 @@ const Signup = ({ goToConformation }: Props) => {
             return
         }
         try {
+            dispatch({ action: 'loading', data: true })
             await cognitoSignUp(email, password);
+            dispatch({ action: 'loading', data: false })
+            dispatch({ action: 'popup', data: { colour: 'info', message: 'Account conformation required' } })
             goToConformation({ email, password })
         } catch (err: any) {
+            dispatch({ action: 'loading', data: false })
+            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to create account' } })
             setMessage(err.message)
         }
     };

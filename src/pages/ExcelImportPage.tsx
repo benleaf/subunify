@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SheetTabs from "@/components/sheet/SheetTabs";
 import { Workbook, Buffer } from "exceljs";
 import BaseModal from "@/components/modal/BaseModal";
@@ -6,13 +6,19 @@ import ExcelImporter from "@/components/form/ExcelImporter";
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { Divider } from "@mui/material";
+import { StateMachineDispatch } from "@/App";
+import { isExcelImporter } from "@/stateManagment/stateMachines/getContext";
 
 const ExcelImportPage = () => {
+    const context = useContext(StateMachineDispatch)!
     const [file, setFile] = useState<File>()
-    const [workbook, setWorkbook] = useState<Workbook>()
 
     useEffect(() => {
-        if (!file) return
+        context.dispatch({ action: 'startExcelImporter' })
+    }, [])
+
+    useEffect(() => {
+        if (!file || !isExcelImporter(context)) return
         const wb = new Workbook();
         const reader = new FileReader()
 
@@ -20,13 +26,13 @@ const ExcelImportPage = () => {
         reader.onload = () => {
             const buffer = reader.result;
             wb.xlsx.load(buffer as Buffer).then(workbook => {
-                setWorkbook(workbook)
+                context.dispatch({ action: 'setWorksheets', data: workbook.worksheets })
                 reader.abort()
             })
         }
-    }, [file])
+    }, [file, context.state.data.machine])
 
-    return <>
+    return isExcelImporter(context) && <>
         <BaseModal state={file ? "closed" : "open"}>
             <GlassSpace size={"small"}>
                 <GlassText size="huge">Select an Excel File</GlassText>
@@ -58,7 +64,7 @@ const ExcelImportPage = () => {
                 <ExcelImporter setExcelFile={setFile} />
             </GlassSpace>
         </BaseModal>
-        <SheetTabs worksheets={workbook?.worksheets} />
+        <SheetTabs />
     </>
 }
 

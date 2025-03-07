@@ -1,7 +1,7 @@
 import { SheetState } from "./SheetState";
-import { SheetEvents } from "@/types/spreadsheet/SheetEvents";
+import { SheetEvents } from "@/stateManagment/stateMachines/excelImporter/types/SheetEvents";
 import { ViewerState } from "./ViewerState";
-import { BoundingBox } from "../../helpers/BoundingBox";
+import { BoundingBox } from "../../../helpers/BoundingBox";
 import { ScrollableSheetState } from "./ScrollableSheetState";
 
 export class CreateTableHeadSetSizeState extends ScrollableSheetState {

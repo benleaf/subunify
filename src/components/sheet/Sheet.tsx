@@ -2,7 +2,6 @@ import { Worksheet } from "exceljs"
 import SheetCell from "./SheetCell"
 import { ElementRef, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { SheetTable } from "@/types/spreadsheet/SheetTable"
-import { StateMachineDispatch } from "./SheetTabs"
 import { Dimension } from "@/types/spreadsheet/Dimension"
 import { CellFormatter } from "../../helpers/CellFormatter"
 import { Coordinate } from "@/types/spreadsheet/Coordinate"
@@ -10,6 +9,7 @@ import ScrollableTableContainer from "./ScrollableTableContainer"
 import tableStyle from './table.module.css';
 import { BoundingBox } from "@/helpers/BoundingBox"
 import GlassText from "../glassmorphism/GlassText"
+import { StateMachineDispatch } from "@/App"
 
 type Props = {
     sheetTables: SheetTable[]

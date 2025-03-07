@@ -5,8 +5,16 @@ import { DataTable } from "./DataTable";
 import { apiAction } from "@/api/apiAction";
 
 export class TablesDeployer {
-    public static deploy(tables: SheetTable[], worksheets: Worksheet[]) {
+    public static deployFromLocalStore() {
+        const tables = localStorage.getItem("deploymentTables")
+        if (tables) {
+            const result = apiAction('ingest', 'POST', tables)
+            localStorage.removeItem("deploymentTables")
+            return result
+        }
+    }
 
+    public static saveToLocalStore(tables: SheetTable[], worksheets: Worksheet[]) {
         const ingestTables: IngestTable[] = []
         for (const table of tables) {
             const tableWorksheet = worksheets[table.parentWorksheetId]
@@ -43,12 +51,6 @@ export class TablesDeployer {
     }
 
     private static deployTable(ingestTables: IngestTable[]) {
-        return apiAction(
-            'ingest',
-            'POST',
-            JSON.stringify({
-                tables: ingestTables,
-            }),
-        )
+        localStorage.setItem("deploymentTables", JSON.stringify({ tables: ingestTables }));
     }
 }
