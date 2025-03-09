@@ -13,6 +13,7 @@ import { ServerTable } from "@/types/application/ServerTable";
 import { isError } from "@/api/isError";
 import { TableResult } from "@/types/server/TableResult";
 import { useAuth } from "@/auth/AuthContext";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const TableManager = () => {
     const context = useContext(StateMachineDispatch)!
@@ -83,26 +84,16 @@ const TableManager = () => {
         }
     }
 
-    return isDashboard(context) && <>
-        <div style={{ display: 'flex' }}>
-            <Sidebar />
-            <div style={{ height: height - ComponentSizes.topBar, width: width - ComponentSizes.sideBar }}>
-                <div style={{ marginLeft: CssSizes.moderate, marginTop: CssSizes.moderate }}>
-                    <GlassText size='large'>Table Manager</GlassText>
-                </div>
-                <GlassCard marginSize="moderate" paddingSize="moderate" height={(height - ComponentSizes.topBar) - 45}>
-                    <EditableTable
-                        name="Table"
-                        columns={[...columnMetadata]}
-                        rows={rows()}
-                        deleteRecord={() => context.dispatch({ action: 'popup', data: { colour: 'info', message: 'Deleting tables is universally disabled for now' } })}
-                        createNewRecord={createNewRecord}
-                        processRowUpdate={updateRecord}
-                    />
-                </GlassCard>
-            </div>
-        </div>
-    </>
+    return isDashboard(context) && isDashboard(context) && <DashboardLayout>
+        <EditableTable
+            name="Table"
+            columns={[...columnMetadata]}
+            rows={rows()}
+            deleteRecord={() => context.dispatch({ action: 'popup', data: { colour: 'info', message: 'Deleting tables is universally disabled for now' } })}
+            createNewRecord={createNewRecord}
+            processRowUpdate={updateRecord}
+        />
+    </DashboardLayout>
 }
 
 export default TableManager

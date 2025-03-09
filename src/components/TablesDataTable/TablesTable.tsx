@@ -48,16 +48,14 @@ const TablesTable = () => {
     const processRowUpdate = async (newRow: GridRowModel) => {
         const valuesMap = new Map<string, string>()
 
-        for (const columnName of Object.keys(newRow)) {
-            const value = newRow[columnName];
-            const columnId = columns.find(column => column.field == columnName)?.id
+        for (const columnId of Object.keys(newRow)) {
+            const value = newRow[columnId];
             const oldRow = rows.find(row => row.id == newRow.id)
-            const dontSend = !columnId || !oldRow || oldRow[columnName] == value
+            const dontSend = !columnId || !oldRow || oldRow[columnId] == value
             const notNullValue = value === null ? '' : value
 
             if (!dontSend) valuesMap.set(columnId, notNullValue)
         }
-
         const result = await updateRemoteRows(newRow.id, Object.fromEntries(valuesMap))
 
         if (isError(result)) {
