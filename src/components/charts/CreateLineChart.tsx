@@ -1,10 +1,10 @@
-import { apiAction } from '@/api/apiAction'
 import { Column } from '@/types/application/Column'
 import { Select, InputLabel, MenuItem } from '@mui/material'
 import { ElementRef, useEffect, useRef, useState } from 'react'
 import { LineChart } from "@mui/x-charts"
 import GlassText from '../glassmorphism/GlassText'
-import { isError } from '@/api/getResource'
+import { isError } from '@/api/isError'
+import { useAuth } from '@/auth/AuthContext'
 
 type Props = {
     tableId: string
@@ -14,11 +14,12 @@ const CreateLineChart = ({ tableId }: Props) => {
     const [columns, setColumns] = useState<{ all: Column[], primaryId?: string, secondaryIds?: string[] }>({ all: [] })
     const [data, setData] = useState<{ axisData: TODO, series: TODO }>()
     const chartContainer = useRef<ElementRef<'div'>>(null)
+    const { authAction } = useAuth()
 
     useEffect(() => {
         const getColumns = async () => {
             if (!tableId) return
-            const result = await apiAction<Column[]>(
+            const result = await authAction<Column[]>(
                 `table-column/by-table/${tableId}`,
                 'GET',
             )
@@ -33,7 +34,7 @@ const CreateLineChart = ({ tableId }: Props) => {
     }, [tableId])
 
     const getColumnData = async (columnId: string) => {
-        const result = await apiAction<{ id: string, value: string, tableRow: { id: string } }[]>(
+        const result = await authAction<{ id: string, value: string, tableRow: { id: string } }[]>(
             `table-data/column-data/${columnId}`,
             'GET',
         )

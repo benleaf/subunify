@@ -12,8 +12,8 @@ type Props = {
 }
 
 const FloatingGlassCircle = ({ offset, size = "medium" }: Props) => {
-    return <div style={{ position: 'relative', marginRight: '5em' }}>
-        <div style={{ position: 'absolute', ...offset, zIndex: -100 }}>
+    return <div style={{ position: 'relative', marginRight: '5em', zIndex: -100 }}>
+        <div style={{ position: 'absolute', ...offset }}>
             <GlassCircle size={size} />
         </div>
     </div>

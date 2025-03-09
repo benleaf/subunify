@@ -8,11 +8,14 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
 import GlassText from "../glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
-import AuthModal from "@/stateManagement/auth/AuthModal"
-import { useAuth } from "@/stateManagement/auth/AuthContext"
+import AuthModal from "@/auth/AuthModal"
+import { useAuth } from "@/auth/AuthContext"
 import PaymentModal from "../payments/PaymentModal"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 import { TablesDeployer } from "@/helpers/TablesDeployer"
+import { User } from "@/types/User"
+import { isError } from "@/api/isError"
+import { useNavigate } from "react-router"
 
 
 type Props = {
@@ -20,7 +23,8 @@ type Props = {
 }
 
 const TableControlWidgets = ({ tables }: Props) => {
-    const auth = useAuth()
+    const { user, authAction } = useAuth()
+    const navigate = useNavigate()
 
     const context = useContext(StateMachineDispatch)!
     if (!isExcelImporter(context)) throw new Error("TableControlWidgets can only be used within the excelImporter context");
@@ -31,7 +35,7 @@ const TableControlWidgets = ({ tables }: Props) => {
         dispatch({ action: "setFlowState", data: 'editing' })
         if (!state.data.worksheets) return
 
-        if (!auth.user) {
+        if (!user) {
             dispatch({ action: "setFlowState", data: 'login' })
         } else {
             forcePayment()
@@ -40,8 +44,21 @@ const TableControlWidgets = ({ tables }: Props) => {
 
     const forcePayment = async () => {
         if (!state.data.worksheets) return
-        dispatch({ action: "setFlowState", data: 'payment' })
-        TablesDeployer.saveToLocalStore(state.data.tables, state.data.worksheets ?? [])
+        const userResult = await authAction<User>(`user`, "GET")
+        if (isError(userResult)) {
+            console.error(userResult)
+        } else if (!userResult.stripeSubscriptionId) {
+            dispatch({ action: "setFlowState", data: 'payment' })
+            TablesDeployer.saveToLocalStore(state.data.tables, state.data.worksheets ?? [])
+        } else if (state.data.tables.length > 0) {
+            TablesDeployer.saveToLocalStore(state.data.tables, state.data.worksheets ?? [])
+            await TablesDeployer.deployFromLocalStore()
+            dispatch({ action: "startDashboard" })
+            navigate('/dashboard')
+        } else {
+            dispatch({ action: "startDashboard" })
+            navigate('/dashboard')
+        }
     }
 
     return <GlassCard marginSize="small" paddingSize="small">

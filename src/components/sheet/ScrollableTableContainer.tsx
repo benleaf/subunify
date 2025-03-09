@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react"
 import { TableContainer, Paper, Table } from "@mui/material"
 import { Coordinate } from "@/types/spreadsheet/Coordinate"
 import { StateMachineDispatch } from "@/App"
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 
 type Props = {
     tableRef: React.RefObject<HTMLDivElement>,
@@ -9,7 +10,9 @@ type Props = {
 }
 
 const ScrollableTableContainer = ({ tableRef, children }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
+    const context = useContext(StateMachineDispatch)!
+    if (!isExcelImporter(context)) throw new Error("ScrollableTableContainer can only be used within the excelImporter context");
+    const { dispatch } = context
 
     const defaultCellDimension = { width: 100, height: 30 }
     const screenDimension = tableRef.current?.getBoundingClientRect() ?? { width: 0, height: 0 }

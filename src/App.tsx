@@ -10,6 +10,9 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import { StateMachineContext } from './stateManagement/stateMachines/StateMachineContext';
 import DataUpload from './pages/DataUpload';
 import UniversalAlert from './components/modal/UniversalAlert';
+import TableManager from './pages/TableManager';
+import { AuthProvider } from './auth/AuthContext';
+import AuthWrapper from './auth/AuthWrapper';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -18,22 +21,25 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, new ApplicationIdleState({ machine: 'idle' }));
 
   return <StateMachineDispatch.Provider value={{ dispatch, state }}>
-    <UniversalAlert />
-    <TopBar />
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/excel-importer" element={<ExcelImportPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/data-upload" element={<DataUpload />} />
-      </Routes>
-    </BrowserRouter>
-    <Backdrop
-      sx={{ color: '#fff', zIndex: Number.MAX_SAFE_INTEGER }}
-      open={!!state.data.loading}
-    >
-      <CircularProgress color="inherit" />
-    </Backdrop>
+    <AuthProvider>
+      <UniversalAlert />
+      <TopBar />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/excel-importer" element={<ExcelImportPage />} />
+          <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} />
+          <Route path="/dashboard" element={<AuthWrapper><Dashboard /></AuthWrapper>} />
+          <Route path="/data-upload" element={<AuthWrapper><DataUpload /></AuthWrapper>} />
+        </Routes>
+      </BrowserRouter>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: Number.MAX_SAFE_INTEGER }}
+        open={!!state.data.loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </AuthProvider>
   </StateMachineDispatch.Provider>
 }
 

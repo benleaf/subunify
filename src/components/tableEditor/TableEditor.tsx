@@ -1,7 +1,6 @@
 import { DataTable } from "../../helpers/DataTable"
 import { SheetTable } from "@/types/spreadsheet/SheetTable"
 import { Button, Chip, IconButton, Stack, TextField } from "@mui/material"
-import { Worksheet } from "exceljs"
 import { useContext, useEffect, useState } from "react"
 import { StateMachineDispatch } from "@/App"
 import TableEditorTable from "./TableEditorTable"

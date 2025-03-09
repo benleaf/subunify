@@ -6,6 +6,7 @@ import { BaseState } from "../BaseState";
 import { SheetState } from "./SheetState";
 import { SheetEvents } from "./types/SheetEvents";
 import { ApplicationEvents } from "../application/types/ApplicationEvents";
+import { TableState } from "../dashboard/TableState";
 
 export class ViewerState extends SheetState {
     public handleAction(event: SheetEvents): BaseState {
@@ -14,6 +15,10 @@ export class ViewerState extends SheetState {
                 return new ViewerState({
                     ...this.data,
                     worksheets: event.data
+                })
+            case "startDashboard":
+                return new TableState({
+                    machine: 'dashboard'
                 })
             case "goToCell":
                 return new ViewerState({

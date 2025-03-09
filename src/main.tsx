@@ -7,7 +7,6 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
-import { AuthProvider } from './stateManagement/auth/AuthContext';
 import { Colours } from './constants/Colours';
 import App from './App';
 
@@ -28,11 +27,9 @@ declare global {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
-    <ThemeProvider theme={theme}>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </ThemeProvider>
-  </AuthProvider>
+  <ThemeProvider theme={theme}>
+    <StrictMode>
+      <App />
+    </StrictMode>
+  </ThemeProvider>
 )

@@ -2,9 +2,9 @@ import { useContext, useEffect } from "react";
 import { TablesDeployer } from "@/helpers/TablesDeployer";
 import { StateMachineDispatch } from "@/App";
 import { useNavigate } from "react-router";
-import { apiAction } from "@/api/apiAction";
 import Stripe from "stripe";
-import { isError } from "@/api/getResource";
+import { isError } from "@/api/isError";
+import { useAuth } from "@/auth/AuthContext";
 
 type SessionResult = {
     status: Stripe.Checkout.Session.Status | null;
@@ -15,12 +15,13 @@ const DataUpload = () => {
     const navigate = useNavigate();
     const context = useContext(StateMachineDispatch)!
     const { dispatch } = context
+    const { authAction } = useAuth()
 
     async function initialize() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const sessionId = urlParams.get('stripe_session_id');
-        const sessionResult = await apiAction<SessionResult>(`stripe/session/${sessionId}`, "GET");
+        const sessionResult = await authAction<SessionResult>(`stripe/subscription/${sessionId}`, "POST");
         if (isError(sessionResult)) {
             throw new Error(sessionResult.error);
         }

@@ -10,6 +10,7 @@ import tableStyle from './table.module.css';
 import { BoundingBox } from "@/helpers/BoundingBox"
 import GlassText from "../glassmorphism/GlassText"
 import { StateMachineDispatch } from "@/App"
+import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 
 type Props = {
     sheetTables: SheetTable[]
@@ -20,7 +21,9 @@ type Props = {
 }
 
 const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIndex }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
+    const context = useContext(StateMachineDispatch)!
+    if (!isExcelImporter(context)) throw new Error("Sheet can only be used within the excelImporter context");
+    const { dispatch } = context
 
     const getCellByDisplayCoord = (x: number, y: number) => worksheet?.getRow(getGlobalY(y)).getCell(getGlobalX(x))
     const getGlobalX = (x: number) => x + Math.floor(possition.x)

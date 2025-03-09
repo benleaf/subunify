@@ -1,9 +1,20 @@
+import { BaseState } from "../BaseState";
+import { ViewerState } from "../excelImporter/ViewerState";
 import { DashboardState } from "./DashboardState";
 import { DashboardEvents } from "./types/DashboardEvents";
 
 export class TableState extends DashboardState {
-    public handleAction(event: DashboardEvents): DashboardState {
+    public handleAction(event: DashboardEvents): BaseState {
         switch (event.action) {
+            case "startExcelImporter":
+                return new ViewerState({
+                    machine: 'excelImporter',
+                    scroll: { x: 1, y: 1 },
+                    mousePossition: { x: 1, y: 1 },
+                    tables: [],
+                    worksheetId: 0,
+                    flowState: 'editing'
+                })
             case 'loadData':
                 return new TableState({
                     ...this.data,

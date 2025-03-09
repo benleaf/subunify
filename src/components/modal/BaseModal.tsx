@@ -9,7 +9,7 @@ const style: CSSProperties = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: "95%",
-    maxWidth: 800,
+    maxWidth: 500,
     backgroundColor: '#fff0'
 }
 
