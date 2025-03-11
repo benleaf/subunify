@@ -20,6 +20,7 @@ const UploadButton = ({ onClick, children }: Props) => {
         <input
             className={form.hiddeninput}
             type="file"
+            accept='.xlsx'
             onChange={onClick}
             multiple
         />

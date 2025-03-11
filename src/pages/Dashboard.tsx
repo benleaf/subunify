@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import GlassText from "@/components/glassmorphism/GlassText";
 import TablesTable from "@/components/TablesDataTable/TablesTable";
 import { useSize } from "@/hooks/useSize";
@@ -10,7 +10,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 
 const Dashboard = () => {
     const context = useContext(StateMachineDispatch)!
-    const { height, width } = useSize()
+    const { height } = useSize()
 
     useEffect(() => {
         context.dispatch({ action: 'startDashboard' })

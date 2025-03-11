@@ -8,7 +8,10 @@ export class EditTableSizeState extends ScrollableSheetState {
     public handleAction(event: SheetEvents): SheetState {
         switch (event.action) {
             case "mouseUp":
-                return new ViewerState({ ...this.data })
+                return new ViewerState({
+                    ...this.data,
+                    cursor: undefined
+                })
             case "cellSelected":
                 if (this.data.selectedTableIndex === undefined) return this
                 const newTables = [...this.data.tables]

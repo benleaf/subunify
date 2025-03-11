@@ -5,7 +5,6 @@ import { StateMachineDispatch } from "@/App"
 import { SheetTable } from "@/types/spreadsheet/SheetTable"
 import { CloudUpload } from "@mui/icons-material"
 import GlassCard from "../glassmorphism/GlassCard"
-import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
 import GlassText from "../glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
 import AuthModal from "@/auth/AuthModal"
@@ -61,6 +60,14 @@ const TableControlWidgets = ({ tables }: Props) => {
         }
     }
 
+    const addButton = <Button
+        fullWidth
+        variant="contained"
+        onClick={() => dispatch({ action: "createTable" })}
+    >
+        Create Table
+    </Button>
+
     return <GlassCard marginSize="small" paddingSize="small">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: CssSizes.small }}>
             <GlassText size="huge">
@@ -69,13 +76,14 @@ const TableControlWidgets = ({ tables }: Props) => {
             <Button
                 component="label"
                 onClick={requestDeployment}
-                variant="contained"
+                variant={state.data.tables.length ? "contained" : 'outlined'}
                 startIcon={<CloudUpload />}
-                style={{ color: 'white' }}
+                style={{ color: state.data.tables.length ? 'white' : undefined }}
             >
                 Deploy to database
             </Button>
         </div>
+        {!tables.length && addButton}
         <div style={{ display: 'flex', flexWrap: 'wrap', height: '77vh', overflow: 'scroll', scrollbarWidth: 'none' }}>
             {tables.map((table, index) => state.data.worksheets &&
                 <TableControlWidget
@@ -84,17 +92,8 @@ const TableControlWidgets = ({ tables }: Props) => {
                     worksheet={state.data.worksheets[table.parentWorksheetId]}
                 />
             )}
-            <GlassCard marginSize="small" paddingSize="small" flex={1} >
-                <GlassSpaceBox>
-                    <Button
-                        style={{ width: '100%', height: '100%', minHeight: '10em' }}
-                        onClick={() => dispatch({ action: "createTable" })}
-                    >
-                        Create Table
-                    </Button>
-                </GlassSpaceBox>
-            </GlassCard>
         </div>
+        {tables.length && addButton}
         <AuthModal
             overrideState={state.data.flowState == 'login'}
             onLogin={forcePayment}

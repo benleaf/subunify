@@ -7,6 +7,7 @@ import { Edit } from "@mui/icons-material"
 import BaseModal from "../modal/BaseModal"
 import FieldEditor from "./FieldEditor"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
+import GlassText from "../glassmorphism/GlassText"
 
 type Props = {
     table: SheetTable
@@ -22,12 +23,12 @@ const TableEditorTable = ({ table }: Props) => {
     const [modalState, setModalState] = useState<EditModalProps>({ state: 'closed' })
 
     const [dataTable, setDataTable] = useState<DataTable>(new DataTable(table, state.data.worksheets![table.parentWorksheetId ?? 0]))
-    const itemsOnPage = 8
+    const itemsOnPage = 5
     const recordsOnPage = 4
     const [fieldPagination, setFieldPagination] = useState<number>(1)
     const [recordPagination, setRecordPagination] = useState<number>(1)
-    const displayableHeder = dataTable.header.slice((fieldPagination - 1) * itemsOnPage, (fieldPagination - 1) * itemsOnPage + itemsOnPage)
-    const displayableBody = dataTable.body?.map(column => column.slice((recordPagination - 1) * recordsOnPage, (recordPagination - 1) * recordsOnPage + recordsOnPage))
+    const displayableHeder = dataTable.header.slice((fieldPagination - 1) * itemsOnPage, (fieldPagination - 1) * itemsOnPage + itemsOnPage).reverse()
+    const displayableBody = dataTable.body?.map(column => column.slice((recordPagination - 1) * recordsOnPage, (recordPagination - 1) * recordsOnPage + recordsOnPage)).reverse()
 
     const updatePagination = (page: number) => {
         setFieldPagination(page)
@@ -46,12 +47,25 @@ const TableEditorTable = ({ table }: Props) => {
 
 
     return <Stack spacing={1}>
-        <Pagination
-            count={Math.ceil(dataTable.header.length / itemsOnPage)}
-            page={fieldPagination}
-            onChange={e => updatePagination(+(e.target as TODO).textContent)}
-        />
-        <TableContainer component={Paper} >
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+                <GlassText size="small">Column</GlassText>
+                <Pagination
+                    count={Math.ceil(dataTable.header.length / itemsOnPage)}
+                    page={fieldPagination}
+                    onChange={e => updatePagination(+(e.target as TODO).textContent)}
+                />
+            </div>
+            {dataTable.body && <div>
+                <GlassText size="small">Row</GlassText>
+                <Pagination
+                    count={Math.ceil(dataTable.body[0].length / recordsOnPage)}
+                    page={recordPagination}
+                    onChange={e => updateRecordPagination(+(e.target as TODO).textContent)}
+                />
+            </div>}
+        </div>
+        <TableContainer component={Paper}>
             <Table stickyHeader size="small">
                 <TableHead>
                     <TableRow>
@@ -84,11 +98,6 @@ const TableEditorTable = ({ table }: Props) => {
                 </TableBody>
             </Table>
         </TableContainer>
-        {dataTable.body && <Pagination
-            count={Math.ceil(dataTable.body[0].length / recordsOnPage)}
-            page={recordPagination}
-            onChange={e => updateRecordPagination(+(e.target as TODO).textContent)}
-        />}
         <BaseModal state={modalState.state} close={() => setModalState({ state: 'closed' })}>
             {
                 dataTable.columns && modalState.state == 'open' && dataTable.header &&

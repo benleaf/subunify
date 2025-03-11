@@ -10,15 +10,10 @@ export class TableState extends DashboardState {
                 return new ViewerState({
                     machine: 'excelImporter',
                     scroll: { x: 1, y: 1 },
-                    mousePossition: { x: 1, y: 1 },
+                    mousePosition: { x: 1, y: 1 },
                     tables: [],
                     worksheetId: 0,
                     flowState: 'editing'
-                })
-            case 'loadData':
-                return new TableState({
-                    ...this.data,
-                    loadingData: event.data
                 })
             case 'tableGetAll':
                 return new TableState({

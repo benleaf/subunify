@@ -10,7 +10,7 @@ export class ApplicationIdleState extends BaseState {
                 return new ViewerState({
                     machine: 'excelImporter',
                     scroll: { x: 1, y: 1 },
-                    mousePossition: { x: 1, y: 1 },
+                    mousePosition: { x: 1, y: 1 },
                     tables: [],
                     worksheetId: 0,
                     flowState: 'editing'

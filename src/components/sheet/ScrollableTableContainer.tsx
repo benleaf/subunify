@@ -18,10 +18,21 @@ const ScrollableTableContainer = ({ tableRef, children }: Props) => {
     const screenDimension = tableRef.current?.getBoundingClientRect() ?? { width: 0, height: 0 }
 
     useEffect(() => {
+        if (window.matchMedia("(any-hover: none)").matches) {
+            dispatch({ action: "touchScreenOnly", data: true })
+        }
+    }, [])
+
+
+    useEffect(() => {
         tableRef.current!.onwheel = e => {
             e.preventDefault()
             const first = 100
             dispatch({ action: "scroll", data: { x: e.deltaX / first, y: e.deltaY / first } })
+        }
+        tableRef.current!.ontouchmove = e => {
+            e.preventDefault()
+            dispatch({ action: "touchMove", data: { x: e.touches[0].clientX, y: e.touches[0].clientY } })
         }
     }, [tableRef])
 
@@ -57,16 +68,16 @@ const ScrollableTableContainer = ({ tableRef, children }: Props) => {
             width: '100%',
             height: '100%',
             overflow: 'hidden',
-            userSelect: 'none'
+            userSelect: 'none',
         }}
+
         ref={tableRef}
         onMouseDown={e => dispatch({ action: "mouseDown", data: { x: e.clientX, y: e.clientY } })}
-        onTouchStart={e => dispatch({ action: "mouseDown", data: { x: e.touches[0].clientX, y: e.touches[0].clientY } })}
         onMouseUp={_ => dispatch({ action: "mouseUp" })}
-        onTouchEnd={_ => dispatch({ action: "mouseUp" })}
         onMouseLeave={_ => dispatch({ action: "mouseUp" })}
         onMouseMove={e => handleMouseMove({ x: e.clientX, y: e.clientY })}
-        onTouchMove={e => handleMouseMove({ x: e.touches[0].clientX, y: e.touches[0].clientY })}
+        onTouchStart={e => dispatch({ action: "touchStart", data: { x: e.touches[0].clientX, y: e.touches[0].clientY } })}
+        onTouchEnd={_ => dispatch({ action: "touchStop" })}
     >
         <Table
             style={{

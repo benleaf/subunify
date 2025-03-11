@@ -2,6 +2,7 @@ import { BoundingBox } from "../../../helpers/BoundingBox";
 import { CreateTableDataState } from "./CreateTableDataState";
 import { SheetState } from "./SheetState";
 import { SheetEvents } from "@/stateManagement/stateMachines/excelImporter/types/SheetEvents";
+import { ViewerState } from "./ViewerState";
 
 export class CreateTableAnchorDataState extends SheetState {
     public handleAction(event: SheetEvents): SheetState {
@@ -9,6 +10,11 @@ export class CreateTableAnchorDataState extends SheetState {
             case "mouseDown":
                 return new CreateTableDataState({
                     ...this.data,
+                })
+            case "finishEditing":
+                return new ViewerState({
+                    ...this.data,
+                    cursor: undefined
                 })
             case "cellSelected":
                 if (this.data.selectedTableIndex === undefined) return this

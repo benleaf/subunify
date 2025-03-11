@@ -1,15 +1,8 @@
 import { useContext, useEffect } from "react";
-import Sidebar from "@/components/navigation/Sidebar";
-import GlassCard from "@/components/glassmorphism/GlassCard";
-import { useSize } from "@/hooks/useSize";
-import { ComponentSizes } from "@/constants/ComponentSizes";
 import { StateMachineDispatch } from "@/App";
 import { GridColDef, GridRowModel, GridValidRowModel } from "@mui/x-data-grid";
 import { isDashboard } from "@/stateManagement/stateMachines/getContext";
 import EditableTable from "@/components/TablesDataTable/EditableTable";
-import GlassText from "@/components/glassmorphism/GlassText";
-import { CssSizes } from "@/constants/CssSizes";
-import { ServerTable } from "@/types/application/ServerTable";
 import { isError } from "@/api/isError";
 import { TableResult } from "@/types/server/TableResult";
 import { useAuth } from "@/auth/AuthContext";
@@ -17,8 +10,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 
 const TableManager = () => {
     const context = useContext(StateMachineDispatch)!
-    const { height, width } = useSize()
-    const { authAction, logout } = useAuth()
+    const { authAction } = useAuth()
 
     useEffect(() => {
         context.dispatch({ action: 'startDashboard' })
@@ -59,7 +51,7 @@ const TableManager = () => {
 
     const createNewRecord = async (record: { [key: string]: any }) => {
         if (!isDashboard(context)) return
-        const result = await authAction<ServerTable>(`table`, 'POST', JSON.stringify(record))
+        const result = await authAction<TableResult>(`table`, 'POST', JSON.stringify(record))
         if (isError(result)) {
             console.error(result)
         } else {

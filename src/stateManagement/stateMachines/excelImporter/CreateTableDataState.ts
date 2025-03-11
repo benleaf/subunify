@@ -10,7 +10,13 @@ export class CreateTableDataState extends ScrollableSheetState {
             case "mouseDown":
                 return new ViewerState({
                     ...this.data,
+                    cursor: undefined,
                     resizeAncorPossition: undefined
+                })
+            case "finishEditing":
+                return new ViewerState({
+                    ...this.data,
+                    cursor: undefined
                 })
             case "cellSelected":
                 if (this.data.selectedTableIndex === undefined) return this

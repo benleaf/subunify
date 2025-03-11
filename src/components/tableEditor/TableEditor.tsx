@@ -7,9 +7,10 @@ import TableEditorTable from "./TableEditorTable"
 import GlassCard from "../glassmorphism/GlassCard"
 import GlassText from "../glassmorphism/GlassText"
 import GlassSpace from "../glassmorphism/GlassSpace"
-import BaseModal from "../modal/BaseModal"
-import { Edit } from "@mui/icons-material"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
+import { Cancel, Done } from "@mui/icons-material"
+import { Colours } from "@/constants/Colours"
+import { CssSizes } from "@/constants/CssSizes"
 
 type Props = {
     table: SheetTable
@@ -21,69 +22,72 @@ const TableEditor = ({ table, tableIndex }: Props) => {
     if (!isExcelImporter(context)) throw new Error("TableEditorTable can only be used within the excelImporter context");
     const { dispatch, state } = context
 
-    const [editModalOpen, setEditModalOpen] = useState(false)
-    const [dataTable, setDataTable] = useState<DataTable>(new DataTable(table, state.data.worksheets![table.parentWorksheetId ?? 0]))
+    if (state.data.cursor == 'cell') {
+        return <GlassCard paddingSize="small" marginSize="small" height='90vh'>
+            <div style={{ display: 'flex', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                <Button
+                    variant="contained"
+                    onClick={() => dispatch({ action: "finishEditing" })}
+                    startIcon={<Cancel />}
+                >
+                    Stop Editing
+                </Button>
+            </div>
+        </GlassCard>
+    }
 
-    useEffect(() => {
-        const newDataTable = new DataTable(table, state.data.worksheets![table.parentWorksheetId ?? 0])
-        setDataTable(newDataTable)
-    }, [table.head, table.body])
-
-
-    return <GlassCard paddingSize="small" marginSize="small">
-        <Stack direction='row'>
-            <GlassText size="huge">{table.name}</GlassText>
-            <IconButton onClick={() => setEditModalOpen(true)}>
-                <Edit />
-            </IconButton>
-        </Stack>
+    return <GlassCard paddingSize="small" marginSize="small" height='calc(101vh - 85px)'>
         <Stack spacing={1}>
+            <GlassSpace size="tiny" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                < TextField
+                    label="Table Name"
+                    style={{ minWidth: '50%' }
+                    }
+                    defaultValue={table.name}
+                    onChange={e => dispatch({ action: "renameTable", data: e.target.value })}
+                />
+                < div style={{ marginLeft: CssSizes.small }}>
+                    <IconButton onClick={() => dispatch({ action: "finishEditing" })} style={{ backgroundColor: Colours.primary, color: Colours.white }}>
+                        <Done />
+                    </IconButton>
+                </div >
+            </GlassSpace >
             {!table.head &&
-                <GlassCard>
-                    <GlassText size="large">Add Table Columns</GlassText>
+                <GlassCard paddingSize="small" marginSize="small">
+                    <GlassText size="large">Add Table Header Cells</GlassText>
                     <GlassSpace size='tiny'>
                         <Button
                             variant="contained"
                             onClick={() => dispatch({ action: "addTableColumnNames", data: tableIndex })}
                         >
-                            Add
+                            Add Cells
                         </Button>
                     </GlassSpace>
                 </GlassCard>
             }
-            {table.head && <>
-                <Stack spacing={1} direction='row'>
-                    <Chip label={`${dataTable.header.length} field${dataTable.header.length != 1 ? 's' : ''}`} />
-                    {dataTable.body && <Chip label={`${dataTable.body[0].length} record${dataTable.body[0].length != 1 ? 's' : ''}`} />}
-                </Stack>
+            {
+                table.head && !table.body &&
                 <GlassCard paddingSize="small" marginSize="small">
-                    <TableEditorTable table={table} />
-                </GlassCard>
-            </>}
-            {table.head && !table.body &&
-                <GlassCard paddingSize="small" marginSize="small">
-                    <GlassText size="large">Add table Data</GlassText>
+                    <GlassText size="large">Add Table Records</GlassText>
                     <GlassSpace size='tiny'>
                         <Button
                             variant="contained"
                             onClick={() => dispatch({ action: "addTableData", data: tableIndex })}
                         >
-                            Add
+                            Add Records
                         </Button>
                     </GlassSpace>
                 </GlassCard>
             }
-            <Button onClick={() => dispatch({ action: "finishEditing" })} variant="contained">Done</Button>
-        </Stack>
-        <BaseModal state={editModalOpen ? 'open' : 'closed'} close={() => setEditModalOpen(false)}>
-            <TextField
-                fullWidth
-                label="Table Name"
-                defaultValue={table.name}
-                onChange={e => dispatch({ action: "renameTable", data: e.target.value })}
-            />
-        </BaseModal>
-    </GlassCard>
+            {
+                table.head && <>
+                    <GlassCard paddingSize="small">
+                        <TableEditorTable table={table} />
+                    </GlassCard>
+                </>
+            }
+        </Stack >
+    </GlassCard >
 }
 
 export default TableEditor

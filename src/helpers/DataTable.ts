@@ -5,12 +5,23 @@ import { DataField } from "@/types/DataField";
 import { DataFormat } from "@/types/DataFormat";
 import { CellFormatter } from "./CellFormatter";
 
+type HeadersTableRow = { id: number, columnName: string, type: string, records: number }
+
 export class DataTable {
     private internalColumns?: DataFormat[]
     private internalHeader?: DataField[]
     private internalBody?: DataField[][]
 
     constructor(private sheetTable: SheetTable, private worksheet: Worksheet) { }
+
+    public getHeadersTableData(): HeadersTableRow[] {
+        return this.header?.map((column, id) => ({
+            id,
+            columnName: column.name,
+            records: this.body ? this.body[id].length : 0,
+            type: this.body ? this.getColumnType(this.body[id]).type : 'unknown'
+        } as HeadersTableRow)) ?? []
+    }
 
     public headerCoordinateAtIndex(index: number): Partial<Coordinate> {
         const box = this.sheetTable.head?.box
@@ -35,14 +46,7 @@ export class DataTable {
 
         const columns: DataFormat[] = []
         for (const header of this.internalHeader) {
-            let currentType = this.internalBody[header.id][0].dataFormat
-            for (let index = 0; index < this.internalBody[header.id].length; index++) {
-                if (this.internalBody[header.id][index].dataFormat.type != 'unknown') {
-                    currentType = this.internalBody[header.id][index].dataFormat
-                    break
-                }
-            }
-            columns.push(currentType)
+            columns.push(this.getColumnType(this.internalBody[header.id]))
         }
         this.internalColumns = columns
         return columns
@@ -58,6 +62,17 @@ export class DataTable {
         if (this.internalBody && this.internalBody.length > 0 && this.internalBody[0].length > 0) return this.internalBody
         this.internalBody = this.createBody(this.header)
         return this.internalBody
+    }
+
+    private getColumnType(column: DataField[]) {
+        let currentType = column[0].dataFormat
+        for (let index = 0; index < column.length; index++) {
+            if (column[index].dataFormat.type != 'unknown') {
+                currentType = column[index].dataFormat
+                break
+            }
+        }
+        return currentType
     }
 
     private createHeader(): DataField[] {

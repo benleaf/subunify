@@ -10,6 +10,9 @@ export type SheetEvents = SheetExclusiveEvents | ApplicationEvents
 type SheetExclusiveEvents =
     { action: "goToCell", data: Partial<Coordinate> } |
     { action: "cellSelected", data: Coordinate } |
+    { action: "touchStart", data: Coordinate } |
+    { action: "touchStop" } |
+    { action: "touchMove", data: Coordinate } |
     { action: "setWorksheets", data: Worksheet[] } |
     { action: "setScroll", data: Coordinate } |
     { action: "scroll", data: Coordinate } |
@@ -20,8 +23,10 @@ type SheetExclusiveEvents =
     { action: "setFlowState", data: FlowStates } |
     { action: "finishEditing" } |
     { action: "editTable", data: number } |
+    { action: "deleteTable", data: number } |
     { action: "addTableColumnNames", data: number } |
     { action: "addTableData", data: number } |
+    { action: "touchScreenOnly", data: boolean } |
     { action: "setWorksheet", data: number } |
     { action: "renameTable", data: string } |
     { action: "renameColumn", data: { value: string, columnId: number } } |

@@ -16,6 +16,11 @@ export class ViewerState extends SheetState {
                     ...this.data,
                     worksheets: event.data
                 })
+            case "touchScreenOnly":
+                return new ViewerState({
+                    ...this.data,
+                    touchScreenOnly: event.data
+                })
             case "startDashboard":
                 return new TableState({
                     machine: 'dashboard'
@@ -28,7 +33,12 @@ export class ViewerState extends SheetState {
             case "mouseDown":
                 return new PanningState({
                     ...this.data,
-                    mousePossition: { x: event.data.x, y: event.data.y }
+                    mousePosition: { x: event.data.x, y: event.data.y }
+                })
+            case "touchStart":
+                return new PanningState({
+                    ...this.data,
+                    mousePosition: { x: event.data.x, y: event.data.y }
                 })
             case "setFlowState":
                 return new ViewerState({
@@ -38,7 +48,7 @@ export class ViewerState extends SheetState {
             case "mouseMoved":
                 return new ViewerState({
                     ...this.data,
-                    mousePossition: { x: event.data.x, y: event.data.y }
+                    mousePosition: { x: event.data.x, y: event.data.y }
                 })
             case "setScroll":
                 return new ViewerState({
@@ -56,6 +66,7 @@ export class ViewerState extends SheetState {
             case "createTable":
                 return new ViewerState({
                     ...this.data,
+                    selectedTableIndex: this.data.tables.length,
                     tables: [...this.data.tables, {
                         parentWorksheetId: this.data.worksheetId,
                         name: `New Table ${this.data.tables.length + 1}`
@@ -73,6 +84,11 @@ export class ViewerState extends SheetState {
                     worksheetId: this.data.tables[event.data].parentWorksheetId,
                     selectedTableIndex: event.data
                 })
+            case "deleteTable":
+                return new ViewerState({
+                    ...this.data,
+                    tables: this.data.tables.filter((_, index) => index !== event.data),
+                })
             case "cellSelected":
                 return new ViewerState({
                     ...this.data,
@@ -81,6 +97,7 @@ export class ViewerState extends SheetState {
             case "addTableColumnNames":
                 return new CreateTableHeadState({
                     ...this.data,
+                    cursor: 'cell',
                     selectedTableIndex: event.data
                 })
             case "dragSelectedTableCorner":
@@ -91,6 +108,7 @@ export class ViewerState extends SheetState {
             case "addTableData":
                 return new CreateTableAnchorDataState({
                     ...this.data,
+                    cursor: 'cell',
                     resizeAncorPossition: undefined,
                     selectedTableIndex: event.data
                 })

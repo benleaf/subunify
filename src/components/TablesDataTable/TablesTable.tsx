@@ -2,7 +2,6 @@ import { GridColDef, GridRowModel } from "@mui/x-data-grid"
 import { useContext, } from "react"
 import { ServerRow } from "@/types/application/ServerRow"
 import { UpdateTableRowResult } from "@/types/server/UpdateTableRowResult"
-import { ServerColumn } from "@/types/application/ServerColumn"
 import { StateMachineDispatch } from "@/App"
 import { isDashboard } from "@/stateManagement/stateMachines/getContext"
 import { isError } from "@/api/isError"
@@ -16,7 +15,6 @@ const TablesTable = () => {
     const { authAction } = useAuth()
 
     const rows: ServerRow[] = state.data.selectedTable?.rows ?? []
-    const columns: ServerColumn[] = state.data.selectedTable?.columns ?? []
 
     const createNewRecord = async (record: { [key: string]: any }) => {
         const newRow = await authAction<ServerRow>(

@@ -23,7 +23,7 @@ const SheetCell = ({ cornerVisible, innerRef, value, style, onMouseEnter, onCorn
         className={tableStyle.tableCell}
         ref={innerRef}
         onMouseEnter={onMouseEnter}
-        onTouchMoveCapture={onMouseEnter}
+        onTouchStart={onMouseEnter}
     >
         {cornerVisible &&
             <div

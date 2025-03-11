@@ -15,9 +15,9 @@ const SheetTabs = () => {
     const { dispatch, state } = context
 
     return state.data.machine == 'excelImporter' && <>
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%', cursor: state.data.cursor ?? 'default' }}>
             <DynamicStack>
-                <div style={{ height: '80vh', flex: 1 }}>
+                <div style={{ flex: 1 }}>
                     <GlassCard marginSize="small" paddingSize="small">
                         <Tabs
                             value={state.data.worksheetId}
@@ -26,7 +26,7 @@ const SheetTabs = () => {
                             {state.data.worksheets?.map((sheet, key) => <Tab key={key} label={sheet.name} />)}
                         </Tabs>
                     </GlassCard>
-                    <GlassCard height='80vh' marginSize="small" paddingSize="small">
+                    <GlassCard marginSize="small" paddingSize="small" height='calc(101vh - 170px)'>
                         {state.data.tables &&
                             <Sheet
                                 worksheet={state.data.worksheets && state.data.worksheets[state.data.worksheetId]}

@@ -1,6 +1,6 @@
 import { CssSizes } from '@/constants/CssSizes'
-import { FormControlLabel, Checkbox, Input, FormGroup, TextField, Button, Stack } from '@mui/material'
-import { GridColDef, GridColType } from '@mui/x-data-grid'
+import { FormControlLabel, Checkbox, FormGroup, TextField, Button, Stack } from '@mui/material'
+import { GridColDef } from '@mui/x-data-grid'
 import { useState } from 'react'
 
 type Props = {
