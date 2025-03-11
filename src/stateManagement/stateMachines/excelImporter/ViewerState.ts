@@ -130,17 +130,16 @@ export class ViewerState extends SheetState {
                     ...this.data,
                     loading: event.data
                 })
-            case "renameColumn":
+            case "modifyColumn":
                 const tablesClone = [...this.data.tables]
                 const columnOverides = tablesClone[this.data.selectedTableIndex!].columnOverrides
                 tablesClone[this.data.selectedTableIndex!].columnOverrides = {
                     ...columnOverides,
                     [event.data.columnId]: event.data.value
                 }
-
                 return new ViewerState({
                     ...this.data,
-                    tables: this.data.tables
+                    tables: tablesClone
                 })
             default:
                 return new ViewerState({

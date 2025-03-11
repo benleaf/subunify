@@ -8,56 +8,23 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassText from "../glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
 import AuthModal from "@/auth/AuthModal"
-import { useAuth } from "@/auth/AuthContext"
 import PaymentModal from "../payments/PaymentModal"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
-import { TablesDeployer } from "@/helpers/TablesDeployer"
-import { User } from "@/types/User"
-import { isError } from "@/api/isError"
-import { useNavigate } from "react-router"
-
+import PreDeployModal from "../modal/PreDeployModal"
 
 type Props = {
     tables: SheetTable[],
 }
 
 const TableControlWidgets = ({ tables }: Props) => {
-    const { user, authAction } = useAuth()
-    const navigate = useNavigate()
-
     const context = useContext(StateMachineDispatch)!
     if (!isExcelImporter(context)) throw new Error("TableControlWidgets can only be used within the excelImporter context");
     const { dispatch, state } = context
 
 
     const requestDeployment = async () => {
-        dispatch({ action: "setFlowState", data: 'editing' })
         if (!state.data.worksheets) return
-
-        if (!user) {
-            dispatch({ action: "setFlowState", data: 'login' })
-        } else {
-            forcePayment()
-        }
-    }
-
-    const forcePayment = async () => {
-        if (!state.data.worksheets) return
-        const userResult = await authAction<User>(`user`, "GET")
-        if (isError(userResult)) {
-            console.error(userResult)
-        } else if (!userResult.stripeSubscriptionId) {
-            dispatch({ action: "setFlowState", data: 'payment' })
-            TablesDeployer.saveToLocalStore(state.data.tables, state.data.worksheets ?? [])
-        } else if (state.data.tables.length > 0) {
-            TablesDeployer.saveToLocalStore(state.data.tables, state.data.worksheets ?? [])
-            await TablesDeployer.deployFromLocalStore()
-            dispatch({ action: "startDashboard" })
-            navigate('/dashboard')
-        } else {
-            dispatch({ action: "startDashboard" })
-            navigate('/dashboard')
-        }
+        dispatch({ action: "setFlowState", data: 'preDeployWelcome' })
     }
 
     const addButton = <Button
@@ -83,7 +50,7 @@ const TableControlWidgets = ({ tables }: Props) => {
                 Deploy to database
             </Button>
         </div>
-        {!tables.length && addButton}
+        {tables.length === 0 && addButton}
         <div style={{ display: 'flex', flexWrap: 'wrap', height: '77vh', overflow: 'scroll', scrollbarWidth: 'none' }}>
             {tables.map((table, index) => state.data.worksheets &&
                 <TableControlWidget
@@ -93,10 +60,14 @@ const TableControlWidgets = ({ tables }: Props) => {
                 />
             )}
         </div>
-        {tables.length && addButton}
+        {tables.length > 0 && addButton}
+        <PreDeployModal
+            isOpen={state.data.flowState === 'preDeployWelcome'}
+            onClose={() => dispatch({ action: "setFlowState", data: 'editing' })}
+        />
         <AuthModal
             overrideState={state.data.flowState == 'login'}
-            onLogin={forcePayment}
+            onLogin={requestDeployment}
             onAccountCreationCompleate={requestDeployment}
             onClose={() => dispatch({ action: "setFlowState", data: 'editing' })}
             hideButton

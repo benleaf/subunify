@@ -5,5 +5,5 @@ export type SheetTable = {
     parentWorksheetId: number
     head?: BoundingBox
     body?: BoundingBox
-    columnOverrides?: { [key: number]: string }
+    columnOverrides?: { [key: number]: string | null }
 }

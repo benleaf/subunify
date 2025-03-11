@@ -5,23 +5,12 @@ import { DataField } from "@/types/DataField";
 import { DataFormat } from "@/types/DataFormat";
 import { CellFormatter } from "./CellFormatter";
 
-type HeadersTableRow = { id: number, columnName: string, type: string, records: number }
-
 export class DataTable {
     private internalColumns?: DataFormat[]
     private internalHeader?: DataField[]
     private internalBody?: DataField[][]
 
     constructor(private sheetTable: SheetTable, private worksheet: Worksheet) { }
-
-    public getHeadersTableData(): HeadersTableRow[] {
-        return this.header?.map((column, id) => ({
-            id,
-            columnName: column.name,
-            records: this.body ? this.body[id].length : 0,
-            type: this.body ? this.getColumnType(this.body[id]).type : 'unknown'
-        } as HeadersTableRow)) ?? []
-    }
 
     public headerCoordinateAtIndex(index: number): Partial<Coordinate> {
         const box = this.sheetTable.head?.box
@@ -41,12 +30,12 @@ export class DataTable {
 
     public get columns(): DataFormat[] | undefined {
         if (this.internalColumns?.length) return this.internalColumns
-        if (!this.internalHeader) return undefined
-        if (this.internalBody == undefined || this.internalBody[0].length == 0) return this.internalHeader.map(_ => ({ type: "unknown" }))
+        if (!this.header) return undefined
+        if (this.body == undefined || this.body[0].length == 0) return this.header.map(_ => ({ type: "unknown" }))
 
         const columns: DataFormat[] = []
-        for (const header of this.internalHeader) {
-            columns.push(this.getColumnType(this.internalBody[header.id]))
+        for (const header of this.header) {
+            columns.push(this.getColumnType(this.body[header.localIndex]))
         }
         this.internalColumns = columns
         return columns
@@ -78,25 +67,33 @@ export class DataTable {
     private createHeader(): DataField[] {
         if (!this.sheetTable.head) return []
 
-        let cells: Cell[] = []
+        let cellsWithGlobalIndex: { cell: Cell, globalIndex: number }[] = []
         const bottomRight = this.sheetTable.head.box.br
         const topLeft = this.sheetTable.head.box.tl
 
         if (topLeft.x == bottomRight.x) {
-            cells = [...Array(bottomRight.y - topLeft.y + 1).keys()]
+            cellsWithGlobalIndex = [...Array(bottomRight.y - topLeft.y + 1).keys()]
                 .map(index => index + topLeft.y)
-                .map(yPos => this.worksheet.getRow(yPos).getCell(bottomRight.x))
+                .map(yPos => ({
+                    cell: this.worksheet.getRow(yPos).getCell(bottomRight.x),
+                    globalIndex: yPos
+                }))
         } else if (topLeft.y == bottomRight.y) {
-            cells = [...Array(bottomRight.x - topLeft.x + 1).keys()]
+            cellsWithGlobalIndex = [...Array(bottomRight.x - topLeft.x + 1).keys()]
                 .map(index => index + topLeft.x)
-                .map(xPos => this.worksheet.getRow(bottomRight.y).getCell(xPos))
+                .map(xPos => ({
+                    cell: this.worksheet.getRow(bottomRight.y).getCell(xPos),
+                    globalIndex: xPos
+                }))
         }
 
-        return cells.map((cell, index) => ({
-            id: index,
+        return cellsWithGlobalIndex.map(({ cell, globalIndex }, localIndex) => ({
+            localIndex,
+            globalIndex,
             dataFormat: { type: 'unknown' },
-            name: this.getColumnOverrideData(index) ?? CellFormatter.getHeaderCellText(cell),
-            linkedCell: cell
+            name: this.getColumnOverrideData(globalIndex) ?? CellFormatter.getHeaderCellText(cell),
+            linkedCell: cell,
+            removed: this.getColumnOverrideData(globalIndex) === null
         } as DataField))
     }
 
@@ -137,30 +134,29 @@ export class DataTable {
             for (const column of header) {
                 const row = [...Array(bottomRight.y - topLeft.y + 1).keys()]
                     .map(index => index + topLeft.y)
-                    .map(yPos => this.worksheet.getRow(yPos).getCell(column.id + topLeft.x))
-                    .map((cell, index) => ({
-                        id: index,
-                        dataFormat: this.getCellDataFormat(cell),
-                        name: CellFormatter.getCellText(cell),
-                        linkedCell: cell
-                    } as DataField))
-                newBody = [...(newBody ?? []), row]
+                    .map(yPos => this.worksheet.getRow(yPos).getCell(column.localIndex + topLeft.x))
+                newBody = [...(newBody ?? []), this.getBodyCellsDataFields(row, column)]
             }
         } else if (bottomRight.y - topLeft.y + 1 === header.length && topLeft.y == headTopLeft.y) {
             for (const column of header) {
                 const row = [...Array(bottomRight.x - topLeft.x + 1).keys()]
                     .map(index => index + topLeft.x)
-                    .map(xPos => this.worksheet.getRow(column.id + topLeft.y).getCell(xPos))
-                    .map((cell, index) => ({
-                        id: index,
-                        dataFormat: this.getCellDataFormat(cell),
-                        name: CellFormatter.getCellText(cell),
-                        linkedCell: cell
-                    } as DataField))
-                newBody = [...(newBody ?? []), row]
+                    .map(xPos => this.worksheet.getRow(column.localIndex + topLeft.y).getCell(xPos))
+
+                newBody = [...(newBody ?? []), this.getBodyCellsDataFields(row, column)]
             }
         }
 
         return newBody
+    }
+
+    private getBodyCellsDataFields(cells: Cell[], column: DataField): DataField[] {
+        return cells.map((cell, index) => ({
+            localIndex: index,
+            dataFormat: this.getCellDataFormat(cell),
+            name: CellFormatter.getCellText(cell),
+            linkedCell: cell,
+            removed: column.removed
+        } as DataField))
     }
 }

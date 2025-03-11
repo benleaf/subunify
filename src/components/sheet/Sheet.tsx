@@ -11,6 +11,7 @@ import { BoundingBox } from "@/helpers/BoundingBox"
 import GlassText from "../glassmorphism/GlassText"
 import { StateMachineDispatch } from "@/App"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
+import { Orientation } from "@/types/spreadsheet/Orientation"
 
 type Props = {
     sheetTables: SheetTable[]
@@ -34,9 +35,10 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
         globalY: number,
         table: SheetTable
     ): { box: BoundingBox, type: 'head' | 'body' } | undefined =>
-        table.body?.inBoundingBox({ x: globalX, y: globalY }) ? { box: table.body, type: 'body' } : (
-            table.head?.inBoundingBox({ x: globalX, y: globalY }) ? { box: table.head, type: 'head' } : undefined
-        )
+        table.body?.inBoundingBox({ x: globalX, y: globalY }) ?
+            { box: table.body, type: 'body' } : (
+                table.head?.inBoundingBox({ x: globalX, y: globalY }) ? { box: table.head, type: 'head' } : undefined
+            )
 
     const getBoundingBox = (globalX: number, globalY: number) => sheetTables
         .map((table, index) => ({
@@ -45,7 +47,8 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
             ...getTableBoundingBox(globalX, globalY, table)
         }))
         .filter(table => table.parentWorksheetId == worksheetId)
-        .filter(table => table.box).pop()
+        .filter(table => table.box)
+        .pop()
 
     const isCorner = (x: number, y: number) => {
         return sheetTables
@@ -64,11 +67,17 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
 
     const getBoxedCellData = (x: number, y: number) => {
         const boxData = getBoundingBox(x, y)
+        const head = sheetTables[boxData?.tableId ?? 0]?.head
+        let orientation: Orientation = 'x'
+        if (head) {
+            orientation = BoundingBox.getOrientation(head)
+        }
         const boundingBoxStyles = boxData?.box?.getCellStyles({ x, y }, boxData?.tableId == selectedTableIndex)
 
         return {
             styles: boundingBoxStyles ?? defaultCellStyles,
-            boxIndex: boxData?.box?.getCellIndex({ x, y }),
+            boxGlobalIndex: boxData?.box?.getCellGlobalIndex({ x, y }, orientation),
+            tableId: boxData?.tableId,
             type: boxData?.type
         }
     }
@@ -88,18 +97,27 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
     const getTableCellDisplayData = (x: number, y: number) => {
         const cell = getCellByDisplayCoord(x, y)
         const cellData = getBoxedCellData(getGlobalX(x), getGlobalY(y))
+        let styles = cellData.styles
         let cellName = cell ? CellFormatter.getCellText(cell) : ''
 
-        if (selectedTableIndex !== undefined && cellData.boxIndex !== undefined && cellData.type == 'head') {
-            const table = sheetTables[selectedTableIndex]
-            if (table.columnOverrides && table.columnOverrides[cellData.boxIndex])
-                cellName = table.columnOverrides[cellData.boxIndex]
+        if (cellData.tableId !== undefined && cellData.boxGlobalIndex !== undefined) {
+            const table = sheetTables[cellData.tableId]
+
+            if (table.columnOverrides && cellData.boxGlobalIndex in table.columnOverrides) {
+                const overrideValue = table.columnOverrides[cellData.boxGlobalIndex]
+
+                if (overrideValue == null) {
+                    styles = { ...styles, textDecoration: 'line-through' }
+                } else if (cellData.type == 'head') {
+                    cellName = overrideValue
+                }
+            }
         }
 
         return {
             cell,
             value: cellName,
-            style: cellData.styles,
+            style: styles,
             cornerVisible: isCorner(getGlobalX(x), getGlobalY(y))
         }
     }
@@ -120,7 +138,8 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
         worksheetId,
         sheetTables,
         selectedTableIndex !== undefined && sheetTables[selectedTableIndex].columnOverrides,
-        screenDimension
+        Math.floor(screenDimension.height / 10),
+        Math.floor(screenDimension.width / 10),
     ]
 
     const displayableGrid = useMemo(

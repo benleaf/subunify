@@ -1,24 +1,21 @@
-import { DataField } from "@/types/DataField"
-import { DataFormat } from "@/types/DataFormat"
 import { StateMachineDispatch } from "@/App"
 import { useContext } from "react"
 import { TextField } from "@mui/material"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 
 type Props = {
-    dataFormat: DataFormat,
-    headderField: DataField,
+    defaultValue: string,
     selectedFieldId: number
 }
 
-const FieldEditor = ({ headderField, selectedFieldId }: Props) => {
+const FieldEditor = ({ defaultValue, selectedFieldId }: Props) => {
     const context = useContext(StateMachineDispatch)!
     if (!isExcelImporter(context)) throw new Error("FieldEditor can only be used within the excelImporter context");
     const { dispatch } = context
 
     const renameColumn = (value: string) => {
         dispatch({
-            action: "renameColumn",
+            action: "modifyColumn",
             data: { columnId: selectedFieldId, value }
         })
     }
@@ -26,7 +23,7 @@ const FieldEditor = ({ headderField, selectedFieldId }: Props) => {
         <TextField
             fullWidth
             label="Field Name"
-            defaultValue={headderField.name}
+            defaultValue={defaultValue}
             onChange={e => renameColumn(e.target.value)}
         />
     </div>

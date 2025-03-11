@@ -47,11 +47,15 @@ export class BoundingBox {
         }
     }
 
-    public getCellIndex(possition: Coordinate) {
+    public getCellIndex(possition: Coordinate, orientation: Orientation) {
         const x = possition.x - this.box.tl.x
         const y = possition.y - this.box.tl.y
 
-        return BoundingBox.getOrientation(this) == 'x' ? x : y
+        return orientation == 'x' ? x : y
+    }
+
+    public getCellGlobalIndex(possition: Coordinate, orientation: Orientation) {
+        return orientation == 'x' ? possition.x : possition.y
     }
 
     public static getResizedBoxViaAnchor(newPossition: Coordinate, anchorPossition: Coordinate) {

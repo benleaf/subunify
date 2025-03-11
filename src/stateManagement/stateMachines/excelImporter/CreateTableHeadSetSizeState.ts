@@ -50,18 +50,23 @@ export class CreateTableHeadSetSizeState extends ScrollableSheetState {
 
     private getTablesForResize() {
         const newTables = [...this.data.tables]
+
+        if (!this.data.selectedCell || !this.data.resizeAncorPossition || this.data.selectedTableIndex === undefined) {
+            throw new Error("Cannot find needed data for resizing");
+        }
+
         const dimensions = {
-            x: Math.abs(this.data.selectedCell!.x - this.data.resizeAncorPossition!.x),
-            y: Math.abs(this.data.selectedCell!.y - this.data.resizeAncorPossition!.y)
+            x: Math.abs(this.data.selectedCell!.x - this.data.resizeAncorPossition.x),
+            y: Math.abs(this.data.selectedCell.y - this.data.resizeAncorPossition.y)
         }
 
         const axisAlignedPosition = dimensions.x > dimensions.y ?
-            { x: this.data.selectedCell!.x, y: this.data.resizeAncorPossition!.y } :
-            { x: this.data.resizeAncorPossition!.x, y: this.data.selectedCell!.y }
+            { x: this.data.selectedCell.x, y: this.data.resizeAncorPossition.y } :
+            { x: this.data.resizeAncorPossition.x, y: this.data.selectedCell.y }
 
-        newTables[this.data.selectedTableIndex!].head = BoundingBox.getResizedBoxViaAnchor(
+        newTables[this.data.selectedTableIndex].head = BoundingBox.getResizedBoxViaAnchor(
             axisAlignedPosition,
-            this.data.resizeAncorPossition!
+            this.data.resizeAncorPossition
         )
         return newTables
     }

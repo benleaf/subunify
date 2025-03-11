@@ -1,19 +1,19 @@
 import { SheetTable } from "@/types/spreadsheet/SheetTable"
 import { Button, Chip, Divider, IconButton, Stack } from "@mui/material"
-import { Cell, Worksheet } from "exceljs"
-import { useContext, useEffect, useState } from "react"
+import { Worksheet } from "exceljs"
+import { useContext, useState } from "react"
 import { StateMachineDispatch } from "@/App"
 import { Delete, Edit } from "@mui/icons-material"
 import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpaceBox from "../glassmorphism/GlassSpaceBox"
-import { CellFormatter } from "@/helpers/CellFormatter"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 import BaseModal from "../modal/BaseModal"
+import { DataTable } from "@/helpers/DataTable"
 
 type Props = {
-    table: Partial<SheetTable>
+    table: SheetTable,
     worksheet: Worksheet,
     tableIndex: number,
 }
@@ -21,68 +21,21 @@ type Props = {
 const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
     const context = useContext(StateMachineDispatch)!
     if (!isExcelImporter(context)) throw new Error("TableControlWidget can only be used within the excelImporter context");
+    const dataTable = new DataTable(table, worksheet)
     const { dispatch } = context
-
     const [tableToDelete, setTableToDelete] = useState<number>()
-    const [header, setHeader] = useState<string[]>([])
-    const [body, setBody] = useState<string[][]>([[]])
 
-    useEffect(() => {
-        const headerTemp = getHeader()
-        setHeader(headerTemp)
-        const bodyData = getData(headerTemp)
-        setBody(bodyData)
-    }, [table.head, table.body])
+    const header = dataTable
+        .header
+        .filter(item => item.removed === false)
 
-
-    const getHeader = () => {
-        if (!table.head) return []
-
-        let cells: Cell[] = []
-        const bottomRight = table.head.box.br
-        const topLeft = table.head.box.tl
-
-        if (topLeft.x == bottomRight.x) {
-            cells = [...Array(bottomRight.y - topLeft.y + 1).keys()]
-                .map(index => index + topLeft.y)
-                .map(yPos => worksheet.getRow(yPos).getCell(bottomRight.x))
-        } else if (topLeft.y == bottomRight.y) {
-            cells = [...Array(bottomRight.x - topLeft.x + 1).keys()]
-                .map(index => index + topLeft.x)
-                .map(xPos => worksheet.getRow(bottomRight.y).getCell(xPos))
-        }
-
-        return cells.map(cell => CellFormatter.getHeaderCellText(cell))
-    }
-
-    const getData = (header: string[]) => {
-        if (!table.body || !table.head) return [[]]
-
-        const newBody: string[][] = header.map(_ => [])
-
-        const bottomRight = table.body.box.br
-        const topLeft = table.body.box.tl
-        const headTopLeft = table.head.box.tl
-
-        if (bottomRight.x - topLeft.x + 1 === header.length && topLeft.x == headTopLeft.x) {
-            for (const key in newBody) {
-                newBody[key] = [...Array(bottomRight.y - topLeft.y + 1).keys()]
-                    .map(index => index + topLeft.y)
-                    .map(yPos => worksheet.getRow(yPos).getCell(+key + topLeft.x))
-                    .map(cell => CellFormatter.getCellText(cell))
-            }
-        } else if (bottomRight.y - topLeft.y + 1 === header.length && topLeft.y == headTopLeft.y) {
-            for (const key in newBody) {
-                newBody[key] = [...Array(bottomRight.x - topLeft.x + 1).keys()]
-                    .map(index => index + topLeft.x)
-                    .map(xPos => worksheet.getRow(+key + topLeft.y).getCell(xPos))
-                    .map(cell => CellFormatter.getCellText(cell))
-            }
-        }
-
-
-        return newBody
-    }
+    const body: (string | undefined)[][] | undefined = dataTable
+        .body?.filter((_, index) => dataTable.header[index].removed === false)
+        .map(
+            column => column
+                .filter(item => item.removed === false)
+                .map(item => item.name)
+        )
 
     return <GlassCard marginSize="tiny" paddingSize="moderate" flex={1}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -98,12 +51,12 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
         </div>
         <GlassSpaceBox>
             <Stack spacing={1} width='100%'>
-                {header.slice(Math.max(header.length - 2, 0)).map((colVal, index) =>
+                {header.slice(0, 3).map((colVal, index) =>
                     <GlassCard marginSize="tiny" paddingSize="tiny">
                         <GlassSpace size="tiny">
-                            <GlassText size="moderate">{colVal}</GlassText>
+                            <GlassText size="moderate">{colVal.name}</GlassText>
                             <GlassText size="small">
-                                Values: {body.length == header.length && body[index].slice(Math.max(body[index].length - 2, 0)).join(', ')}
+                                Values: {body?.length == header.length && body[index].slice(0, 3).join(', ')}
                             </GlassText>
                         </GlassSpace>
                     </GlassCard>
@@ -112,7 +65,7 @@ const TableControlWidget = ({ table, tableIndex, worksheet }: Props) => {
                     <GlassText size="moderate">
                         <Stack spacing={1} direction='row'>
                             <Chip label={`${header.length} field${header.length != 1 ? 's' : ''}`} />
-                            {body[0] && <Chip label={`${body[0].length} record${body[0].length != 1 ? 's' : ''}`} />}
+                            {body && body[0] && <Chip label={`${body[0].length} record${body[0].length != 1 ? 's' : ''}`} />}
                         </Stack>
                     </GlassText>
                 </GlassSpace>

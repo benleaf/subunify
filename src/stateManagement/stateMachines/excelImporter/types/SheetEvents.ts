@@ -29,6 +29,6 @@ type SheetExclusiveEvents =
     { action: "touchScreenOnly", data: boolean } |
     { action: "setWorksheet", data: number } |
     { action: "renameTable", data: string } |
-    { action: "renameColumn", data: { value: string, columnId: number } } |
+    { action: "modifyColumn", data: { value: string | null, columnId: number } } |
     { action: "dragSelectedTableCorner", data: TableCorner } |
     { action: "mouseNearEdge", data: Direction | 'RemoveAcceleration' }

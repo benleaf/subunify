@@ -1,1 +1,1 @@
-export type FlowStates = 'login' | 'payment' | 'dashboard' | 'editing'
+export type FlowStates = 'preDeployWelcome' | 'login' | 'payment' | 'dashboard' | 'editing'
