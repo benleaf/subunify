@@ -13,6 +13,7 @@ import UniversalAlert from './components/modal/UniversalAlert';
 import TableManager from './pages/TableManager';
 import { AuthProvider } from './auth/AuthContext';
 import AuthWrapper from './auth/AuthWrapper';
+import ColumnManager from './pages/ColumnManager';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/excel-importer" element={<ExcelImportPage />} />
           <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} />
+          <Route path="/column-manager" element={<AuthWrapper><ColumnManager /></AuthWrapper>} />
           <Route path="/dashboard" element={<AuthWrapper><Dashboard /></AuthWrapper>} />
           <Route path="/data-upload" element={<AuthWrapper><DataUpload /></AuthWrapper>} />
         </Routes>

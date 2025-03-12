@@ -17,6 +17,7 @@ const SheetCell = ({ cornerVisible, innerRef, value, style, onMouseEnter, onCorn
         style={{
             ...style,
             padding: '0.5em',
+            maxWidth: '5em',
             position: "relative",
             overflow: 'hidden'
         }}

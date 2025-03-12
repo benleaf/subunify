@@ -8,7 +8,7 @@ import { CSSProperties } from "react"
 export type SheetStateData = {
     machine: 'excelImporter',
     scroll: Coordinate
-    cursor: CSSProperties['cursor']
+    cursor?: CSSProperties['cursor']
     mousePosition: Coordinate
     selectedTableIndex?: number
     tables: SheetTable[]

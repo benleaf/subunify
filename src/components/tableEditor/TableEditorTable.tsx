@@ -34,7 +34,7 @@ const TableEditorTable = ({ table }: Props) => {
     const { width } = useSize()
 
     const itemsOnPage = 5
-    const recordsOnPage = width > ScreenWidths.Tablet ? 4 : 2
+    const recordsOnPage = 2
 
     const displayableHeder = dataTable
         .header
@@ -51,11 +51,15 @@ const TableEditorTable = ({ table }: Props) => {
 
     const updatePagination = (page: number) => {
         setFieldPagination(page)
+        console.log(page)
+        console.log(dataTable.headerCoordinateAtIndex((page - 1) * itemsOnPage))
         dispatch({ action: "goToCell", data: dataTable.headerCoordinateAtIndex((page - 1) * itemsOnPage) })
     }
 
     const updateRecordPagination = (page: number) => {
         setRecordPagination(page)
+        console.log(page)
+        console.log(dataTable.bodyCoordinateAtIndex((fieldPagination - 1) * itemsOnPage, (page - 1) * recordsOnPage))
         dispatch({ action: "goToCell", data: dataTable.bodyCoordinateAtIndex((fieldPagination - 1) * itemsOnPage, (page - 1) * recordsOnPage) })
     }
 
@@ -79,7 +83,7 @@ const TableEditorTable = ({ table }: Props) => {
                 <Pagination
                     count={Math.ceil(dataTable.header.length / itemsOnPage)}
                     page={fieldPagination}
-                    onChange={e => updatePagination(+(e.target as TODO).textContent)}
+                    onChange={(_, pageNumber) => updatePagination(pageNumber)}
                 />
             </div>
             {width > ScreenWidths.Mobile && dataTable.body && <div>
@@ -87,7 +91,7 @@ const TableEditorTable = ({ table }: Props) => {
                 <Pagination
                     count={Math.ceil(dataTable.body[0].length / recordsOnPage)}
                     page={recordPagination}
-                    onChange={e => updateRecordPagination(+(e.target as TODO).textContent)}
+                    onChange={(_, pageNumber) => updateRecordPagination(pageNumber)}
                 />
             </div>}
         </div>

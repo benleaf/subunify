@@ -17,7 +17,7 @@ const SheetTabs = () => {
     return state.data.machine == 'excelImporter' && <>
         <Box sx={{ width: '100%', cursor: state.data.cursor ?? 'default' }}>
             <DynamicStack>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 3 }}>
                     <GlassCard marginSize="small" paddingSize="small">
                         <Tabs
                             value={state.data.worksheetId}

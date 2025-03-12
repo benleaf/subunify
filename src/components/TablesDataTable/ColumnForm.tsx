@@ -1,7 +1,9 @@
 import { CssSizes } from '@/constants/CssSizes'
-import { FormControlLabel, Checkbox, FormGroup, TextField, Button, Stack } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
+import { FormControlLabel, Checkbox, FormGroup, TextField, Button, Stack, MenuItem, Select } from '@mui/material'
+import { GridColDef, GridSingleSelectColDef } from '@mui/x-data-grid'
 import { useState } from 'react'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 
 type Props = {
     columns: GridColDef[]
@@ -29,6 +31,23 @@ const ColumnForm = ({ columns, onSubmit }: Props) => {
                     variant="outlined"
                     onChange={e => onChange(e.target.value)}
                 />
+            case 'date':
+                return <DatePicker label={column.headerName} onChange={e => onChange(e?.toDate())} />
+            case 'singleSelect':
+                const options = (column as GridSingleSelectColDef).valueOptions
+                if (typeof options == 'function') {
+                    return <TextField
+                        label={column.headerName}
+                        variant="outlined"
+                        onChange={e => onChange(e.target.value)}
+                    />
+                } else {
+                    return <Select onChange={e => onChange(e.target.value)}>
+                        {options?.map(option =>
+                            <MenuItem value={'' + option}>{'' + option}</MenuItem>
+                        )}
+                    </Select>
+                }
             default:
                 return <TextField
                     multiline

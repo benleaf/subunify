@@ -7,6 +7,7 @@ import { isDashboard } from "@/stateManagement/stateMachines/getContext"
 import { isError } from "@/api/isError"
 import EditableTable from "./EditableTable"
 import { useAuth } from "@/auth/AuthContext"
+import { Time } from "@/helpers/Time"
 
 const TablesTable = () => {
     const context = useContext(StateMachineDispatch)!
@@ -98,15 +99,15 @@ const TablesTable = () => {
         },
         {
             field: 'created',
-            type: 'string',
+            type: 'date',
             headerName: 'Created',
-            width: 100,
+            width: 110,
         },
         {
             field: 'modified',
-            type: 'string',
+            type: 'date',
             headerName: 'Last Modified',
-            width: 100,
+            width: 110,
         },
     ]
 

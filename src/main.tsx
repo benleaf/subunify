@@ -9,6 +9,8 @@ import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import { Colours } from './constants/Colours';
 import App from './App';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
 const theme = createTheme({
   palette: {
@@ -28,8 +30,10 @@ declare global {
 
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider theme={theme}>
-    <StrictMode>
-      <App />
-    </StrictMode>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <StrictMode>
+        <App />
+      </StrictMode>
+    </LocalizationProvider>
   </ThemeProvider>
 )

@@ -1,7 +1,6 @@
-import { DataTable } from "../../helpers/DataTable"
 import { SheetTable } from "@/types/spreadsheet/SheetTable"
-import { Button, Chip, IconButton, Stack, TextField } from "@mui/material"
-import { useContext, useEffect, useState } from "react"
+import { Button, IconButton, Stack, TextField } from "@mui/material"
+import { useContext, useState } from "react"
 import { StateMachineDispatch } from "@/App"
 import TableEditorTable from "./TableEditorTable"
 import GlassCard from "../glassmorphism/GlassCard"
@@ -11,6 +10,7 @@ import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 import { Cancel, Done } from "@mui/icons-material"
 import { Colours } from "@/constants/Colours"
 import { CssSizes } from "@/constants/CssSizes"
+import HowToSelectTableModal from "../modal/HowToSelectTableModal"
 
 type Props = {
     table: SheetTable
@@ -21,6 +21,12 @@ const TableEditor = ({ table, tableIndex }: Props) => {
     const context = useContext(StateMachineDispatch)!
     if (!isExcelImporter(context)) throw new Error("TableEditorTable can only be used within the excelImporter context");
     const { dispatch, state } = context
+
+    const [tutorialModal, setTutorialModal] = useState(!localStorage.getItem('seenSelectTableTutorial'))
+    const closeTutorialModal = () => {
+        setTutorialModal(false)
+        localStorage.setItem('seenSelectTableTutorial', '1')
+    }
 
     if (state.data.cursor == 'cell') {
         return <GlassCard paddingSize="small" marginSize="small" height='90vh'>
@@ -54,13 +60,13 @@ const TableEditor = ({ table, tableIndex }: Props) => {
             </GlassSpace >
             {!table.head &&
                 <GlassCard paddingSize="small" marginSize="small">
-                    <GlassText size="large">Add Table Header Cells</GlassText>
+                    <GlassText size="large">Select Table Header Cells</GlassText>
                     <GlassSpace size='tiny'>
                         <Button
                             variant="contained"
                             onClick={() => dispatch({ action: "addTableColumnNames", data: tableIndex })}
                         >
-                            Add Cells
+                            Select Cells
                         </Button>
                     </GlassSpace>
                 </GlassCard>
@@ -87,6 +93,10 @@ const TableEditor = ({ table, tableIndex }: Props) => {
                 </>
             }
         </Stack >
+        <HowToSelectTableModal
+            isOpen={tutorialModal}
+            onClose={closeTutorialModal}
+        />
     </GlassCard >
 }
 

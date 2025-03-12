@@ -7,6 +7,8 @@ import GlassSpace from "../glassmorphism/GlassSpace"
 import { DataGridPro, GridToolbar } from "@mui/x-data-grid-pro"
 import GlassText from "../glassmorphism/GlassText"
 import ColumnForm from "./ColumnForm"
+import { Time } from "@/helpers/Time"
+import { stringify } from "querystring"
 
 declare module '@mui/x-data-grid' {
     interface ToolbarPropsOverrides {
@@ -39,7 +41,7 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
         return <GridToolbarContainer style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <GridToolbar {...props} />
             <Button startIcon={<Add />} onClick={() => setModalState({ state: 'open', action: 'create' })}>
-                Add record
+                Add {name ?? 'Record'}
             </Button>
         </GridToolbarContainer>
     }
@@ -134,9 +136,20 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
         setModalState({ state: 'closed' })
     }
 
+    const formattedColumns = columns.map(column => {
+        if (column.type == 'date') {
+            return {
+                ...column,
+                valueFormatter: (dateString?: string) => dateString ? Time.format(dateString) : ''
+            }
+        }
+
+        return column
+    })
+
     return <>
         <DataGridPro
-            columns={[...columns, columnActions]}
+            columns={[...formattedColumns, columnActions]}
             rows={rows}
             pagination
             initialState={{

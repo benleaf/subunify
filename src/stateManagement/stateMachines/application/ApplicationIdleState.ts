@@ -9,6 +9,7 @@ export class ApplicationIdleState extends BaseState {
             case "startExcelImporter":
                 return new ViewerState({
                     machine: 'excelImporter',
+                    cursor: undefined,
                     scroll: { x: 1, y: 1 },
                     mousePosition: { x: 1, y: 1 },
                     tables: [],

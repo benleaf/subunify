@@ -7,6 +7,8 @@ import { isError } from "@/api/isError";
 import { TableResult } from "@/types/server/TableResult";
 import { useAuth } from "@/auth/AuthContext";
 import DashboardLayout from "@/components/DashboardLayout";
+import { Button } from "@mui/material";
+import GlassText from "@/components/glassmorphism/GlassText";
 
 const TableManager = () => {
     const context = useContext(StateMachineDispatch)!
@@ -38,6 +40,14 @@ const TableManager = () => {
             headerName: 'Visibility',
             width: 120,
         },
+        {
+            field: 'editColumns',
+            type: 'actions',
+            editable: false,
+            headerName: 'Edit Columns',
+            width: 120,
+            getActions: ({ id }) => [<Button href={`column-manager?id=${id}`}>Edit</Button>]
+        }
     ]
 
     const rows = () => {
@@ -45,7 +55,7 @@ const TableManager = () => {
         return context.state.data.tables?.map(table => ({
             id: table.id,
             name: table.name,
-            visible: table.visible
+            visible: table.visible,
         })) ?? []
     }
 
@@ -77,6 +87,7 @@ const TableManager = () => {
     }
 
     return isDashboard(context) && isDashboard(context) && <DashboardLayout>
+        <GlassText size='huge'>Table Manager</GlassText>
         <EditableTable
             name="Table"
             columns={[...columnMetadata]}
