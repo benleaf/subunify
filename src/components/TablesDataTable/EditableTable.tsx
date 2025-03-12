@@ -1,6 +1,6 @@
 import { Add, Cancel, Delete, Edit, Save } from "@mui/icons-material"
 import { Button, Divider, Stack } from "@mui/material"
-import { GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlotProps, GridToolbarContainer, GridValidRowModel } from "@mui/x-data-grid"
+import { GridActionsCellItem, GridCallbackDetails, GridColDef, GridColumnOrderChangeParams, GridColumnResizeParams, GridColumnVisibilityModel, GridEventListener, GridPinnedColumnFields, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlotProps, GridToolbarContainer, GridValidRowModel } from "@mui/x-data-grid"
 import { useState, } from "react"
 import BaseModal from "../modal/BaseModal"
 import GlassSpace from "../glassmorphism/GlassSpace"
@@ -135,7 +135,23 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
         setModalState({ state: 'closed' })
     }
 
+    const onColumnResize = (params: GridColumnResizeParams) => {
+        localStorage.setItem(`colWidth:${params.colDef.field}:${name}`, `${params.width}`)
+    }
+
+    const onColumnVisibilityModelChange = (params: GridColumnVisibilityModel) => {
+        localStorage.setItem(`colVisibility:${name}`, JSON.stringify(params))
+    }
+
+    const getColumnVisibility = (): GridColumnVisibilityModel | undefined => {
+        const visibility = localStorage.getItem(`colVisibility:${name}`)
+        if (visibility) return JSON.parse(visibility)
+    }
+
     const formattedColumns = columns.map(column => {
+        const columnWidth = localStorage.getItem(`colWidth:${column.field}:${name}`)
+        if (columnWidth != null) column.width = +columnWidth
+
         if (column.type == 'date') {
             return {
                 ...column,
@@ -153,9 +169,14 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
             pagination
             initialState={{
                 density: 'compact',
-                pinnedColumns: { right: ['actions'], left: ['id'] }
+                pinnedColumns: { right: ['actions'], left: ['id'] },
+                columns: {
+                    columnVisibilityModel: getColumnVisibility()
+                }
             }}
             editMode="row"
+            onColumnResize={onColumnResize}
+            onColumnVisibilityModelChange={onColumnVisibilityModelChange}
             rowModesModel={rowModesModel}
             onRowModesModelChange={handleRowModesModelChange}
             onRowEditStop={handleRowEditStop}
