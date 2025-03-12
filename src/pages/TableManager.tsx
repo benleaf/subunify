@@ -71,6 +71,19 @@ const TableManager = () => {
         }
     }
 
+    const deleteRecord = async (id: string) => {
+        if (!isDashboard(context)) return
+        const result = await authAction<object>(`table/${id}`, 'DELETE')
+        if (isError(result)) {
+            console.error(result)
+            context.dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to delete table' } })
+        } else {
+            const tables = context.state.data.tables ?? []
+            context.dispatch({ action: 'tableGetAll', data: tables.filter(table => table.id != id) })
+            context.dispatch({ action: 'popup', data: { colour: 'success', message: 'Table deleted successfully' } })
+        }
+    }
+
     const updateRecord = async (params: GridRowModel): Promise<GridValidRowModel> => {
         if (!isDashboard(context)) return {}
         const result = await authAction<TableResult>(`table/${params.id}`, 'POST', JSON.stringify(params))
@@ -81,7 +94,7 @@ const TableManager = () => {
             const tables = context.state.data.tables ?? []
             tables.splice(tables.findIndex(table => table.id === params.id), 1, params as TableResult)
             context.dispatch({ action: 'tableGetAll', data: tables })
-            context.dispatch({ action: 'popup', data: { colour: 'success', message: 'Table created successfully' } })
+            context.dispatch({ action: 'popup', data: { colour: 'success', message: 'Table updated successfully' } })
             return params
         }
     }
@@ -92,7 +105,7 @@ const TableManager = () => {
             name="Table"
             columns={[...columnMetadata]}
             rows={rows()}
-            deleteRecord={() => context.dispatch({ action: 'popup', data: { colour: 'info', message: 'Deleting tables is universally disabled for now' } })}
+            deleteRecord={deleteRecord}
             createNewRecord={createNewRecord}
             processRowUpdate={updateRecord}
         />

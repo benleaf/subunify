@@ -42,7 +42,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string) => {
+        dispatch({ action: 'loading', data: true })
         const result = await apiAction<T>(endpoint, method, body);
+        dispatch({ action: 'loading', data: false })
         if (isError(result) && result.error == 'Unauthorized') {
             logout();
             dispatch({ action: 'popup', data: { colour: 'error', message: 'Session Expired, please login again' } })
