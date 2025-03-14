@@ -1,12 +1,13 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
-import { cognitoLogin } from "./AuthService";
+import { cognitoLogin, cognitoRefreshTokens } from "./AuthService";
 import { AuthUser } from "@/types/AuthUser";
 import { apiAction } from "@/api/apiAction";
 import { RequestMethod } from "@/types/server/RequestMethod";
 import { isError } from "@/api/isError";
 import { ApiError } from "@/types/server/ApiError";
 import { StateMachineDispatch } from "@/App";
+import { CognitoUser } from "amazon-cognito-identity-js";
 
 interface AuthContextType {
     user: AuthUser | null
@@ -19,7 +20,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<AuthUser | null>(null);
+    const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
     const [subscribed, setSubscribed] = useState<any>(true);
     const { dispatch } = useContext(StateMachineDispatch)!
 
@@ -31,8 +33,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const login = async (email: string, password: string) => {
-        if (!email || !password) return
-        const token = await cognitoLogin(email, password);
+        const { token, cognitoUser } = await cognitoLogin(email, password);
+        setCognitoUser(cognitoUser)
         setUser(jwtDecode(token));
     };
 
@@ -52,6 +54,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setSubscribed(false)
             dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to find users subscription' } })
         }
+
+        if (cognitoUser) {
+            cognitoRefreshTokens(cognitoUser)
+        }
+
         return result;
     };
 

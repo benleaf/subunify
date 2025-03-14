@@ -24,9 +24,7 @@ const Sidebar = () => {
 
     useEffect(() => {
         const getTables = async () => {
-            context.dispatch({ action: 'loading', data: true })
             const result = await authAction<TableResult[]>('table', 'GET')
-            context.dispatch({ action: 'loading', data: false })
             if (isError(result)) {
                 console.error(result)
             } else {
@@ -51,7 +49,6 @@ const Sidebar = () => {
     }
 
     const tableClicked = async (tableId: string) => {
-        context.dispatch({ action: 'loading', data: true })
         navigate('/dashboard')
         if (state.data.selectedScreen != 'Tables') {
             dispatch({
@@ -60,7 +57,6 @@ const Sidebar = () => {
             })
         }
         await getTable(tableId)
-        context.dispatch({ action: 'loading', data: false })
     }
 
     const chartClicked = () => {

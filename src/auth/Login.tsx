@@ -50,6 +50,7 @@ const Login = ({ goToConformation, onLogin }: Props) => {
                 handleAccountConfirmation()
                 dispatch({ action: 'popup', data: { colour: 'info', message: 'Account confirmation required' } })
             } else {
+                console.error(err)
                 dispatch({ action: 'loading', data: false })
                 dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to login' } })
                 setMessage(err.message || "Login failed.");

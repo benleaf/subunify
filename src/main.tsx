@@ -11,6 +11,9 @@ import { Colours } from './constants/Colours';
 import App from './App';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LicenseInfo } from '@mui/x-license';
+
+LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_KEY);
 
 const theme = createTheme({
   palette: {

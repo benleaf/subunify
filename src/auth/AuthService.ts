@@ -1,12 +1,25 @@
-import { CognitoUserPool, CognitoUser, AuthenticationDetails, ISignUpResult } from "amazon-cognito-identity-js";
+import { CognitoUserPool, CognitoUser, AuthenticationDetails, ISignUpResult, CognitoUserSession } from "amazon-cognito-identity-js";
 
 const poolData = {
     UserPoolId: "us-east-2_x9KThcYSW",
     ClientId: "78ehhe2nvbnhuc88bvpiki1446",
 };
 
-
 const UserPool = new CognitoUserPool(poolData);
+
+type TokenUser = { token: string, cognitoUser: CognitoUser }
+
+export const cognitoRefreshTokens = (cognitoUser: CognitoUser) => {
+    cognitoUser.getSession((error: Error | null, session: CognitoUserSession | null) => {
+        if (session) {
+            cognitoUser.refreshSession(session.getRefreshToken(), (error, _) => {
+                if (error) console.error("Refresh session error: ", error)
+            })
+        } else {
+            console.log("Get session error: ", error)
+        }
+    })
+};
 
 export const cognitoSignUp = (email: string, password: string): Promise<ISignUpResult> => {
     return new Promise((resolve, reject) => {
@@ -46,12 +59,12 @@ export const cognitoResendConfirm = (email: string): Promise<void> => {
     });
 };
 
-export const cognitoLogin = (email: string, password: string): Promise<string> => {
-    const user = new CognitoUser({ Username: email, Pool: UserPool });
+export const cognitoLogin = async (email: string, password: string): Promise<TokenUser> => {
+    const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
     const authDetails = new AuthenticationDetails({ Username: email, Password: password });
 
-    return new Promise((resolve, reject) => {
-        user.authenticateUser(authDetails, {
+    const token: string = await new Promise((resolve, reject) => {
+        cognitoUser.authenticateUser(authDetails, {
             onSuccess: (session) => {
                 const token = session.getIdToken().getJwtToken();
                 localStorage.setItem("token", token);
@@ -63,4 +76,6 @@ export const cognitoLogin = (email: string, password: string): Promise<string> =
             },
         });
     });
+
+    return { token, cognitoUser }
 };

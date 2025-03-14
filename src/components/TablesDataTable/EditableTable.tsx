@@ -1,6 +1,6 @@
 import { Add, Cancel, Delete, Edit, Save } from "@mui/icons-material"
 import { Button, Divider, Stack } from "@mui/material"
-import { GridActionsCellItem, GridCallbackDetails, GridColDef, GridColumnOrderChangeParams, GridColumnResizeParams, GridColumnVisibilityModel, GridEventListener, GridPinnedColumnFields, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlotProps, GridToolbarContainer, GridValidRowModel } from "@mui/x-data-grid"
+import { GridActionsCellItem, GridColDef, GridColumnOrderChangeParams, GridColumnResizeParams, GridColumnVisibilityModel, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlotProps, GridToolbarContainer, GridValidRowModel } from "@mui/x-data-grid"
 import { useState, } from "react"
 import BaseModal from "../modal/BaseModal"
 import GlassSpace from "../glassmorphism/GlassSpace"
@@ -148,23 +148,55 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
         if (visibility) return JSON.parse(visibility)
     }
 
-    const formattedColumns = columns.map(column => {
-        const columnWidth = localStorage.getItem(`colWidth:${column.field}:${name}`)
-        if (columnWidth != null) column.width = +columnWidth
+    const onColumnOrderChange = (params: GridColumnOrderChangeParams) => {
+        let order: (string | undefined)[] = getColumnOrder()
 
-        if (column.type == 'date') {
-            return {
-                ...column,
-                valueFormatter: (dateString?: string) => dateString ? Time.format(dateString) : ''
+        if (params.targetIndex >= order.length) {
+            var k = params.targetIndex - order.length + 1;
+            while (k--) {
+                order.push(undefined);
             }
         }
+        order.splice(params.targetIndex, 0, order.splice(params.oldIndex, 1)[0]);
+        localStorage.setItem(`colOrder:${name}`, JSON.stringify(order))
+    }
 
-        return column
-    })
+    const getColumnOrder = (): string[] => {
+        const orderJsonString = localStorage.getItem(`colOrder:${name}`)
+
+        if (orderJsonString) {
+            return JSON.parse(orderJsonString)
+        } else {
+            return columns.map(column => column.field ?? '')
+        }
+    }
+
+    const getFormattedColumns = (): GridColDef[] => {
+        const formattedColumns = []
+
+        for (const column of columns) {
+            const columnWidth = localStorage.getItem(`colWidth:${column.field}:${name}`)
+            if (columnWidth != null) column.width = +columnWidth
+            const sortingOrders = getColumnOrder()
+            const sortingOrder = sortingOrders.indexOf(column.field)
+
+            if (column.type == 'date') {
+                column.valueFormatter = (dateString?: string) => dateString ? Time.format(dateString) : ''
+            }
+            formattedColumns.push({
+                ...column,
+                customSortingOrder: sortingOrder
+            })
+        }
+
+        const sortedColumns = formattedColumns.sort((a, b) => a.customSortingOrder - b.customSortingOrder)
+
+        return sortedColumns.map(({ customSortingOrder, ...columnData }) => columnData)
+    }
 
     return <>
         <DataGridPro
-            columns={[...formattedColumns, columnActions]}
+            columns={[...getFormattedColumns(), columnActions]}
             rows={rows}
             pagination
             initialState={{
@@ -177,6 +209,7 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
             editMode="row"
             onColumnResize={onColumnResize}
             onColumnVisibilityModelChange={onColumnVisibilityModelChange}
+            onColumnOrderChange={onColumnOrderChange}
             rowModesModel={rowModesModel}
             onRowModesModelChange={handleRowModesModelChange}
             onRowEditStop={handleRowEditStop}
@@ -201,7 +234,7 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
                 {modalState.state == 'open' && modalState.action == 'create' &&
                     <Stack direction='column' spacing={2}>
                         <GlassText size="moderate">Create {name ?? 'Row'}</GlassText>
-                        <ColumnForm columns={columns} onSubmit={onCreateNewRecord} />
+                        <ColumnForm columns={getFormattedColumns()} onSubmit={onCreateNewRecord} />
                     </Stack>
                 }
             </GlassSpace>
