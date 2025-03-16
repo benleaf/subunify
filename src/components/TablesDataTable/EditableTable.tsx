@@ -201,12 +201,13 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
             pagination
             initialState={{
                 density: 'compact',
-                pinnedColumns: { right: ['actions'], left: ['id'] },
+                pinnedColumns: { right: ['actions'] },
                 columns: {
                     columnVisibilityModel: getColumnVisibility()
                 }
             }}
             editMode="row"
+            getRowHeight={params => params.densityFactor > 1 ? 'auto' : undefined}
             onColumnResize={onColumnResize}
             onColumnVisibilityModelChange={onColumnVisibilityModelChange}
             onColumnOrderChange={onColumnOrderChange}

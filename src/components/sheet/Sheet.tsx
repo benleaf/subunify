@@ -135,7 +135,7 @@ const Sheet = ({ sheetTables, possition, worksheet, worksheetId, selectedTableIn
     const tableRerenderDependencies = [
         Math.floor(possition.x),
         Math.floor(possition.y),
-        worksheetId,
+        worksheet,
         sheetTables,
         selectedTableIndex !== undefined && sheetTables[selectedTableIndex].columnOverrides,
         Math.floor(screenDimension.height / 10),
