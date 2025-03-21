@@ -2,19 +2,12 @@ import { Button, Divider, Stack } from "@mui/material";
 import GlassSpace from "../glassmorphism/GlassSpace";
 import BaseModal from "./BaseModal";
 import GlassText from "../glassmorphism/GlassText";
-import SheetCell from "../sheet/SheetCell";
-import { Colours } from "@/constants/Colours";
 import { useEffect, useMemo, useState } from "react";
+import ExampleSheet from "../sheet/ExampleSheet";
 
 type Props = {
     isOpen: boolean,
     onClose: () => void
-}
-
-const defaultCellStyles: React.CSSProperties = {
-    borderWidth: 1,
-    borderColor: 'lightgray',
-    borderStyle: 'solid',
 }
 
 const gridData = [
@@ -23,21 +16,6 @@ const gridData = [
     ['Samantha Smith', '32', 'Sales', '98,000', '11/4/2017'],
     ['Bob Moses', '44', 'Parks Commissioner', 'N/A', '2/5/1932'],
 ]
-
-const exampleGrid = (highlights: boolean[][]) => <table>
-    <tbody>
-        {gridData?.map((rows, y) =>
-            <tr key={y}>
-                {rows.map((cellDisplayData, x) => <SheetCell
-                    key={x}
-                    style={{ ...defaultCellStyles, backgroundColor: highlights[x][y] ? Colours.primaryLight : Colours.white }}
-                    cornerVisible={false}
-                    value={cellDisplayData}
-                />)}
-            </tr>
-        )}
-    </tbody>
-</table>
 
 const HowToSelectTableModal = ({ isOpen, onClose }: Props) => {
     const [time, setTime] = useState(Date.now() / 1000)
@@ -61,7 +39,7 @@ const HowToSelectTableModal = ({ isOpen, onClose }: Props) => {
                 <GlassText size='large'>Selecting A Header</GlassText>
                 <GlassText size='moderate'>Start by selecting the cells that make up your tables header</GlassText>
                 <Divider />
-                {exampleGrid(cycleThroughHeader)}
+                <ExampleSheet gridData={gridData} highlights={cycleThroughHeader} />
                 <Stack direction='row' spacing={2}>
                     <Button
                         style={{ flex: 1 }}

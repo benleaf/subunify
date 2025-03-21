@@ -24,6 +24,7 @@ type EditModalProps =
     { state: 'closed' }
 
 type Props = {
+    style?: React.CSSProperties
     name?: string,
     columns: GridColDef[]
     rows: { [key: string]: any }[],
@@ -32,18 +33,19 @@ type Props = {
     processRowUpdate: (params: GridRowModel) => GridValidRowModel | Promise<GridValidRowModel>
 }
 
-const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, processRowUpdate }: Props) => {
+const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewRecord, processRowUpdate }: Props) => {
     const [modalState, setModalState] = useState<EditModalProps>({ state: 'closed' })
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-    const EditToolbar = (props: GridSlotProps['toolbar']) => {
-        return <GridToolbarContainer style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <GridToolbar {...props} />
+    const EditToolbar = (props: GridSlotProps['toolbar']) =>
+        <GridToolbarContainer style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+                <GridToolbar {...props} />
+            </div>
             <Button startIcon={<Add />} onClick={() => setModalState({ state: 'open', action: 'create' })}>
                 Add {name ?? 'Record'}
             </Button>
         </GridToolbarContainer>
-    }
 
     const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -196,11 +198,12 @@ const EditableTable = ({ name, columns, rows, deleteRecord, createNewRecord, pro
 
     return <>
         <DataGridPro
+            style={style}
             columns={[...getFormattedColumns(), columnActions]}
             rows={rows}
             pagination
             initialState={{
-                density: 'compact',
+                density: 'comfortable',
                 pinnedColumns: { right: ['actions'] },
                 columns: {
                     columnVisibilityModel: getColumnVisibility()

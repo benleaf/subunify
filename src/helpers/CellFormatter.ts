@@ -25,7 +25,7 @@ export class CellFormatter {
             case ValueType.RichText:
                 return CellFormatter.handleRichText(cell.value)
             case ValueType.Formula:
-                return (cell?.value as CellFormulaValue).formula
+                return (cell?.value as CellFormulaValue).result?.toString() ?? ''
             case ValueType.Null:
                 return ''
             case ValueType.Merge:

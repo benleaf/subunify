@@ -7,6 +7,7 @@ import { isDashboard } from "@/stateManagement/stateMachines/getContext"
 import { isError } from "@/api/isError"
 import EditableTable from "./EditableTable"
 import { useAuth } from "@/auth/AuthContext"
+import { DataGridValueFormatter } from "@/helpers/DataGridValueFormatter"
 
 const TablesTable = () => {
     const context = useContext(StateMachineDispatch)!
@@ -110,9 +111,7 @@ const TablesTable = () => {
         },
     ]
 
-    const cleanedColumnData = state.data.selectedTable?.columns.map(column => column.type == 'date' ? ({
-        ...column, valueFormatter: (dateString: string | undefined) => dateString && (new Date(dateString)).toLocaleString()
-    }) : column) as GridColDef[] | undefined
+    const cleanedColumnData = DataGridValueFormatter.format(state.data.selectedTable?.columns ?? [])
 
     return cleanedColumnData && <>
         <EditableTable
