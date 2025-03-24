@@ -1,7 +1,7 @@
-import { TableDataResult } from "./TableDataResult"
+import { ServerRow } from "../application/ServerRow";
 
 export type UpdateTableRowResult = {
-    rowData: Promise<TableDataResult[]>;
+    rowData: ServerRow[];
     modified: Date;
     rowId: string;
 }

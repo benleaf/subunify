@@ -7,5 +7,5 @@ export type DisplayableTableColumn = {
     headerName: string,
     width: number,
     editable: boolean,
-    hideable: boolean,
+    hidable: boolean,
 }

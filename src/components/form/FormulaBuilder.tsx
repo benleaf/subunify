@@ -129,7 +129,11 @@ const DemoQueryBuilder = ({ initialJsonLogic, dataInputs, onSubmit }: Props) => 
     <Button
       variant="outlined"
       startIcon={<Save />}
-      onClick={() => onSubmit({ formula: equation, variables: collectVariables(equation) })}
+      onClick={() => onSubmit({
+        formula: equation,
+        variables: collectVariables(equation),
+        resultType: 'number'
+      })}
     >Save</Button>
   </Stack>
 }

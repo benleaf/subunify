@@ -14,6 +14,7 @@ import TableManager from './pages/TableManager';
 import { AuthProvider } from './auth/AuthContext';
 import AuthWrapper from './auth/AuthWrapper';
 import ColumnManager from './pages/ColumnManager';
+import LandingPageDeepStorage from './pages/LandingPageDeepStorage';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -27,7 +28,8 @@ const App = () => {
       <TopBar />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/original" element={<LandingPage />} />
+          <Route path="/" element={<LandingPageDeepStorage />} />
           <Route path="/excel-importer" element={<ExcelImportPage />} />
           <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} />
           <Route path="/column-manager" element={<AuthWrapper><ColumnManager /></AuthWrapper>} />

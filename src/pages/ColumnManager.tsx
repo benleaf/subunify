@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { StateMachineDispatch } from "@/App";
-import { GridColDef, GridRowId, GridRowModel, GridValidRowModel } from "@mui/x-data-grid";
+import { GridColDef, GridRowModel, GridValidRowModel } from "@mui/x-data-grid";
 import { isDashboard } from "@/stateManagement/stateMachines/getContext";
 import EditableTable from "@/components/TablesDataTable/EditableTable";
 import { isError } from "@/api/isError";
@@ -11,11 +11,10 @@ import GlassText from "@/components/glassmorphism/GlassText";
 import { ServerColumn } from "@/types/application/ServerColumn";
 import { ServerTable } from "@/types/application/ServerTable";
 import { ArrowBack } from "@mui/icons-material";
-import { Button, Divider, IconButton, Stack } from "@mui/material";
+import { Button, IconButton, Stack } from "@mui/material";
 import FormulaBuilder from "@/components/form/FormulaBuilder";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import BaseModal from "@/components/modal/BaseModal";
-import ExampleSheet from "@/components/sheet/ExampleSheet";
 import { JsonLogicEquation } from "@/formulas";
 
 const ColumnManager = () => {

@@ -3,6 +3,13 @@ import { SheetTable } from "@/types/spreadsheet/SheetTable";
 import { Worksheet } from "exceljs";
 import { DataTable } from "./DataTable";
 import { apiAction } from "@/api/apiAction";
+import { DataFormat } from "@/types/DataFormat";
+
+type Heading = {
+    name: string;
+    removed: boolean;
+    columnType: DataFormat['type']
+}
 
 export class TablesDeployer {
     public static deployFromLocalStore() {
@@ -27,7 +34,7 @@ export class TablesDeployer {
             const dataTable = new DataTable(table, tableWorksheet)
             const headings = TablesDeployer.getHeadFromDataTable(dataTable)
             ingestTables.push({
-                data: TablesDeployer.getDataFromDataTable(dataTable),
+                data: TablesDeployer.getDataFromDataTable(dataTable, headings),
                 head: headings,
                 name: table.name
             })
@@ -41,12 +48,12 @@ export class TablesDeployer {
             .map((heading, index) => ({
                 name: heading.name,
                 removed: heading.removed,
-                columnType: dataTable.columns ? dataTable.columns[index].type : 'unknown'
+                columnType: (dataTable.columns ? dataTable.columns[index].type : 'unknown')
             }))
             .filter(heading => !heading.removed)
     }
 
-    private static getDataFromDataTable(dataTable: DataTable) {
+    private static getDataFromDataTable(dataTable: DataTable, headings: Heading[]) {
         if (!dataTable.body) return [[]]
         const data: string[][] = [[]]
         let filteredColumnIndex = 0
@@ -56,6 +63,8 @@ export class TablesDeployer {
 
             for (let rowIndex = 0; rowIndex < dataTable.body[filteredColumnIndex].length; rowIndex++) {
                 if (typeof data[rowIndex] === 'undefined') data[rowIndex] = []
+                if (dataTable.columns && dataTable.columns[columnIndex].type == 'formula') break
+
                 data[rowIndex][filteredColumnIndex] = dataTable.body[filteredColumnIndex][rowIndex].name
             }
 

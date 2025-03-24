@@ -37,7 +37,7 @@ const TablesTable = () => {
     }
 
     const updateRemoteRows = async (rowId: string, values: { [key: string]: string }) => {
-        return authAction<UpdateTableRowResult>(
+        return authAction<ServerRow>(
             `table-row`,
             'PATCH',
             JSON.stringify({ rowId, values })
@@ -63,11 +63,10 @@ const TablesTable = () => {
             return
         }
 
-        const newRowWithModified: GridRowModel & { modified: Date } = { ...newRow, modified: result.modified }
-        setRows(rows.map((row) => (row.id === newRowWithModified.id ? newRowWithModified as ServerRow : row)))
+        setRows(rows.map((row) => (row.id === result.id ? result as ServerRow : row)))
         dispatch({ action: 'popup', data: { colour: 'success', message: 'Record Updated' } })
 
-        return newRowWithModified
+        return result
     }
 
     const setRows = (newRows: ServerRow[]) => {
