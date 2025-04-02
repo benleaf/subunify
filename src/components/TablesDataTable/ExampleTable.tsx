@@ -3,21 +3,14 @@ import { ServerRow } from "@/types/application/ServerRow"
 import EditableTable from "./EditableTable"
 import { useContext, useState } from "react"
 import { StateMachineDispatch } from "@/App"
+import { Button, IconButton } from "@mui/material"
+import { fakeData } from "./fakeData"
+import { CopyAll } from "@mui/icons-material"
 
 const ExampleTable = () => {
     const { dispatch } = useContext(StateMachineDispatch)!
 
-    const [rows, setRows] = useState<{ [key: string]: any }[]>([
-        { id: 2, name: 'Tim Telly', address: '123 Random st', probability: 3, priority: 'Low' },
-        { id: 3, name: 'Hannah Hull', address: '21 Main st', probability: 6, priority: 'Medium' },
-        { id: 4, name: 'Kristina Kelly', address: '14 Church ave', probability: 9, priority: 'High' },
-        { id: 12, name: 'Tim Telly', address: '123 Random st', probability: 3, priority: 'Low' },
-        { id: 13, name: 'Hannah Hull', address: '21 Main st', probability: 6, priority: 'Medium' },
-        { id: 14, name: 'Kristina Kelly', address: '14 Church ave', probability: 9, priority: 'High' },
-        { id: 22, name: 'Tim Telly', address: '123 Random st', probability: 3, priority: 'Low' },
-        { id: 23, name: 'Hannah Hull', address: '21 Main st', probability: 6, priority: 'Medium' },
-        { id: 24, name: 'Kristina Kelly', address: '14 Church ave', probability: 9, priority: 'High' },
-    ])
+    const [rows, setRows] = useState<{ [key: string]: any }[]>(fakeData)
 
     const createNewRecord = async (record: { [key: string]: any }) => {
         setRows(oldRows => [...oldRows ?? [], { id: oldRows.length + 1, ...record }])
@@ -49,32 +42,38 @@ const ExampleTable = () => {
 
     const columnMetadata: GridColDef[] = [
         {
+            field: 'downloadLink',
+            type: 'actions',
+            width: 120,
+            headerName: 'Download Link',
+            editable: false,
+            getActions: () => [<IconButton><CopyAll /></IconButton>]
+        },
+        {
             field: 'name',
             type: 'string',
-            headerName: 'name',
+            headerName: 'Name',
             editable: true
         },
         {
-            field: 'address',
+            field: 'description',
             type: 'string',
-            headerName: 'address',
-            width: 110,
+            width: 400,
+            headerName: 'Description',
             editable: true
         },
         {
-            field: 'probability',
-            type: 'number',
-            headerName: 'Likely to do business score',
-            width: 110,
-            editable: true
+            field: 'dateOfStorage',
+            type: 'date',
+            headerName: 'Date Stored',
+            editable: false
         },
         {
-            field: 'priority',
-            type: 'string',
-            headerName: 'Priority',
-            width: 110,
-            editable: true
-        },
+            field: 'fileDownload',
+            type: 'actions',
+            editable: false,
+            getActions: () => [<Button>Download</Button>]
+        }
     ]
 
     return <EditableTable

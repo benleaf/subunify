@@ -14,7 +14,7 @@ interface AuthContextType {
     subscribed: boolean
     login: (email: string, password: string) => Promise<void>
     logout: () => void
-    authAction: <T>(endpoint: string, method: RequestMethod, body?: string) => Promise<T | Partial<ApiError>>
+    authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
     };
 
-    const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string) => {
+    const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData) => {
         dispatch({ action: 'loading', data: true })
         const result = await apiAction<T>(endpoint, method, body);
         dispatch({ action: 'loading', data: false })

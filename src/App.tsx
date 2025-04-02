@@ -15,6 +15,8 @@ import { AuthProvider } from './auth/AuthContext';
 import AuthWrapper from './auth/AuthWrapper';
 import ColumnManager from './pages/ColumnManager';
 import LandingPageDeepStorage from './pages/LandingPageDeepStorage';
+import FileUpload from './pages/FileUpload';
+import DeepStorage from './pages/DeepStorage';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -30,6 +32,8 @@ const App = () => {
         <Routes>
           <Route path="/original" element={<LandingPage />} />
           <Route path="/" element={<LandingPageDeepStorage />} />
+          <Route path="/file-upload" element={<FileUpload />} />
+          <Route path="/deep-storage" element={<AuthWrapper><DeepStorage /></AuthWrapper>} />
           <Route path="/excel-importer" element={<ExcelImportPage />} />
           <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} />
           <Route path="/column-manager" element={<AuthWrapper><ColumnManager /></AuthWrapper>} />

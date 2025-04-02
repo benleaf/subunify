@@ -1,7 +1,7 @@
 import { ApiResponse } from "@/types/server/ApiResponse"
 import { RequestMethod } from "@/types/server/RequestMethod"
 
-export const apiAction = async <T>(endpoint: string, method: RequestMethod, body?: string): Promise<ApiResponse<T>> => {
+export const apiAction = async <T>(endpoint: string, method: RequestMethod, body?: string | FormData): Promise<ApiResponse<T>> => {
     try {
         const jwtToken = localStorage.getItem("token");
         if (!jwtToken) return { message: 'No Token Supplied, request not sent', error: 'Unauthorized' }
@@ -12,8 +12,7 @@ export const apiAction = async <T>(endpoint: string, method: RequestMethod, body
                 method,
                 body,
                 headers: {
-                    "Content-type": "application/json; charset=UTF-8",
-                    "authorization": `Bearer ${jwtToken}`
+                    "authorization": `Bearer ${jwtToken}`,
                 }
             }
         )

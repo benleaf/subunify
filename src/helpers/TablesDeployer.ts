@@ -3,13 +3,6 @@ import { SheetTable } from "@/types/spreadsheet/SheetTable";
 import { Worksheet } from "exceljs";
 import { DataTable } from "./DataTable";
 import { apiAction } from "@/api/apiAction";
-import { DataFormat } from "@/types/DataFormat";
-
-type Heading = {
-    name: string;
-    removed: boolean;
-    columnType: DataFormat['type']
-}
 
 export class TablesDeployer {
     public static deployFromLocalStore() {
@@ -34,7 +27,7 @@ export class TablesDeployer {
             const dataTable = new DataTable(table, tableWorksheet)
             const headings = TablesDeployer.getHeadFromDataTable(dataTable)
             ingestTables.push({
-                data: TablesDeployer.getDataFromDataTable(dataTable, headings),
+                data: TablesDeployer.getDataFromDataTable(dataTable),
                 head: headings,
                 name: table.name
             })
@@ -53,7 +46,7 @@ export class TablesDeployer {
             .filter(heading => !heading.removed)
     }
 
-    private static getDataFromDataTable(dataTable: DataTable, headings: Heading[]) {
+    private static getDataFromDataTable(dataTable: DataTable) {
         if (!dataTable.body) return [[]]
         const data: string[][] = [[]]
         let filteredColumnIndex = 0

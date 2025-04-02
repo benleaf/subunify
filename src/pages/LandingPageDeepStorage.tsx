@@ -1,28 +1,23 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Divider, MenuItem, Select, Slider, Stack, TextField, } from "@mui/material";
+import { Button, Divider, MenuItem, Select, Slider, Stack, TextField, } from "@mui/material";
 import FloatingGlassCircle from "@/components/glassmorphism/FloatingGlassCircle";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import GlassIconText from "@/components/glassmorphism/GlassIconText";
-import { Article, Backup, BallotOutlined, BorderTop, PieChart } from "@mui/icons-material";
+import { Article, Backup, BallotOutlined, BorderTop, MoveToInbox, StopScreenShare } from "@mui/icons-material";
 import { ScreenWidths } from "@/constants/ScreenWidths";
-import { BarChart } from "@mui/x-charts";
-import { useSize } from "@/hooks/useSize";
 import { useState } from "react";
+import ExampleTable from "@/components/TablesDataTable/ExampleTable";
 
 const LandingPageDeepStorage = () => {
-    const { width } = useSize()
-    const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'GB', value: 150, proportion: 0.8 })
+    const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'TB', value: 5, proportion: 1 })
     const sizeMultiplier = costCalculatorValue.size == 'TB' ? 1000 : 1
     const totalGB = costCalculatorValue.value * sizeMultiplier
-    const deepStorageAWSCost = 0.00099
     const deepStorageCost = 0.005
-    const liveAwsCost = 0.024
     const liveCost = 0.05
 
-    const costValue = (liveCost * (1 - costCalculatorValue.proportion) + (deepStorageCost * costCalculatorValue.proportion)) * totalGB
-    const profit = costValue - ((liveAwsCost * (1 - costCalculatorValue.proportion)) + (deepStorageAWSCost * costCalculatorValue.proportion)) * totalGB
+    const costValue = Math.max(1, (liveCost * (1 - costCalculatorValue.proportion) + (deepStorageCost * costCalculatorValue.proportion)) * totalGB)
 
     return <div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -41,7 +36,7 @@ const LandingPageDeepStorage = () => {
                             <GlassText size="moderate">
                                 <Stack spacing={3} margin='1em'>
                                     <GlassIconText size={"moderate"} icon={<Article color="primary" fontSize="medium" />}>
-                                        Access any file anywhere with the click of a link over the internet
+                                        Access any file with a click of a link
                                     </GlassIconText>
                                     <GlassIconText size={"moderate"} icon={<BorderTop color="primary" fontSize="medium" />}>
                                         Downloads initiated instantly
@@ -50,7 +45,7 @@ const LandingPageDeepStorage = () => {
                                         Data secured on Amazon servers
                                     </GlassIconText>
                                     <GlassIconText size={"moderate"} icon={<BallotOutlined color="primary" fontSize="medium" />}>
-                                        Enjoy painless data access using the power of web forms
+                                        Enjoy painless data access using our web forms
                                     </GlassIconText>
                                 </Stack>
                             </GlassText>
@@ -64,22 +59,26 @@ const LandingPageDeepStorage = () => {
                 <GlassCard marginSize="small">
                     <div style={{ maxWidth: 400, height: 500, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                         <GlassSpace size={"tiny"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <GlassText size="large">DEEP STORAGE</GlassText><GlassText size="moderate">
+                            <GlassText size="large">DEEP STORAGE</GlassText>
+                            <GlassText size="moderate">
                                 <Stack spacing={3} margin='1em'>
-                                    <GlassIconText size={"moderate"} icon={<BallotOutlined color="primary" fontSize="medium" />}>
-                                        Data restricted to two requests per year
+                                    <GlassIconText size={"moderate"} icon={<StopScreenShare color="primary" fontSize="medium" />}>
+                                        Data is inaccessible while in deep storage
                                     </GlassIconText>
                                     <GlassIconText size={"moderate"} icon={<Backup color="primary" fontSize="medium" />}>
-                                        12 hour retrieval time
+                                        Transfers to LIVE storage take 12 hours at $0.1 per GB
                                     </GlassIconText>
-                                    <GlassIconText size={"moderate"} icon={<PieChart color="primary" fontSize="medium" />}>
-                                        Accessable only in a 24 hour window or by moving to LIVE mode
+                                    <GlassIconText size={"moderate"} icon={<MoveToInbox color="primary" fontSize="medium" />}>
+                                        Files moved into DEEP storage immediately upon request
                                     </GlassIconText>
                                 </Stack>
                             </GlassText>
                             <GlassText size={"large"}>
                                 $5 per TB per Month
                             </GlassText>
+                            <Button href="/file-upload">
+                                Archive File
+                            </Button>
                         </GlassSpace>
                     </div>
                 </GlassCard>
@@ -88,7 +87,7 @@ const LandingPageDeepStorage = () => {
         </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>
-                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>DYNAMIC PRICING</GlassText>
+                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>PAY AS YOU GO</GlassText>
                 <GlassText size="moderate">Pay monthly for only the data you used, nothing more</GlassText>
             </GlassSpace>
         </div>
@@ -108,7 +107,10 @@ const LandingPageDeepStorage = () => {
                         />
                     </Stack>
                     <Stack direction='row' spacing={2} alignItems='center'>
-                        <GlassText size="small">LIVE</GlassText>
+                        <div>
+                            <GlassText size="small">LIVE</GlassText>
+                            <GlassText size="small">{((1 - costCalculatorValue.proportion) * costCalculatorValue.value).toFixed(1)}{costCalculatorValue.size}</GlassText>
+                        </div>
                         <Slider
                             min={0}
                             max={100}
@@ -118,7 +120,10 @@ const LandingPageDeepStorage = () => {
                             value={costCalculatorValue.proportion * 100}
                             onChange={(_, value) => setCostCalculatorValue(old => ({ ...old, proportion: (value as number) / 100 }))}
                         />
-                        <GlassText size="small">DEEP</GlassText>
+                        <div>
+                            <GlassText size="small">DEEP</GlassText>
+                            <GlassText size="small">{(costCalculatorValue.proportion * costCalculatorValue.value).toFixed(1)}{costCalculatorValue.size}</GlassText>
+                        </div>
                     </Stack>
                     <GlassSpace size={"tiny"}>
                         <GlassText size="large">${costValue.toFixed(2)} Per Month</GlassText>
@@ -130,8 +135,27 @@ const LandingPageDeepStorage = () => {
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>
-                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>CONTACT US</GlassText>
+                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>MAINTAIN DATA LIKE A PRO</GlassText>
+                <GlassText size="moderate">Keep track of files with our powerful data tables</GlassText>
+            </GlassSpace>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ maxWidth: ScreenWidths.Mobile, width: '100%' }}>
+                <GlassCard flex={1} marginSize="moderate">
+                    <ExampleTable />
+                </GlassCard>
+            </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GlassSpace size='moderate'>
+                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>CONTACT US TO REQUEST ACCESS</GlassText>
                 <GlassText size="moderate">product@subunify.com</GlassText>
+            </GlassSpace>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GlassSpace size='huge' style={{ textAlign: 'center' }}>
+                <GlassText size="large">SUBUNIFY</GlassText>
             </GlassSpace>
         </div>
     </div >

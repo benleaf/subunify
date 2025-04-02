@@ -5,14 +5,15 @@ import GlassSpace from "../glassmorphism/GlassSpace";
 
 type Props = {
     state: 'open' | 'closed',
-    onClose?: () => void
+    onClose?: () => void,
+    onComplete?: () => void,
 }
 
-const PaymentModal = ({ state, onClose }: Props) => {
+const PaymentModal = ({ state, onClose, onComplete }: Props) => {
     return <BaseModal state={state} close={onClose}>
         <GlassSpace size="moderate" style={{ maxHeight: '80vh', overflowY: 'scroll', }}>
             <Stack spacing={2}>
-                <StripeProvider />
+                <StripeProvider onComplete={onComplete} />
             </Stack>
         </GlassSpace>
     </BaseModal>

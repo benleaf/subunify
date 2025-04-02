@@ -9,14 +9,18 @@ import { useAuth } from '@/auth/AuthContext';
 // recreating the `Stripe` object on every render.
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_CLIENT_SECRET, {});
 
-const StripeProvider = () => {
+type Props = {
+    onComplete?: () => void
+}
+
+const StripeProvider = ({ onComplete }: Props) => {
     const [options, setOptions] = useState<Stripe.Checkout.Session>()
     const { authAction } = useAuth()
 
     useEffect(() => {
         const getSession = async () => {
             const result = await authAction<Stripe.Checkout.Session>(
-                `stripe/start-session`,
+                `stripe/start-storage-session`,
                 'GET',
             )
             if (!isError(result)) {
@@ -29,7 +33,10 @@ const StripeProvider = () => {
     return options &&
         <EmbeddedCheckoutProvider
             stripe={stripePromise}
-            options={{ clientSecret: options.client_secret }}
+            options={{
+                clientSecret: options.client_secret,
+                onComplete: onComplete
+            }}
         >
             <EmbeddedCheckout />
         </EmbeddedCheckoutProvider>

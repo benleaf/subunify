@@ -1,6 +1,6 @@
 import { Add, Cancel, Delete, Edit, Save } from "@mui/icons-material"
 import { Button, Divider, Stack } from "@mui/material"
-import { GridActionsCellItem, GridColDef, GridColumnOrderChangeParams, GridColumnResizeParams, GridColumnVisibilityModel, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlotProps, GridToolbarContainer, GridValidRowModel } from "@mui/x-data-grid"
+import { GridActionsCellItem, GridColDef, GridColumnOrderChangeParams, GridColumnResizeParams, GridColumnVisibilityModel, GridDensity, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlotProps, GridToolbarContainer, GridValidRowModel } from "@mui/x-data-grid"
 import { useState, } from "react"
 import BaseModal from "../modal/BaseModal"
 import GlassSpace from "../glassmorphism/GlassSpace"
@@ -26,14 +26,15 @@ type EditModalProps =
 type Props = {
     style?: React.CSSProperties
     name?: string,
+    defaultDensity?: GridDensity,
     columns: GridColDef[]
     rows: { [key: string]: any }[],
     deleteRecord: (id: string) => void,
-    createNewRecord: (record: { [key: string]: any }) => void,
     processRowUpdate: (params: GridRowModel) => GridValidRowModel | Promise<GridValidRowModel>
+    createNewRecord?: (record: { [key: string]: any }) => void,
 }
 
-const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewRecord, processRowUpdate }: Props) => {
+const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewRecord, processRowUpdate, defaultDensity = 'comfortable' }: Props) => {
     const [modalState, setModalState] = useState<EditModalProps>({ state: 'closed' })
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
@@ -42,9 +43,11 @@ const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewReco
             <div style={{ flex: 1 }}>
                 <GridToolbar {...props} />
             </div>
-            <Button startIcon={<Add />} onClick={() => setModalState({ state: 'open', action: 'create' })}>
-                Add {name ?? 'Record'}
-            </Button>
+            {createNewRecord &&
+                <Button startIcon={<Add />} onClick={() => setModalState({ state: 'open', action: 'create' })}>
+                    Add {name ?? 'Record'}
+                </Button>
+            }
         </GridToolbarContainer>
 
     const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
@@ -126,7 +129,7 @@ const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewReco
     }
 
     const onCreateNewRecord = (record: { [key: string]: any }) => {
-        createNewRecord(record)
+        createNewRecord && createNewRecord(record)
         setModalState({ state: 'closed' })
     }
 
@@ -203,7 +206,7 @@ const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewReco
             rows={rows}
             pagination
             initialState={{
-                density: 'comfortable',
+                density: defaultDensity,
                 pinnedColumns: { right: ['actions'] },
                 columns: {
                     columnVisibilityModel: getColumnVisibility()
