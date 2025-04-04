@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { cognitoLogin, cognitoRefreshTokens } from "./AuthService";
 import { AuthUser } from "@/types/AuthUser";
-import { apiAction } from "@/api/apiAction";
+import { apiAction, rawApiAction } from "@/api/apiAction";
 import { RequestMethod } from "@/types/server/RequestMethod";
 import { isError } from "@/api/isError";
 import { ApiError } from "@/types/server/ApiError";
@@ -15,6 +15,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>
     logout: () => void
     authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
+    rawAuthAction: (endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<Partial<ApiError> | Response>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -62,7 +63,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return result;
     };
 
-    return <AuthContext.Provider value={{ user, login, logout, authAction, subscribed }}>{children}</AuthContext.Provider>;
+    const rawAuthAction = async (endpoint: string, method: RequestMethod, body?: string | FormData) => {
+        const result = await rawApiAction(endpoint, method, body);
+        if (isError(result) && result.error == 'Unauthorized') {
+            logout();
+            dispatch({ action: 'popup', data: { colour: 'error', message: 'Session Expired, please login again' } })
+        }
+
+        if (cognitoUser) {
+            cognitoRefreshTokens(cognitoUser)
+        }
+
+        return result;
+    };
+
+    return <AuthContext.Provider value={{ user, login, logout, authAction, rawAuthAction, subscribed }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
