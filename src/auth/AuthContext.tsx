@@ -46,14 +46,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData) => {
         dispatch({ action: 'loading', data: true })
-        const result = await apiAction<T>(endpoint, method, body);
-        dispatch({ action: 'loading', data: false })
+        try {
+            const result = await apiAction<T>(endpoint, method, body);
+            dispatch({ action: 'loading', data: false })
+            return handleAction(result);
+        } catch (error: TODO) {
+            dispatch({ action: 'loading', data: false })
+
+            if (error.message == "Failed to fetch") {
+                return { message: 'Unable to connect to the SUBUNIFY server', error: 'ConnectionError' } as Partial<ApiError>
+            }
+
+            return { message: error.message, error: 'UnknownError' } as Partial<ApiError>
+        }
+    };
+
+    const rawAuthAction = async (endpoint: string, method: RequestMethod, body?: string | FormData) => {
+        const result = await rawApiAction(endpoint, method, body);
+        return handleAction(result);
+    };
+
+    const handleAction = <T,>(result: T) => {
         if (isError(result) && result.error == 'Unauthorized') {
             logout();
             dispatch({ action: 'popup', data: { colour: 'error', message: 'Session Expired, please login again' } })
         } else if (isError(result) && result.error == 'UserNotSubscribed') {
             setSubscribed(false)
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to find users subscription' } })
+            dispatch({ action: 'popup', data: { colour: 'warning', message: 'Subscription needed' } })
         }
 
         if (cognitoUser) {
@@ -61,21 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         return result;
-    };
-
-    const rawAuthAction = async (endpoint: string, method: RequestMethod, body?: string | FormData) => {
-        const result = await rawApiAction(endpoint, method, body);
-        if (isError(result) && result.error == 'Unauthorized') {
-            logout();
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Session Expired, please login again' } })
-        }
-
-        if (cognitoUser) {
-            cognitoRefreshTokens(cognitoUser)
-        }
-
-        return result;
-    };
+    }
 
     return <AuthContext.Provider value={{ user, login, logout, authAction, rawAuthAction, subscribed }}>{children}</AuthContext.Provider>;
 };

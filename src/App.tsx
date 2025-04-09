@@ -17,6 +17,7 @@ import ColumnManager from './pages/ColumnManager';
 import LandingPageDeepStorage from './pages/LandingPageDeepStorage';
 import FileUpload from './pages/FileUpload';
 import DeepStorage from './pages/DeepStorage';
+import UserAccount from './pages/UserAccount';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -27,8 +28,8 @@ const App = () => {
   return <StateMachineDispatch.Provider value={{ dispatch, state }}>
     <AuthProvider>
       <UniversalAlert />
-      <TopBar />
       <BrowserRouter>
+        <TopBar />
         <Routes>
           <Route path="/original" element={<LandingPage />} />
           <Route path="/" element={<LandingPageDeepStorage />} />
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/column-manager" element={<AuthWrapper><ColumnManager /></AuthWrapper>} />
           <Route path="/dashboard" element={<AuthWrapper><Dashboard /></AuthWrapper>} />
           <Route path="/data-upload" element={<AuthWrapper><DataUpload /></AuthWrapper>} />
+          <Route path="/user-account" element={<AuthWrapper><UserAccount /></AuthWrapper>} />
         </Routes>
       </BrowserRouter>
       <Backdrop

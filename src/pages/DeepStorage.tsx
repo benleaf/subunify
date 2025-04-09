@@ -6,15 +6,15 @@ import { useContext, useEffect, useState } from "react";
 import { isError } from "@/api/isError";
 import moment from "moment";
 import { StateMachineDispatch } from "@/App";
-import { Button, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { Button, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { Download } from "@mui/icons-material";
 import DashboardLayout from "@/components/DashboardLayout";
 
 const retrievalTypeInfo = {
-    Standard: { name: "Standard: 12 hour retrieval", cost: 0.1 },
-    Economy: { name: "Economy: 48 hour retrieval", cost: 0.01 },
+    Standard: { name: "Standard: 12 hour retrieval", cost: 0.2 },
+    Economy: { name: "Economy: 48 hour retrieval", cost: 0.02 },
 }
 
 const costPerDay = 0.002
@@ -50,17 +50,17 @@ const DeepStorage = () => {
     }
 
     const selectedFile = deepStorageFiles.find(file => file.id == requestFileModal.fileId)
-    const selectedFileGB = (selectedFile?.bytes ?? 0) * 1e-9
+    const selectedFileGB = (selectedFile?.bytes ?? 0) * 2 ** -30
     const costOfRetrieval = selectedFileGB * retrievalTypeInfo[requestFileModal.retrievalType].cost + selectedFileGB * costPerDay * requestFileModal.duration
 
     const onDelete = async (id: string) => {
-        const record = deepStorageFiles.find(file => file.id == id)
-        if (moment(record.dateOfStorage).isAfter(moment().subtract(180, 'days'))) {
-            context.dispatch({ action: 'popup', data: { colour: 'warning', message: 'Cannot delete files uploaded within 180 days' } })
-            return
+        const result = await authAction<null>(`storage-file/${id}`, 'DELETE')
+        if (isError(result)) {
+            context.dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to delete file' } })
+        } else {
+            context.dispatch({ action: 'popup', data: { colour: 'success', message: 'File deleted successfully' } })
+            setDeepStorageFiles(oldFiles => oldFiles.filter(file => file.id != id))
         }
-        await authAction<TODO>(`storage-file/${id}`, 'DELETE')
-        setDeepStorageFiles(oldFiles => oldFiles.filter(file => file.id != id))
     }
 
     const onUpdate = async (params: GridRowModel) => {
@@ -204,6 +204,32 @@ const DeepStorage = () => {
                     <GlassText size="large">Create Download Window</GlassText>
                     <GlassText size="small">{selectedFile?.name}</GlassText>
                     <GlassText size="moderate">Create a window of time (Following retrieval) where your files can be freely downloaded</GlassText>
+                    <TableContainer>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell></TableCell>
+                                    <TableCell>Restore Time</TableCell>
+                                    <TableCell>Cost of restore per GB</TableCell>
+                                    <TableCell>Access window per Day per GB</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow >
+                                    <TableCell>Standard</TableCell>
+                                    <TableCell>12 Hour</TableCell>
+                                    <TableCell>$0.20</TableCell>
+                                    <TableCell>$0.002</TableCell>
+                                </TableRow>
+                                <TableRow >
+                                    <TableCell>Economy</TableCell>
+                                    <TableCell>48 Hour</TableCell>
+                                    <TableCell>$0.02</TableCell>
+                                    <TableCell>$0.002</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                     <Select
                         defaultValue={requestFileModal.retrievalType}
                         onChange={e => setRequestFileModal(old => ({ ...old, retrievalType: e.target.value as RetrievalType }))}
@@ -216,7 +242,10 @@ const DeepStorage = () => {
                         defaultValue={requestFileModal.duration}
                         onChange={e => setRequestFileModal(old => ({ ...old, duration: +e.target.value }))}
                     />
-                    <GlassText size="moderate">Cost of Retrieval (${Math.max(costOfRetrieval, 0.01).toFixed(2)}) will be added to your monthly bill</GlassText>
+                    <GlassText size="moderate">
+                        Cost of Retrieval (
+                        ${costOfRetrieval < 0.01 ? '0.01 - $0.00' : costOfRetrieval.toFixed(2)}
+                        ) will be added to your monthly bill</GlassText>
 
                     <Button onClick={() => onRequestAccess(requestFileModal.fileId, requestFileModal.retrievalType, requestFileModal.duration)}>Request Access</Button>
                 </Stack>

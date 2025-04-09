@@ -22,7 +22,7 @@ const Sidebar = () => {
                         <ListItemIcon>
                             <ListAlt />
                         </ListItemIcon>
-                        <GlassText size="small">DEEP STORE</GlassText>
+                        <GlassText size="small">File Download</GlassText>
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>

@@ -1,94 +1,88 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Button, Divider, MenuItem, Select, Slider, Stack, TextField, } from "@mui/material";
-import FloatingGlassCircle from "@/components/glassmorphism/FloatingGlassCircle";
+import { Button, Divider, MenuItem, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
-import DynamicStack from "@/components/glassmorphism/DynamicStack";
-import GlassIconText from "@/components/glassmorphism/GlassIconText";
-import { Article, Backup, BallotOutlined, BorderTop, MoveToInbox, StopScreenShare } from "@mui/icons-material";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import { useState } from "react";
 import ExampleTable from "@/components/TablesDataTable/ExampleTable";
+import { useSize } from "@/hooks/useSize";
+import Background from "../../public/Background2.png"
+import DynamicStack from "@/components/glassmorphism/DynamicStack";
 
 const LandingPageDeepStorage = () => {
-    const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'TB', value: 5, proportion: 1 })
-    const sizeMultiplier = costCalculatorValue.size == 'TB' ? 1000 : 1
+    const { width } = useSize()
+    const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'TB', value: 1 })
+    const sizeMultiplier = costCalculatorValue.size == 'TB' ? 1 : 2 ** -10
     const totalGB = costCalculatorValue.value * sizeMultiplier
-    const deepStorageCost = 0.005
-    const liveCost = 0.05
+    const deepStorageCost = 1.5
+    const initialStorageCost = 6.5
 
-    const costValue = Math.max(1, (liveCost * (1 - costCalculatorValue.proportion) + (deepStorageCost * costCalculatorValue.proportion)) * totalGB)
+    const costValue = Math.max(1, deepStorageCost * totalGB)
+    const initialCost = Math.max(0.5, initialStorageCost * totalGB)
 
     return <div>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GlassSpace size='moderate' style={{ textAlign: 'center' }}>
-                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>SUBUNIFY PRESENTS</GlassText>
-                <GlassText size="gigantic" style={{ letterSpacing: '0.15em' }}>DEEP DATA STORAGE</GlassText>
-            </GlassSpace>
+        <div style={{ display: 'flex', backgroundImage: `url(${Background})`, backgroundSize: 'cover' }}>
+            <div style={{ display: 'flex', height: '95vh', alignItems: 'center', width: '80vh' }}>
+                <GlassSpace size='moderate' style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <GlassText size="large" style={{ letterSpacing: '0.15em' }}>THE SUBUNIFY</GlassText>
+                        <Divider style={{ flex: 1 }} />
+                    </div>
+                    <GlassText size="gigantic" style={{ lineHeight: '10vw', fontWeight: 'bolder' }}>DEEP STORE</GlassText>
+
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <GlassText size="moderate" style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}>FILE AND FORGET MEDIA ARCHIVING</GlassText>
+                        <Divider style={{ flex: 1 }} />
+                    </div>
+                </GlassSpace>
+            </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <DynamicStack>
-                <FloatingGlassCircle offset={{ bottom: '-10em', left: '-4em' }} size="medium" />
-                <GlassCard marginSize="small">
-                    <div style={{ maxWidth: 400, height: 500, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <GlassSpace size={"tiny"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <GlassText size="large">LIVE STORAGE</GlassText>
-                            <GlassText size="moderate">
-                                <Stack spacing={3} margin='1em'>
-                                    <GlassIconText size={"moderate"} icon={<Article color="primary" fontSize="medium" />}>
-                                        Access any file with a click of a link
-                                    </GlassIconText>
-                                    <GlassIconText size={"moderate"} icon={<BorderTop color="primary" fontSize="medium" />}>
-                                        Downloads initiated instantly
-                                    </GlassIconText>
-                                    <GlassIconText size={"moderate"} icon={<Backup color="primary" fontSize="medium" />}>
-                                        Data secured on Amazon servers
-                                    </GlassIconText>
-                                    <GlassIconText size={"moderate"} icon={<BallotOutlined color="primary" fontSize="medium" />}>
-                                        Enjoy painless data access using our web forms
-                                    </GlassIconText>
-                                </Stack>
-                            </GlassText>
-                            <GlassText size={"large"}>
-                                $50 per TB per Month
-                            </GlassText>
-                        </GlassSpace>
+        <div style={{ flex: 1, padding: '2em' }} />
+        <DynamicStack>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                <GlassText size="large"> Cloud Enabled Deep Data storage </GlassText>
+                <GlassCard marginSize="small" paddingSize="small" flex={1}>
+                    <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                        <GlassText size="moderate">
+                            Data stored on encrypted Amazon servers with data redundancy protecting you from file corruption.
+                        </GlassText>
                     </div>
                 </GlassCard>
-                <Divider orientation="vertical" flexItem><GlassText size="moderate">WITH</GlassText></Divider>
-                <GlassCard marginSize="small">
-                    <div style={{ maxWidth: 400, height: 500, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <GlassSpace size={"tiny"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <GlassText size="large">DEEP STORAGE</GlassText>
-                            <GlassText size="moderate">
-                                <Stack spacing={3} margin='1em'>
-                                    <GlassIconText size={"moderate"} icon={<StopScreenShare color="primary" fontSize="medium" />}>
-                                        Data is inaccessible while in deep storage
-                                    </GlassIconText>
-                                    <GlassIconText size={"moderate"} icon={<Backup color="primary" fontSize="medium" />}>
-                                        Transfers to LIVE storage take 12 hours at $0.1 per GB
-                                    </GlassIconText>
-                                    <GlassIconText size={"moderate"} icon={<MoveToInbox color="primary" fontSize="medium" />}>
-                                        Files moved into DEEP storage immediately upon request
-                                    </GlassIconText>
-                                </Stack>
-                            </GlassText>
-                            <GlassText size={"large"}>
-                                $5 per TB per Month
-                            </GlassText>
-                            <Button href="/file-upload">
-                                Archive File
-                            </Button>
-                        </GlassSpace>
+            </div>
+            {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '2em' }} />}
+            <GlassCard marginSize="small" paddingSize="small" flex={1}>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: "100%", textAlign: 'center' }}>
+                    <GlassSpace size={"moderate"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <GlassText size="large">
+                            12 Hour File Retrieval
+                        </GlassText>
+                        <Divider orientation="horizontal" flexItem><GlassText size="small">ENABLES</GlassText></Divider>
+                        <GlassText size="large">
+                            $1.50 per TB per Month
+                        </GlassText>
+                    </GlassSpace>
+                    <Button variant="contained" href="/file-upload">
+                        Archive A File
+                    </Button>
+                </div>
+            </GlassCard>
+            {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '2em' }} />}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                <GlassText size="large">Unlimited Pay As You Go</GlassText>
+                <GlassCard marginSize="small" paddingSize="small" flex={1}>
+                    <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                        <GlassText size="moderate">
+                            Only pay for the data you use, no hidden fees, no cancellation fees no limits    on data size.
+                        </GlassText>
                     </div>
                 </GlassCard>
-                <FloatingGlassCircle offset={{ top: '-2em', right: '-2em' }} size="small" />
-            </DynamicStack >
-        </div>
+            </div>
+        </DynamicStack>
+        {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '3em' }} />}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>
-                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>PAY AS YOU GO</GlassText>
-                <GlassText size="moderate">Pay monthly for only the data you used, nothing more</GlassText>
+                <GlassText size="large" style={{ letterSpacing: '0.15em' }}></GlassText>
+                <GlassText size="moderate">Calculate your costs before you upload with our calculator</GlassText>
             </GlassSpace>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -97,40 +91,137 @@ const LandingPageDeepStorage = () => {
                     <Stack direction='row' spacing={2} alignItems='center'>
                         <GlassText size="large">Cost Calculator</GlassText>
                         <Select value={costCalculatorValue.size} onChange={e => setCostCalculatorValue(old => ({ ...old, size: e.target.value }))}>
-                            <MenuItem value='GB'>GB</MenuItem>
-                            <MenuItem value='TB'>TB</MenuItem>
+                            <MenuItem value='GB'>{costCalculatorValue.value} GB</MenuItem>
+                            <MenuItem value='TB'>{costCalculatorValue.value} TB</MenuItem>
                         </Select>
-                        <TextField
-                            type="number"
-                            defaultValue={costCalculatorValue.value}
-                            onChange={e => setCostCalculatorValue(old => ({ ...old, value: +(e.target.value ?? 0) }))}
-                        />
                     </Stack>
-                    <Stack direction='row' spacing={2} alignItems='center'>
-                        <div>
-                            <GlassText size="small">LIVE</GlassText>
-                            <GlassText size="small">{((1 - costCalculatorValue.proportion) * costCalculatorValue.value).toFixed(1)}{costCalculatorValue.size}</GlassText>
-                        </div>
-                        <Slider
-                            min={0}
-                            max={100}
-                            step={0.1}
-                            valueLabelDisplay="auto"
-                            valueLabelFormat={value => `${value.toFixed(1)}%`}
-                            value={costCalculatorValue.proportion * 100}
-                            onChange={(_, value) => setCostCalculatorValue(old => ({ ...old, proportion: (value as number) / 100 }))}
-                        />
-                        <div>
-                            <GlassText size="small">DEEP</GlassText>
-                            <GlassText size="small">{(costCalculatorValue.proportion * costCalculatorValue.value).toFixed(1)}{costCalculatorValue.size}</GlassText>
-                        </div>
-                    </Stack>
-                    <GlassSpace size={"tiny"}>
+                    <Slider
+                        valueLabelDisplay="auto"
+                        min={1}
+                        max={2 ** 10}
+                        defaultValue={costCalculatorValue.value}
+                        onChange={(_, value) => setCostCalculatorValue(old => ({ ...old, value: +(value ?? 0) }))}
+                    />
+                    <GlassSpace size={"tiny"} >
+                        <GlassText size="large">${initialCost.toFixed(2)} Initial storage cost</GlassText>
+                        <Divider style={{ margin: '0.4em' }} />
                         <GlassText size="large">${costValue.toFixed(2)} Per Month</GlassText>
                         <GlassText size="moderate">${(costValue * 12).toFixed(2)} Per Year</GlassText>
                     </GlassSpace>
                 </GlassCard>
             </div>
+        </div>
+        {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '2em' }} />}
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+            <GlassSpace size={"large"} style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <GlassText size="large">STORAGE</GlassText>
+                <Stack spacing={3} margin='1em'>
+                    <GlassText size="moderate">
+                        At SUBUNIFY we believe archiving data should be cheap and easy. That's why we emphasize simplicity of use and low price.
+                        At $1.50 per TB per Month with a simple price structure and interface, SUBUNIFY is designed for artists, videographers
+                        and business owners who need data storage but don't want a PhD in Computer Science to use it. Simply file and forget.
+                    </GlassText>
+                    <TableContainer>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Cost of TB per Month</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow >
+                                    <TableCell>$1.50 (Minimum of $1)</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Stack>
+            </GlassSpace>
+            <GlassSpace size={"large"} style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <GlassText size="large">DOWNLOAD</GlassText>
+                <GlassText size="moderate">
+                    <Stack spacing={3} margin='1em'>
+                        <GlassText size="moderate">
+                            The way we achieve our low price is by embracing a key limitation: Retrieval time. We purposefully limit retrieval time to 12 hours,
+                            this allows our Amazon servers to optimize storage to unrivaled levels. Our price is only possible because of this.
+                        </GlassText>
+                        <GlassText size="moderate">
+                            Our service is not for day to day use, it is not for file sharing and streaming, it does one thing, and one thing excellently, it archives.
+                            If you wish these other things, we recommend other services, but, if you have Terabytes of data that you need to hold for years at a time, we
+                            can only recommend ourselves.
+                        </GlassText>
+                        <GlassText size="moderate">
+                            Due to the long restore time, we allow the creation of an access window after file restoration. In this window of time,
+                            a file can be downloaded freely and immediately. The length of this window is specified by you.
+                        </GlassText>
+                        <GlassText size="moderate">
+                            File restoration costs are added to the monthly storage costs and billed together monthly.
+                        </GlassText>
+                    </Stack>
+                </GlassText>
+                <TableContainer>
+                    <Table stickyHeader size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell></TableCell>
+                                <TableCell>Restore Time</TableCell>
+                                <TableCell>Cost of restore per GB</TableCell>
+                                <TableCell>Cost of Access window per Day per GB</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow >
+                                <TableCell>Standard</TableCell>
+                                <TableCell>12 Hour</TableCell>
+                                <TableCell>$0.20</TableCell>
+                                <TableCell>$0.002</TableCell>
+                            </TableRow>
+                            <TableRow >
+                                <TableCell>Economy</TableCell>
+                                <TableCell>48 Hour</TableCell>
+                                <TableCell>$0.02</TableCell>
+                                <TableCell>$0.002</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </GlassSpace>
+            <GlassSpace size={"large"} style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <GlassText size="large">UPLOAD AND DELETION</GlassText>
+                <Stack spacing={3} margin='1em'>
+                    <GlassText size="moderate">
+                        SUBUNIFY provides a means of bulk uploading files to the cloud. Uploads to SUBUNIFY are instant
+                        with fees, these fees are charged immediately after the the conclusion of a successful bulk upload.
+                        If a bulk upload is interrupted for some reason we will only charge for the files that were fully
+                        uploaded at the time of the interrupt.
+                    </GlassText>
+                    <GlassText size="moderate">
+                        Deletions from SUBUNIFY are free of charge and can be performed at any time. If a file is deleted mid
+                        way through the month it will be charged for the time it was in storage during that month on a pro rata basis.
+                    </GlassText>
+                    <GlassText size="moderate">
+                        Careful, Once a file is deleted it can not be recovered, ensure you have backups of any files you wish to delete
+                        or are certain that they are no longer needed.
+                    </GlassText>
+                    <TableContainer>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Cost of TB Upload</TableCell>
+                                    <TableCell>Cost of TB Delete</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow >
+                                    <TableCell>$6.50 (Minimum of $0.50)</TableCell>
+                                    <TableCell>Free</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Stack>
+            </GlassSpace>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -149,10 +240,20 @@ const LandingPageDeepStorage = () => {
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>
-                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>CONTACT US TO REQUEST ACCESS</GlassText>
+                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>Get started today!</GlassText>
+                <Button fullWidth variant="contained" href="/file-upload">
+                    Archive A File
+                </Button>
+            </GlassSpace>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GlassSpace size='moderate'>
+                <GlassText size="large" style={{ letterSpacing: '0.15em' }}>CONTACT US</GlassText>
                 <GlassText size="moderate">product@subunify.com</GlassText>
             </GlassSpace>
         </div>
+
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='huge' style={{ textAlign: 'center' }}>
                 <GlassText size="large">SUBUNIFY</GlassText>

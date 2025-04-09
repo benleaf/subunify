@@ -21,7 +21,7 @@ const TutorialModal = ({ modalName, children }: Props) => {
     }
 
     return <BaseModal state={tutorialModal ? 'open' : 'closed'} maxWidth={700} close={closeTutorialModal}>
-        <GlassSpace size="moderate" style={{ maxHeight: '80vh', overflowY: 'scroll', }}>
+        <GlassSpace size="moderate" style={{ maxHeight: '80vh' }}>
             <Stack spacing={2}>
                 {children}
                 <Divider />

@@ -3,19 +3,13 @@ import { ServerRow } from "@/types/application/ServerRow"
 import EditableTable from "./EditableTable"
 import { useContext, useState } from "react"
 import { StateMachineDispatch } from "@/App"
-import { Button, IconButton } from "@mui/material"
+import { Button } from "@mui/material"
 import { fakeData } from "./fakeData"
-import { CopyAll } from "@mui/icons-material"
 
 const ExampleTable = () => {
     const { dispatch } = useContext(StateMachineDispatch)!
 
     const [rows, setRows] = useState<{ [key: string]: any }[]>(fakeData)
-
-    const createNewRecord = async (record: { [key: string]: any }) => {
-        setRows(oldRows => [...oldRows ?? [], { id: oldRows.length + 1, ...record }])
-        dispatch({ action: 'popup', data: { colour: 'success', message: 'Record created' } })
-    }
 
     const processRowUpdate = async (newRow: GridRowModel) => {
         const valuesMap = new Map<string, string>()
@@ -42,18 +36,18 @@ const ExampleTable = () => {
 
     const columnMetadata: GridColDef[] = [
         {
-            field: 'downloadLink',
+            field: 'access',
             type: 'actions',
-            width: 120,
-            headerName: 'Download Link',
             editable: false,
-            getActions: () => [<IconButton><CopyAll /></IconButton>]
+            headerName: 'Access',
+            width: 150,
+            getActions: () => [<Button variant="outlined" > Request Access </Button>]
         },
         {
             field: 'name',
             type: 'string',
             headerName: 'Name',
-            editable: true
+            editable: false
         },
         {
             field: 'description',
@@ -63,26 +57,33 @@ const ExampleTable = () => {
             editable: true
         },
         {
+            field: 'state',
+            type: 'string',
+            width: 400,
+            headerName: 'State',
+            editable: false
+        },
+        {
             field: 'dateOfStorage',
             type: 'date',
             headerName: 'Date Stored',
             editable: false
         },
         {
-            field: 'fileDownload',
-            type: 'actions',
-            editable: false,
-            getActions: () => [<Button>Download</Button>]
-        }
+            field: 'fileSize',
+            type: 'string',
+            headerName: 'Size',
+            editable: false
+        },
     ]
 
     return <EditableTable
+        defaultDensity="standard"
         style={{ flex: 1 }}
         name={'Data'}
         columns={[...columnMetadata]}
         rows={rows}
         deleteRecord={deleteRecord}
-        createNewRecord={createNewRecord}
         processRowUpdate={processRowUpdate}
     />
 }

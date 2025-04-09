@@ -18,6 +18,8 @@ const GlassCard = ({ children, grow, paddingSize, marginSize, flex, width, heigh
     return <div
         className={classes(glass.glass, glass.radius, grow ? glass.grow : undefined)}
         style={{
+            display: 'flex',
+            flexDirection: 'column',
             padding: paddingSize ? CssSizes[paddingSize] : 0,
             margin: marginSize ? CssSizes[marginSize] : 0,
             flex,

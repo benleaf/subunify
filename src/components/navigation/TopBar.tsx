@@ -4,15 +4,17 @@ import GlassSurface from "../glassmorphism/GlassSurface"
 import GlassText from "../glassmorphism/GlassText"
 import { useAuth } from "@/auth/AuthContext"
 import AuthModal from "@/auth/AuthModal"
-import { Button, Drawer, IconButton, Menu, MenuList, Stack } from "@mui/material"
+import { Button, Drawer, IconButton, Stack } from "@mui/material"
 import { StateMachineDispatch } from "@/App"
 import { useContext, useState } from "react"
 import { useSize } from "@/hooks/useSize"
 import Sidebar from "./Sidebar"
 import { ScreenWidths } from "@/constants/ScreenWidths"
-import { MenuOpen, MenuTwoTone, People } from "@mui/icons-material"
+import { MenuTwoTone } from "@mui/icons-material"
+import { useLocation } from "react-router"
 
 const TopBar = () => {
+    const { pathname } = useLocation()
     const { width } = useSize()
     const { dispatch } = useContext(StateMachineDispatch)!
     const { user, logout } = useAuth()
@@ -21,42 +23,59 @@ const TopBar = () => {
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
     };
-    const handleLogout = () => {
-        dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout successful' } })
-        logout()
-    }
 
-    return <GlassSurface
-        style={{
-            margin: '0px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height: ComponentSizes.topBar
-        }}
-    >
-        <GlassSpace size="tiny">
-            <Stack direction='row' spacing={1} alignItems='center'>
-                {width <= ScreenWidths.Mobile && <>
-                    <div>
-                        <IconButton onClick={toggleDrawer(true)} color="primary">
-                            <MenuTwoTone />
-                        </IconButton>
-                    </div>
-                    <Drawer open={open} onClose={toggleDrawer(false)}>
-                        <Sidebar />
-                    </Drawer>
-                </>
-                }
-                <GlassText size="huge">SUBUNIFY</GlassText>
-            </Stack>
-        </GlassSpace>
-        {user ?
+    return <>
+        <GlassSurface
+            style={{
+                margin: '0px',
+                display: 'flex',
+                alignItems: 'center',
+                width: "100%",
+                zIndex: 3,
+                position: 'fixed',
+                justifyContent: 'space-between',
+                height: ComponentSizes.topBar
+            }}
+        >
+            <GlassSpace size="tiny">
+                <Stack direction='row' spacing={1} alignItems='center'>
+                    {width <= ScreenWidths.Mobile && <>
+                        <div>
+                            <IconButton onClick={toggleDrawer(true)} color="primary">
+                                <MenuTwoTone />
+                            </IconButton>
+                        </div>
+                        <Drawer open={open} onClose={toggleDrawer(false)}>
+                            <Sidebar />
+                        </Drawer>
+                    </>
+                    }
+                    <GlassText size="huge">SUBUNIFY</GlassText>
+                </Stack>
+            </GlassSpace>
             <Stack spacing={3} direction='row'>
-                <Button onClick={handleLogout}>{user.email}</Button>
-            </Stack> :
-            <AuthModal />}
-    </GlassSurface>
+                {user ? <>
+                    {pathname == '/' && width > ScreenWidths.Mobile &&
+                        <Button variant="outlined" href="/deep-storage">My Files</Button>
+                    }
+                    <Button href="/user-account">
+                        {user.email.substring(0, 1)}
+                    </Button>
+                </> : <>
+                    {pathname == '/' && width > ScreenWidths.Mobile &&
+                        <Button variant="contained" href="/file-upload">Archive A File</Button>
+                    }
+                    <AuthModal />
+                </>}
+            </Stack>
+        </GlassSurface>
+
+        <div style={{
+            margin: '0px',
+            width: "100%",
+            height: ComponentSizes.topBar
+        }} />
+    </>
 }
 
 export default TopBar

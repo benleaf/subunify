@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 import { useAuth } from "./AuthContext"
 import AuthModal from "./AuthModal"
-import PaymentModal from "@/components/payments/PaymentModal"
+import PaymentModal from "@/components/modal/PaymentModal"
 
 type Props = {
     children: ReactNode | ReactNode[]

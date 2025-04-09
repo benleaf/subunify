@@ -18,11 +18,20 @@ const DashboardLayout = ({ children }: Props) => {
 
     return <div style={{ display: 'flex' }}>
         {sideBarVisible && <Sidebar />}
-        <div style={{ height: height - ComponentSizes.topBar, width: width - sidebarWidth }}>
-            <GlassCard marginSize="moderate" paddingSize="moderate" height={(height - ComponentSizes.topBar) - 45}>
-                {children}
-            </GlassCard>
-        </div>
+        {width > ScreenWidths.Mobile &&
+            <div style={{ height: height - ComponentSizes.topBar, width: width - sidebarWidth }}>
+                <GlassCard marginSize="moderate" paddingSize="moderate" height={(height - ComponentSizes.topBar) - 45}>
+                    {children}
+                </GlassCard>
+            </div>
+        }
+        {width <= ScreenWidths.Mobile &&
+            <div style={{ minHeight: (height - ComponentSizes.topBar) - 45, width: width }}>
+                <GlassCard marginSize="small" paddingSize="small" grow>
+                    {children}
+                </GlassCard>
+            </div>
+        }
     </div>
 }
 

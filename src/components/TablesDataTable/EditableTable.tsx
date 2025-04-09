@@ -8,6 +8,8 @@ import { DataGridPro, GridToolbar } from "@mui/x-data-grid-pro"
 import GlassText from "../glassmorphism/GlassText"
 import ColumnForm from "./ColumnForm"
 import { Time } from "@/helpers/Time"
+import { useSize } from "@/hooks/useSize"
+import { ScreenWidths } from "@/constants/ScreenWidths"
 
 declare module '@mui/x-data-grid' {
     interface ToolbarPropsOverrides {
@@ -37,6 +39,7 @@ type Props = {
 const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewRecord, processRowUpdate, defaultDensity = 'comfortable' }: Props) => {
     const [modalState, setModalState] = useState<EditModalProps>({ state: 'closed' })
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
+    const { width } = useSize()
 
     const EditToolbar = (props: GridSlotProps['toolbar']) =>
         <GridToolbarContainer style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -207,7 +210,7 @@ const EditableTable = ({ style, name, columns, rows, deleteRecord, createNewReco
             pagination
             initialState={{
                 density: defaultDensity,
-                pinnedColumns: { right: ['actions'] },
+                pinnedColumns: { right: width < ScreenWidths.Mobile ? [] : ['actions'] },
                 columns: {
                     columnVisibilityModel: getColumnVisibility()
                 }

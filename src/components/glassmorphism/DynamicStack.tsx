@@ -9,7 +9,7 @@ type Props = {
 
 const DynamicStack = ({ children }: Props) => {
     const { width } = useSize()
-    return <Stack direction={width > ScreenWidths.Mobile ? 'row' : 'column'}>
+    return <Stack direction={width > ScreenWidths.Mobile ? 'row' : 'column'} flex={1} >
         {children}
     </Stack>
 }

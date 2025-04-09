@@ -8,7 +8,7 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassText from "../glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
 import AuthModal from "@/auth/AuthModal"
-import PaymentModal from "../payments/PaymentModal"
+import PaymentModal from "../modal/PaymentModal"
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext"
 import PreDeployModal from "../modal/PreDeployModal"
 
