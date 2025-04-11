@@ -2,8 +2,9 @@ import { Button, Stack, Step, StepButton, Stepper } from "@mui/material";
 import BaseModal from "@/components/modal/BaseModal";
 import StripeProvider from "../payments/StripeProvider";
 import GlassSpace from "../glassmorphism/GlassSpace";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import GlassText from "../glassmorphism/GlassText";
+import { StateMachineDispatch } from "@/App";
 
 type Props = {
   state: 'open' | 'closed',
@@ -12,6 +13,16 @@ type Props = {
 }
 
 const PaymentModal = ({ state, onClose, onComplete }: Props) => {
+  const context = useContext(StateMachineDispatch)
+
+  const onPaymentCompleat = async () => {
+    context?.dispatch({ action: 'loading', data: true })
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    context?.dispatch({ action: 'loading', data: false })
+    onClose && onClose()
+    onComplete && onComplete()
+  }
+
   const [step, setStep] = useState(0)
   return <BaseModal state={state} close={onClose}>
     <GlassSpace size="small">
@@ -39,7 +50,7 @@ const PaymentModal = ({ state, onClose, onComplete }: Props) => {
             If you have any files pending upload, the upload process will start automatically following payment confirmation.
           </GlassText>
         </>}
-        {step == 1 && <StripeProvider onComplete={onComplete} />}
+        {step == 1 && <StripeProvider onComplete={onPaymentCompleat} />}
       </Stack>
     </GlassSpace>
     {!step && <Button onClick={() => setStep(1)}>Next</Button>}

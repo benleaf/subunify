@@ -21,7 +21,7 @@ const DataUpload = () => {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const sessionId = urlParams.get('stripe_session_id');
-        const sessionResult = await authAction<SessionResult>(`stripe/subscription/${sessionId}`, "POST");
+        const sessionResult = await authAction<SessionResult>(`user/subscription/${sessionId}`, "POST");
         if (isError(sessionResult)) {
             throw new Error(sessionResult.error);
         }

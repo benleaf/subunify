@@ -6,23 +6,24 @@ import { ScreenWidths } from "@/constants/ScreenWidths";
 import { useState } from "react";
 import ExampleTable from "@/components/TablesDataTable/ExampleTable";
 import { useSize } from "@/hooks/useSize";
-import Background from "../../public/Background2.png"
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
+import BlackHoleCanvas from "@/components/graphics/BlackHoleCanvas";
 
 const LandingPageDeepStorage = () => {
     const { width } = useSize()
-    const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'TB', value: 1 })
+    const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'TB', value: 100 })
     const sizeMultiplier = costCalculatorValue.size == 'TB' ? 1 : 2 ** -10
     const totalGB = costCalculatorValue.value * sizeMultiplier
     const deepStorageCost = 1.5
     const initialStorageCost = 6.5
 
-    const costValue = Math.max(1, deepStorageCost * totalGB)
+    const costValue = deepStorageCost * totalGB + 0.6
     const initialCost = Math.max(0.5, initialStorageCost * totalGB)
 
     return <div>
-        <div style={{ display: 'flex', backgroundImage: `url(${Background})`, backgroundSize: 'cover' }}>
-            <div style={{ display: 'flex', height: '95vh', alignItems: 'center', width: '80vh' }}>
+        {width < ScreenWidths.Tablet && <div style={{ height: '40vh' }} />}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', height: width > ScreenWidths.Tablet ? '95vh' : '20vh', alignItems: 'center', width: '80vh' }}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <GlassText size="large" style={{ letterSpacing: '0.15em' }}>THE SUBUNIFY</GlassText>
@@ -31,16 +32,25 @@ const LandingPageDeepStorage = () => {
                     <GlassText size="gigantic" style={{ lineHeight: '10vw', fontWeight: 'bolder' }}>DEEP STORE</GlassText>
 
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <GlassText size="moderate" style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}>FILE AND FORGET MEDIA ARCHIVING</GlassText>
+                        <GlassText size="moderate" style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}>BLACK HOLE MEDIA ARCHIVING</GlassText>
                         <Divider style={{ flex: 1 }} />
                     </div>
+                    {width <= ScreenWidths.Tablet && <div >
+                        <BlackHoleCanvas width={width * 0.8} />
+                    </div>}
                 </GlassSpace>
             </div>
+            {width > ScreenWidths.Tablet && <>
+                <div style={{ display: 'flex', height: '95vh', alignItems: 'center', width: '50%' }}>
+                    <BlackHoleCanvas width={width * 0.5} />
+                </div>
+            </>}
         </div>
+        {width < ScreenWidths.Tablet && <div style={{ height: '25vh' }} />}
         <div style={{ flex: 1, padding: '2em' }} />
         <DynamicStack>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <GlassText size="large"> Cloud Enabled Deep Data storage </GlassText>
+                <GlassText size="large">Deep Cloud Data storage </GlassText>
                 <GlassCard marginSize="small" paddingSize="small" flex={1}>
                     <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
                         <GlassText size="moderate">
@@ -54,7 +64,7 @@ const LandingPageDeepStorage = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: "100%", textAlign: 'center' }}>
                     <GlassSpace size={"moderate"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
                         <GlassText size="large">
-                            12 Hour File Retrieval
+                            12 Hour File Extraction
                         </GlassText>
                         <Divider orientation="horizontal" flexItem><GlassText size="small">ENABLES</GlassText></Divider>
                         <GlassText size="large">
@@ -68,11 +78,11 @@ const LandingPageDeepStorage = () => {
             </GlassCard>
             {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '2em' }} />}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <GlassText size="large">Unlimited Pay As You Go</GlassText>
+                <GlassText size="large">Pay As You Go</GlassText>
                 <GlassCard marginSize="small" paddingSize="small" flex={1}>
                     <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
                         <GlassText size="moderate">
-                            Only pay for the data you use, no hidden fees, no cancellation fees no limits    on data size.
+                            Only pay for the data you use, no hidden fees, no cancellation fees no limits on data size.
                         </GlassText>
                     </div>
                 </GlassCard>
@@ -105,7 +115,7 @@ const LandingPageDeepStorage = () => {
                     <GlassSpace size={"tiny"} >
                         <GlassText size="large">${initialCost.toFixed(2)} Initial storage cost</GlassText>
                         <Divider style={{ margin: '0.4em' }} />
-                        <GlassText size="large">${costValue.toFixed(2)} Per Month</GlassText>
+                        <GlassText size="large">${costValue.toFixed(2)} Per Month (including $0.60 account fee)</GlassText>
                         <GlassText size="moderate">${(costValue * 12).toFixed(2)} Per Year</GlassText>
                     </GlassSpace>
                 </GlassCard>
@@ -126,12 +136,14 @@ const LandingPageDeepStorage = () => {
                         <Table stickyHeader size="small">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Cost of TB per Month</TableCell>
+                                    <TableCell>Cost of TB per month</TableCell>
+                                    <TableCell>Monthly account fee</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow >
-                                    <TableCell>$1.50 (Minimum of $1)</TableCell>
+                                    <TableCell>$1.50</TableCell>
+                                    <TableCell>$0.60</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

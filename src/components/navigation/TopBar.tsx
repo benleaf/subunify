@@ -5,8 +5,7 @@ import GlassText from "../glassmorphism/GlassText"
 import { useAuth } from "@/auth/AuthContext"
 import AuthModal from "@/auth/AuthModal"
 import { Button, Drawer, IconButton, Stack } from "@mui/material"
-import { StateMachineDispatch } from "@/App"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { useSize } from "@/hooks/useSize"
 import Sidebar from "./Sidebar"
 import { ScreenWidths } from "@/constants/ScreenWidths"
@@ -16,8 +15,7 @@ import { useLocation } from "react-router"
 const TopBar = () => {
     const { pathname } = useLocation()
     const { width } = useSize()
-    const { dispatch } = useContext(StateMachineDispatch)!
-    const { user, logout } = useAuth()
+    const { user } = useAuth()
     const [open, setOpen] = useState(false);
 
     const toggleDrawer = (newOpen: boolean) => () => {

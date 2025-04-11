@@ -75,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             dispatch({ action: 'popup', data: { colour: 'warning', message: 'Subscription needed' } })
         }
 
+        setSubscribed(true)
+
         if (cognitoUser) {
             cognitoRefreshTokens(cognitoUser)
         }
