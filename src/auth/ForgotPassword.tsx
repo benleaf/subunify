@@ -30,7 +30,7 @@ const ForgotPassword = () => {
             await cognitoForgotPassword(email);
             setPasswordReset(true)
             dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })
+            dispatch({ action: 'popup', data: { colour: 'success', message: 'Sending email' } })
         } catch (err: any) {
             dispatch({ action: 'loading', data: false })
             dispatch({ action: 'popup', data: { colour: 'error', message: 'Conformation failed' } })
