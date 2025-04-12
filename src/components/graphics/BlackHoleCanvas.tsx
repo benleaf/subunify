@@ -26,7 +26,7 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
         // Create an array of orbiting points.
         const orbitingPoints: OrbitingPoint[] = [];
         const numberOfPoints = 5000;
-        const baseSpeed = 1 / (width * 30) ** 0.5
+        const baseSpeed = 0.005
         for (let i = 0; i < numberOfPoints; i++) {
             orbitingPoints.push({
                 angle: Math.random() * Math.PI * 2,      // Random initial angle
@@ -51,7 +51,7 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
 
                 ctx.fillStyle = '#D1B88922'; // Or choose another color for a contrast effect
                 ctx.beginPath();
-                ctx.arc(x, y, (50 / point.a) + (width / 1500), 0, Math.PI * 2);
+                ctx.arc(x, y, (width / (point.a + 500)), 0, Math.PI * 2);
                 ctx.fill();
 
                 // Increment the angle for the next frame.

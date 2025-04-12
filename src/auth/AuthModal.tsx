@@ -6,6 +6,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Confirm from "./Confirm";
 import { Credentials } from "@/types/Credentials";
+import ForgotPassword from "./ForgotPassword";
 
 type Props = {
     overrideState?: boolean
@@ -18,7 +19,7 @@ type Props = {
 const AuthModal = ({ overrideState: overideState, onLogin, onAccountCreationCompleate, onClose, hideButton = false }: Props) => {
     const [authModalOpen, setAuthModalOpen] = useState(false)
     const [credentials, setCredentials] = useState<Credentials>()
-    const [authPage, setAuthPage] = useState<'login' | 'signup' | 'confirm'>('login')
+    const [authPage, setAuthPage] = useState<'login' | 'signup' | 'confirm' | 'forgotPassword'>('login')
 
     useEffect(() => {
         if (overideState !== undefined) setAuthModalOpen(overideState)
@@ -40,6 +41,12 @@ const AuthModal = ({ overrideState: overideState, onLogin, onAccountCreationComp
                 <Stack spacing={2}>
                     {authPage == 'login' && <>
                         <Login goToConformation={(credentials: Credentials) => goToConformation(credentials)} onLogin={onLogin} />
+                        <Button onClick={() => setAuthPage('forgotPassword')}>Forgot Password</Button>
+                        <Button onClick={() => setAuthPage('signup')}>Create Account</Button>
+                    </>}
+                    {authPage == 'forgotPassword' && <>
+                        <ForgotPassword />
+                        <Button onClick={() => setAuthPage('login')}>Login</Button>
                         <Button onClick={() => setAuthPage('signup')}>Create Account</Button>
                     </>}
                     {authPage == 'signup' && <>

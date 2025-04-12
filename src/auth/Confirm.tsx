@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Button, Typography, FormControl, Input, InputLabel } from "@mui/material";
 import GlassText from "@/components/glassmorphism/GlassText";
-import { cognitoConfirmSignUp } from './AuthService'
+import { confirmRegistration } from './AuthService'
 import { Credentials } from "@/types/Credentials";
 import { useAuth } from "./AuthContext";
 import { StateMachineDispatch } from "@/App";
@@ -21,7 +21,7 @@ const Confirm = ({ credentials, onLogin }: Props) => {
         if (!credentials) return
         try {
             dispatch({ action: 'loading', data: true })
-            await cognitoConfirmSignUp(credentials.email, code);
+            await confirmRegistration(credentials.email, code);
             await login(credentials.email, credentials.password)
             dispatch({ action: 'loading', data: false })
             dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })

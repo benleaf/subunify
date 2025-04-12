@@ -33,7 +33,7 @@ export const cognitoSignUp = (email: string, password: string): Promise<ISignUpR
     });
 };
 
-export const cognitoConfirmSignUp = (email: string, code: string): Promise<void> => {
+export const confirmRegistration = (email: string, code: string): Promise<void> => {
     const user = new CognitoUser({ Username: email, Pool: UserPool });
     return new Promise((resolve, reject) => {
         user.confirmRegistration(code, true, (err) => {
@@ -74,6 +74,40 @@ export const cognitoLogin = async (email: string, password: string): Promise<Tok
                 console.log(err)
                 reject(err)
             },
+        });
+    });
+
+    return { token, cognitoUser }
+};
+
+export const cognitoForgotPassword = async (email: string, code?: string): Promise<TokenUser> => {
+    const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
+
+    const token: string = await new Promise((resolve, reject) => {
+        cognitoUser.forgotPassword({
+            onSuccess: () => { },
+            onFailure: (err) => {
+                console.log(err)
+                reject(err)
+            }
+        });
+    });
+
+    return { token, cognitoUser }
+};
+
+export const cognitoConfirmSignUp = async (email: string, newPassword: string, code: string): Promise<TokenUser> => {
+    const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
+
+    const token: string = await new Promise((resolve, reject) => {
+        cognitoUser.confirmPassword(code, newPassword, {
+            onSuccess: () => {
+                resolve(newPassword);
+            },
+            onFailure: (err) => {
+                console.log(err)
+                reject(err)
+            }
         });
     });
 

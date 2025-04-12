@@ -1,6 +1,6 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Button, Divider, MenuItem, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
+import { Button, Divider, MenuItem, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import { useState } from "react";
@@ -42,7 +42,7 @@ const LandingPageDeepStorage = () => {
             </div>
             {width > ScreenWidths.Tablet && <>
                 <div style={{ display: 'flex', height: '95vh', alignItems: 'center', width: '50%' }}>
-                    <BlackHoleCanvas width={width * 0.5} />
+                    <BlackHoleCanvas width={width * 0.45} />
                 </div>
             </>}
         </div>
@@ -67,7 +67,7 @@ const LandingPageDeepStorage = () => {
                             12 Hour File Extraction
                         </GlassText>
                         <Divider orientation="horizontal" flexItem><GlassText size="small">ENABLES</GlassText></Divider>
-                        <GlassText size="large">
+                        <GlassText size="huge">
                             $1.50 per TB per Month
                         </GlassText>
                     </GlassSpace>
@@ -98,18 +98,24 @@ const LandingPageDeepStorage = () => {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ maxWidth: ScreenWidths.Mobile, width: '100%' }}>
                 <GlassCard flex={1} marginSize="moderate" paddingSize="large">
-                    <Stack direction='row' spacing={2} alignItems='center'>
+                    <Stack direction='row' spacing={1} alignItems='center'>
                         <GlassText size="large">Cost Calculator</GlassText>
                         <Select value={costCalculatorValue.size} onChange={e => setCostCalculatorValue(old => ({ ...old, size: e.target.value }))}>
-                            <MenuItem value='GB'>{costCalculatorValue.value} GB</MenuItem>
-                            <MenuItem value='TB'>{costCalculatorValue.value} TB</MenuItem>
+                            <MenuItem value='GB'>GB</MenuItem>
+                            <MenuItem value='TB'>TB</MenuItem>
                         </Select>
+                        <TextField
+                            type="number"
+                            style={{ width: '7em' }}
+                            value={costCalculatorValue.value}
+                            onChange={e => setCostCalculatorValue(old => ({ ...old, value: +(e.target.value ?? 0) }))}
+                        />
                     </Stack>
                     <Slider
                         valueLabelDisplay="auto"
                         min={1}
                         max={2 ** 10}
-                        defaultValue={costCalculatorValue.value}
+                        value={costCalculatorValue.value}
                         onChange={(_, value) => setCostCalculatorValue(old => ({ ...old, value: +(value ?? 0) }))}
                     />
                     <GlassSpace size={"tiny"} >
