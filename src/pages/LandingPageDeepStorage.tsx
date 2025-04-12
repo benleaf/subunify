@@ -1,24 +1,17 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Button, Divider, MenuItem, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, } from "@mui/material";
+import { Button, Divider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { ScreenWidths } from "@/constants/ScreenWidths";
-import { useState } from "react";
 import ExampleTable from "@/components/TablesDataTable/ExampleTable";
 import { useSize } from "@/hooks/useSize";
-import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import BlackHoleCanvas from "@/components/graphics/BlackHoleCanvas";
+import FirstLineMessaging from "@/components/promo/FirstLineMessaging";
+import CostCalculator from "@/components/promo/CostCalculator";
+import BlackHoleCanvas2 from "@/components/graphics/BlackHoleCanvas2";
 
 const LandingPageDeepStorage = () => {
     const { width } = useSize()
-    const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'TB', value: 100 })
-    const sizeMultiplier = costCalculatorValue.size == 'TB' ? 1 : 2 ** -10
-    const totalGB = costCalculatorValue.value * sizeMultiplier
-    const deepStorageCost = 1.5
-    const initialStorageCost = 6.5
-
-    const costValue = deepStorageCost * totalGB + 0.6
-    const initialCost = Math.max(0.5, initialStorageCost * totalGB)
 
     return <div>
         {width < ScreenWidths.Mobile && <div style={{ height: '35vh' }} />}
@@ -36,7 +29,7 @@ const LandingPageDeepStorage = () => {
                         <Divider style={{ flex: 1 }} />
                     </div>
                     {width <= ScreenWidths.Mobile && <div >
-                        <BlackHoleCanvas width={Math.min(width - 70, 600)} />
+                        <BlackHoleCanvas width={Math.min(width * 0.95 - 70, 600)} />
                     </div>}
                 </GlassSpace>
             </div>
@@ -48,87 +41,11 @@ const LandingPageDeepStorage = () => {
         </div>
         {width < ScreenWidths.Tablet && <div style={{ height: '25vh' }} />}
         <div style={{ flex: 1, padding: '2em' }} />
-        <DynamicStack>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <GlassText size="large">Deep Cloud Data storage </GlassText>
-                <GlassCard marginSize="small" paddingSize="small" flex={1}>
-                    <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                        <GlassText size="moderate">
-                            Data stored on encrypted Amazon servers with data redundancy protecting you from file corruption.
-                        </GlassText>
-                    </div>
-                </GlassCard>
-            </div>
-            {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '2em' }} />}
-            <GlassCard marginSize="small" paddingSize="small" flex={1}>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: "100%", textAlign: 'center' }}>
-                    <GlassSpace size={"moderate"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <GlassText size="large">
-                            12 Hour File Extraction
-                        </GlassText>
-                        <Divider orientation="horizontal" flexItem><GlassText size="small">ENABLES</GlassText></Divider>
-                        <GlassText size="huge">
-                            $1.50 per TB per Month
-                        </GlassText>
-                    </GlassSpace>
-                    <Button variant="contained" href="/file-upload">
-                        Archive A File
-                    </Button>
-                </div>
-            </GlassCard>
-            {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '2em' }} />}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <GlassText size="large">Pay As You Go</GlassText>
-                <GlassCard marginSize="small" paddingSize="small" flex={1}>
-                    <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                        <GlassText size="moderate">
-                            Only pay for the data you use, no hidden fees, no cancellation fees no limits on data size.
-                        </GlassText>
-                    </div>
-                </GlassCard>
-            </div>
-        </DynamicStack>
-        {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '3em' }} />}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GlassSpace size='moderate'>
-                <GlassText size="large" style={{ letterSpacing: '0.15em' }}></GlassText>
-                <GlassText size="moderate">Calculate your costs before you upload with our calculator</GlassText>
-            </GlassSpace>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ maxWidth: ScreenWidths.Mobile, width: '100%' }}>
-                <GlassCard flex={1} marginSize="moderate" paddingSize="large">
-                    <Stack direction='row' spacing={1} alignItems='center'>
-                        <GlassText size="large">Cost Calculator</GlassText>
-                        <Select value={costCalculatorValue.size} onChange={e => setCostCalculatorValue(old => ({ ...old, size: e.target.value }))}>
-                            <MenuItem value='GB'>GB</MenuItem>
-                            <MenuItem value='TB'>TB</MenuItem>
-                        </Select>
-                        <TextField
-                            type="number"
-                            style={{ width: '7em' }}
-                            value={costCalculatorValue.value}
-                            onChange={e => setCostCalculatorValue(old => ({ ...old, value: +(e.target.value ?? 0) }))}
-                        />
-                    </Stack>
-                    <Slider
-                        valueLabelDisplay="auto"
-                        min={1}
-                        max={2 ** 10}
-                        value={costCalculatorValue.value}
-                        onChange={(_, value) => setCostCalculatorValue(old => ({ ...old, value: +(value ?? 0) }))}
-                    />
-                    <GlassSpace size={"tiny"} >
-                        <GlassText size="large">${initialCost.toFixed(2)} Initial storage cost</GlassText>
-                        <Divider style={{ margin: '0.4em' }} />
-                        <GlassText size="large">${costValue.toFixed(2)} Per Month (including $0.60 account fee)</GlassText>
-                        <GlassText size="moderate">${(costValue * 12).toFixed(2)} Per Year</GlassText>
-                    </GlassSpace>
-                </GlassCard>
-            </div>
-        </div>
-        {width < ScreenWidths.Mobile && <div style={{ flex: 1, padding: '2em' }} />}
-
+        <FirstLineMessaging />
+        {width <= ScreenWidths.Mobile && <div style={{ flex: 1, paddingBlock: '2em' }} >
+            <BlackHoleCanvas2 width={width - 20} />
+        </div>}
+        <CostCalculator />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
             <GlassSpace size={"large"} style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <GlassText size="large">STORAGE</GlassText>

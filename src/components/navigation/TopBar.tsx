@@ -4,13 +4,14 @@ import GlassSurface from "../glassmorphism/GlassSurface"
 import GlassText from "../glassmorphism/GlassText"
 import { useAuth } from "@/auth/AuthContext"
 import AuthModal from "@/auth/AuthModal"
-import { Button, Drawer, IconButton, Stack } from "@mui/material"
+import { Button, ButtonBase, Drawer, IconButton, Stack } from "@mui/material"
 import { useState } from "react"
 import { useSize } from "@/hooks/useSize"
 import Sidebar from "./Sidebar"
 import { ScreenWidths } from "@/constants/ScreenWidths"
-import { MenuTwoTone } from "@mui/icons-material"
+import { MenuTwoTone, Settings } from "@mui/icons-material"
 import { useLocation } from "react-router"
+import { CssSizes } from "@/constants/CssSizes"
 
 const TopBar = () => {
     const { pathname } = useLocation()
@@ -48,17 +49,20 @@ const TopBar = () => {
                         </Drawer>
                     </>
                     }
-                    <GlassText size="huge">SUBUNIFY</GlassText>
+                    <ButtonBase href="/deep-storage">
+                        <GlassText size="huge">SUBUNIFY</GlassText>
+                    </ButtonBase>
                 </Stack>
             </GlassSpace>
-            <Stack spacing={3} direction='row'>
+            <Stack spacing={2} direction='row' paddingRight={CssSizes.moderate}>
                 {user ? <>
-                    {pathname == '/' && width > ScreenWidths.Mobile &&
-                        <Button variant="outlined" href="/deep-storage">My Files</Button>
-                    }
-                    <Button href="/user-account">
-                        {user.email.substring(0, 1)}
-                    </Button>
+                    {pathname == '/' && width > ScreenWidths.Mobile && <>
+                        <Button variant="outlined" href="/file-upload">Upload</Button>
+                        <Button variant="outlined" href="/deep-storage">Manage Files</Button>
+                    </>}
+                    <IconButton href="/user-account" color="primary">
+                        <Settings />
+                    </IconButton>
                 </> : <>
                     {pathname == '/' && width > ScreenWidths.Mobile &&
                         <Button variant="contained" href="/file-upload">Archive A File</Button>

@@ -7,7 +7,7 @@ interface OrbitingPoint {
     b: number; // Minor axis length of the ellipse
 }
 
-const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
+const BlackHoleCanvas2 = ({ width = 800 }: { width?: number }) => {
     const height = width / 3
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -30,9 +30,9 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
         for (let i = 0; i < numberOfPoints; i++) {
             orbitingPoints.push({
                 angle: Math.random() * Math.PI * 2,      // Random initial angle
-                speed: baseSpeed + Math.random() * (baseSpeed / 2),        // Slight variation in speed
-                a: (60 + Math.random() * 300) * (height / 250),               // Varying ellipse major axis lengths
-                b: (10 + (Math.random() ** 2) * 50) * (width / 700)           // Varying ellipse minor axis lengths
+                speed: -(baseSpeed + Math.random() * (baseSpeed / 2)),        // Slight variation in speed
+                a: (60 + (Math.random() ** 10) * 300) * (height / 250),               // Varying ellipse major axis lengths
+                b: (60 + (Math.random() ** -0.5) * 1) * (width / 700)           // Varying ellipse minor axis lengths
             });
         }
 
@@ -58,13 +58,6 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
                 point.angle += point.speed;
             });
 
-            // Draw the central black hole with a radial gradient.
-            const radius = width / 13;
-            ctx.fillStyle = '#000f';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, Math.PI, Math.PI * 2);
-            ctx.fill();
-
             animationFrameId = requestAnimationFrame(render);
         };
 
@@ -79,4 +72,4 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
     return <canvas ref={canvasRef} style={{ width, height }} />;
 };
 
-export default BlackHoleCanvas;
+export default BlackHoleCanvas2;
