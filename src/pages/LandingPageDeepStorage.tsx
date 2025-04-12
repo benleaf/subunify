@@ -9,6 +9,7 @@ import BlackHoleCanvas from "@/components/graphics/BlackHoleCanvas";
 import FirstLineMessaging from "@/components/promo/FirstLineMessaging";
 import CostCalculator from "@/components/promo/CostCalculator";
 import BlackHoleCanvas2 from "@/components/graphics/BlackHoleCanvas2";
+import { CssSizes } from "@/constants/CssSizes";
 
 const LandingPageDeepStorage = () => {
     const { width } = useSize()
@@ -42,7 +43,7 @@ const LandingPageDeepStorage = () => {
         {width < ScreenWidths.Tablet && <div style={{ height: '25vh' }} />}
         <div style={{ flex: 1, padding: '2em' }} />
         <FirstLineMessaging />
-        {width <= ScreenWidths.Mobile && <div style={{ flex: 1, paddingBlock: '2em' }} >
+        {width <= ScreenWidths.Mobile && <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.huge }} >
             <BlackHoleCanvas2 width={width - 20} />
         </div>}
         <CostCalculator />

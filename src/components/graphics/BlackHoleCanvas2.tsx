@@ -25,13 +25,13 @@ const BlackHoleCanvas2 = ({ width = 800 }: { width?: number }) => {
 
         // Create an array of orbiting points.
         const orbitingPoints: OrbitingPoint[] = [];
-        const numberOfPoints = width * 8;
+        const numberOfPoints = width;
         const baseSpeed = 0.002
         for (let i = 0; i < numberOfPoints; i++) {
             orbitingPoints.push({
                 angle: Math.random() * Math.PI * 2,      // Random initial angle
                 speed: -(baseSpeed + Math.random() * (baseSpeed / 2)),        // Slight variation in speed
-                a: (60 + (Math.random() ** 10) * 300) * (height / 250),               // Varying ellipse major axis lengths
+                a: (60 + (Math.random() ** 5) * 300) * (height / 250),               // Varying ellipse major axis lengths
                 b: (60 + (Math.random() ** -0.5) * 1) * (width / 700)           // Varying ellipse minor axis lengths
             });
         }
@@ -41,7 +41,7 @@ const BlackHoleCanvas2 = ({ width = 800 }: { width?: number }) => {
         // Render loop using requestAnimationFrame.
         const render = () => {
             // Create a fading effect by drawing a semi-transparent rectangle over the canvas.
-            ctx.fillStyle = `rgba(0, 0, 0, ${baseSpeed * 20})`;
+            ctx.fillStyle = `rgba(0, 0, 0, ${baseSpeed * 30})`;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw each orbiting point.
@@ -49,7 +49,7 @@ const BlackHoleCanvas2 = ({ width = 800 }: { width?: number }) => {
                 const x = centerX + point.a * Math.cos(point.angle);
                 const y = centerY + point.b * Math.sin(point.angle);
 
-                ctx.fillStyle = '#D1B88922'; // Or choose another color for a contrast effect
+                ctx.fillStyle = '#D1B88933'; // Or choose another color for a contrast effect
                 ctx.beginPath();
                 ctx.arc(x, y, (width / (point.a + 500)), 0, Math.PI * 2);
                 ctx.fill();
