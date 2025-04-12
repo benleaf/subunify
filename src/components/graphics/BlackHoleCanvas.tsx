@@ -25,7 +25,7 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
 
         // Create an array of orbiting points.
         const orbitingPoints: OrbitingPoint[] = [];
-        const numberOfPoints = width * 10;
+        const numberOfPoints = width * 8;
         const baseSpeed = 0.005
         for (let i = 0; i < numberOfPoints; i++) {
             orbitingPoints.push({

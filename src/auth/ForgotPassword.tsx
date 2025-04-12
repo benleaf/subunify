@@ -59,7 +59,6 @@ const ForgotPassword = () => {
         try {
             dispatch({ action: 'loading', data: true })
             await cognitoConfirmSignUp(email, password, code);
-            await cognitoConfirmSignUp(email, password, code);
             await login(email, password);
             dispatch({ action: 'loading', data: false })
             dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })

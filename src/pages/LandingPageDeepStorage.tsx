@@ -21,9 +21,9 @@ const LandingPageDeepStorage = () => {
     const initialCost = Math.max(0.5, initialStorageCost * totalGB)
 
     return <div>
-        {width < ScreenWidths.Tablet && <div style={{ height: '40vh' }} />}
+        {width < ScreenWidths.Mobile && <div style={{ height: '35vh' }} />}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', height: width > ScreenWidths.Tablet ? '95vh' : '20vh', alignItems: 'center', width: '80vh' }}>
+            <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '95vh' : '20vh', alignItems: 'center', width: '80vh' }}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <GlassText size="large" style={{ letterSpacing: '0.15em' }}>THE SUBUNIFY</GlassText>
@@ -35,12 +35,12 @@ const LandingPageDeepStorage = () => {
                         <GlassText size="moderate" style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}>BLACK HOLE MEDIA ARCHIVING</GlassText>
                         <Divider style={{ flex: 1 }} />
                     </div>
-                    {width <= ScreenWidths.Tablet && <div >
-                        <BlackHoleCanvas width={width * 0.8} />
+                    {width <= ScreenWidths.Mobile && <div >
+                        <BlackHoleCanvas width={Math.min(width - 70, 600)} />
                     </div>}
                 </GlassSpace>
             </div>
-            {width > ScreenWidths.Tablet && <>
+            {width > ScreenWidths.Mobile && <>
                 <div style={{ display: 'flex', height: '95vh', alignItems: 'center', width: '50%' }}>
                     <BlackHoleCanvas width={width * 0.45} />
                 </div>
