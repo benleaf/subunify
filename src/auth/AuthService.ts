@@ -80,12 +80,14 @@ export const cognitoLogin = async (email: string, password: string): Promise<Tok
     return { token, cognitoUser }
 };
 
-export const cognitoForgotPassword = async (email: string, code?: string): Promise<TokenUser> => {
+export const cognitoForgotPassword = async (email: string): Promise<TokenUser> => {
     const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
 
     const token: string = await new Promise((resolve, reject) => {
         cognitoUser.forgotPassword({
-            onSuccess: () => { },
+            onSuccess: () => {
+                resolve(email);
+            },
             onFailure: (err) => {
                 console.log(err)
                 reject(err)

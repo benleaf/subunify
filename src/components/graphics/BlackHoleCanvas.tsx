@@ -25,14 +25,14 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
 
         // Create an array of orbiting points.
         const orbitingPoints: OrbitingPoint[] = [];
-        const numberOfPoints = 5000;
+        const numberOfPoints = width * 10;
         const baseSpeed = 0.005
         for (let i = 0; i < numberOfPoints; i++) {
             orbitingPoints.push({
                 angle: Math.random() * Math.PI * 2,      // Random initial angle
                 speed: baseSpeed + Math.random() * (baseSpeed / 2),        // Slight variation in speed
                 a: (60 + Math.random() * 300) * (height / 250),               // Varying ellipse major axis lengths
-                b: (10 + Math.random() * 50) * (width / 700)           // Varying ellipse minor axis lengths
+                b: (10 + (Math.random() ** 2) * 50) * (width / 700)           // Varying ellipse minor axis lengths
             });
         }
 
@@ -59,7 +59,7 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
             });
 
             // Draw the central black hole with a radial gradient.
-            const radius = width / 12;
+            const radius = width / 13;
             ctx.fillStyle = '#000f';
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, Math.PI, Math.PI * 2);
