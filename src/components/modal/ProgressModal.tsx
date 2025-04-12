@@ -11,7 +11,7 @@ type Props = {
 const ProgressModal = ({ progressFile, progressS3 }: Props) => {
     return <BaseModal state={progressFile > 0 ? 'open' : 'closed'}>
         <GlassSpace size="huge">
-            {progressFile < 100 && progressS3 < 100 && <>
+            {(progressFile < 100 || progressS3 < 100) && <>
                 <GlassText size="moderate">
                     File Upload
                 </GlassText>
