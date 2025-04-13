@@ -20,6 +20,7 @@ export const fileUpload = async (
         if (!jwtToken) return { message: 'No Token Supplied, request not sent', error: 'Unauthorized' }
 
         const response = await axios.post(import.meta.env.VITE_SERVER_URL + endpoint, body, {
+            timeout: 0,
             headers: {
                 "authorization": `Bearer ${jwtToken}`,
             },
