@@ -95,6 +95,9 @@ const FileUpload = () => {
         }
 
         socket.on('upload-progress', data => setS3Progress(data.progress))
+        const interval = setInterval(() => {
+            socket.emit('ping', { status: 'alive' });
+        }, 60_000);
 
         const result = await fileUpload(
             'storage-file',
@@ -102,6 +105,7 @@ const FileUpload = () => {
             progress => setFileProgress(old => old + progress)
         )
 
+        clearInterval(interval)
         socket.off('upload-progress')
 
         if (isError(result)) {
