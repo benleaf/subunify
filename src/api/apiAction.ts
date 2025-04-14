@@ -4,7 +4,7 @@ import { RequestMethod } from "@/types/server/RequestMethod"
 import { isError } from "./isError";
 import axios, { AxiosError } from "axios";
 
-export const apiAction = async <T>(endpoint: string, method: RequestMethod, body?: string | FormData): Promise<ApiResponse<T>> => {
+export const apiAction = async <T>(endpoint: string, method: RequestMethod, body?: string | FormData | Blob): Promise<ApiResponse<T>> => {
     const response = await rawApiAction(endpoint, method, body)
     if (isError(response)) return response
     return (await response.json()) as ApiResponse<T>
@@ -39,7 +39,7 @@ export const fileUpload = async (
 export const rawApiAction = async (
     endpoint: string,
     method: RequestMethod,
-    body?: string | FormData
+    body?: string | FormData | Blob
 ): Promise<Response | Partial<ApiError>> => {
     const contentType = typeof body == 'string' ? { "content-type": 'application/json' } : undefined
 

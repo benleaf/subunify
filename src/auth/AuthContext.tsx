@@ -15,7 +15,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>
     logout: () => void
     authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
-    rawAuthAction: (endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<Partial<ApiError> | Response>
+    rawAuthAction: (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => Promise<Partial<ApiError> | Response>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
     };
 
-    const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData) => {
+    const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
         dispatch({ action: 'loading', data: true })
         try {
             const result = await apiAction<T>(endpoint, method, body);
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const rawAuthAction = async (endpoint: string, method: RequestMethod, body?: string | FormData) => {
+    const rawAuthAction = async (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
         const result = await rawApiAction(endpoint, method, body);
         return handleAction(result);
     };

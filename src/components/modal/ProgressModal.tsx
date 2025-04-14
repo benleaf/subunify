@@ -4,34 +4,39 @@ import BaseModal from "./BaseModal";
 import GlassText from "../glassmorphism/GlassText";
 
 type Props = {
-    progressFile: number,
-    progressS3: number,
+    fileProgress: number,
+    totalProgress: number,
+    eta?: string,
+    currentFileName?: string
 }
 
-const ProgressModal = ({ progressFile, progressS3 }: Props) => {
-    return <BaseModal state={progressFile > 0 ? 'open' : 'closed'}>
+const ProgressModal = ({ fileProgress, totalProgress, eta, currentFileName }: Props) => {
+    return <BaseModal state={fileProgress > 0 ? 'open' : 'closed'}>
         <GlassSpace size="huge">
-            {(progressFile < 100 || progressS3 < 100) && <>
+            {(fileProgress < 100 || totalProgress < 100) && <>
                 <GlassText size="moderate">
-                    File Upload
+                    {currentFileName}
                 </GlassText>
                 <Stack direction="row" spacing={2} alignItems="center">
-                    <LinearProgress value={progressFile} variant="determinate" style={{ flex: 1 }} />
+                    <LinearProgress value={fileProgress} variant="determinate" style={{ flex: 1 }} />
                     <GlassText size="moderate">
-                        {progressFile.toFixed(1)}%
+                        {fileProgress.toFixed(1)}%
                     </GlassText>
                 </Stack>
                 <GlassText size="moderate">
-                    File Archiving
+                    Total Progress
                 </GlassText>
                 <Stack direction="row" spacing={2} alignItems="center">
-                    <LinearProgress value={progressS3} variant="determinate" style={{ flex: 1 }} />
+                    <LinearProgress value={totalProgress} variant="determinate" style={{ flex: 1 }} />
                     <GlassText size="moderate">
-                        {progressS3.toFixed(1)}%
+                        {totalProgress.toFixed(1)}%
                     </GlassText>
                 </Stack>
+                {eta && <GlassText size="moderate">
+                    Approximately {eta} remaining
+                </GlassText>}
             </>}
-            {progressFile == 100 && progressS3 == 100 && <>
+            {fileProgress == 100 && totalProgress == 100 && <>
                 <CircularProgress />
             </>}
         </GlassSpace>
