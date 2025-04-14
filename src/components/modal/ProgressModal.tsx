@@ -1,4 +1,4 @@
-import { CircularProgress, LinearProgress, Stack } from "@mui/material";
+import { Alert, CircularProgress, LinearProgress, Stack } from "@mui/material";
 import GlassSpace from "../glassmorphism/GlassSpace";
 import BaseModal from "./BaseModal";
 import GlassText from "../glassmorphism/GlassText";
@@ -40,6 +40,11 @@ const ProgressModal = ({ fileProgress, totalProgress, eta, currentFileName }: Pr
                 <CircularProgress />
             </>}
         </GlassSpace>
+        <Alert
+            severity='warning'
+        >
+            Upload in progress, please do not close the tab or refresh.
+        </Alert>
     </BaseModal>
 };
 

@@ -14,20 +14,13 @@ import { isError } from "@/api/isError";
 import { StateMachineDispatch } from "@/App";
 import AuthModal from "@/auth/AuthModal";
 import PaymentModal from "@/components/modal/PaymentModal";
-import { useNavigate } from "react-router";
 import DashboardLayout from "@/components/DashboardLayout";
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
-import ProgressModal from "@/components/modal/ProgressModal";
 import { useSize } from "@/hooks/useSize";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
-import io from 'socket.io-client';
-import moment, { Moment } from "moment";
-
-type UploadSession = { uploadId: string, key: string }
-
-const socket = io(import.meta.env.VITE_SERVER_URL);
+import FileUploader from "@/components/FileUploader";
 
 const removeDuplicates = (files: File[]) => files.reduce((unique: File[], o) => {
     if (!unique.some(file => file.name === o.name)) {
@@ -37,43 +30,25 @@ const removeDuplicates = (files: File[]) => files.reduce((unique: File[], o) => 
 }, []);
 
 const FileUpload = () => {
-    const mb5 = 5 * 1024 * 1024
 
-    const navigate = useNavigate()
     const { dispatch } = useContext(StateMachineDispatch)!
     const { width } = useSize()
 
+    const { authAction, user } = useAuth()
+    const [authFlow, setAuthFlow] = useState('adding')
+
+    const [startUpload, setStartUpload] = useState(false)
     const [files, setFiles] = useState<File[]>([])
+
     const totalSize = files.length ? files.map(file => file.size).reduce((acc, cur) => acc + cur) : 0
     const absoluteMonthlyCost = getNumericFileMonthlyCost(totalSize)
     const monthlyCost = absoluteMonthlyCost < 0.01 ? '<$0.01' : `$${absoluteMonthlyCost.toFixed(2)}`
-    const [fileProgress, setFileProgress] = useState(0)
-    const [totalProgress, setTotalProgress] = useState(0)
-    const [currentFileName, setCurrentFileName] = useState("")
-    const [startTime, setStartTime] = useState<Moment>()
-    const [eta, setEta] = useState<string>()
-
-    useEffect(() => {
-        const now = moment()
-        const duration = moment.duration(now.diff(startTime))
-        const secondsElapsed = duration.asSeconds()
-
-        const uploadSpeed = totalProgress / secondsElapsed
-        const remainingBytes = totalSize - totalProgress
-        const estimatedSecondsLeft = remainingBytes / uploadSpeed
-
-        setEta(moment.duration(estimatedSecondsLeft, 'seconds').humanize())
-    }, [fileProgress])
-
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => setFiles(old => removeDuplicates([...old, ...acceptedFiles])),
         []
-    );
-
-    const { authAction, user } = useAuth()
+    )
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
-    const [authFlow, setAuthFlow] = useState('adding')
 
     const uploadFlow = async () => {
         setAuthFlow('adding')
@@ -93,135 +68,19 @@ const FileUpload = () => {
         } else if (userResult?.stripeSubscriptionId === null) {
             setAuthFlow('payment')
         } else {
-            uploadFiles()
+            setStartUpload(true)
         }
     }
 
     const onPaymentCompleat = () => {
         setAuthFlow('uploading')
-        uploadFiles()
+        setStartUpload(true)
     }
 
     useEffect(() => {
         if (user && authFlow == 'login') uploadFlow()
     }, [user])
 
-    const uploadFiles = async (): Promise<void> => {
-        // Add nominal amount to progress to show progress bar
-        setFileProgress(0.01)
-
-        const uploadUrls: Map<string, string[]> = new Map()
-
-        const uploadSessions = await authAction<UploadSession[]>('storage-file/upload/start', "POST", JSON.stringify({
-            files: files.map(file => ({ name: file.name, description: file.name, size: file.size }))
-        }))
-
-        if (isError(uploadSessions)) throw new Error("Failed to start upload session");
-
-        for (const file of files) {
-            const uploadSession = uploadSessions.find(session => session.key.includes(file.name))
-            if (!uploadSession) throw new Error("Failed to find upload session for file");
-
-            const parts = Math.ceil(file.size / mb5)
-            const response = await authAction<{ urls: string[] }>('storage-file/upload/presigned-parts', "POST", JSON.stringify({
-                key: uploadSession.key,
-                uploadId: uploadSession.uploadId,
-                partCount: parts
-            }))
-
-            if (isError(response)) throw new Error("Failed to get presigned urls");
-
-            uploadUrls.set(file.name, response.urls)
-        }
-
-        const fileUploads: {
-            uploadId: string
-            key: string
-            parts: {
-                ETag: string
-                PartNumber: number
-            }[]
-        }[] = []
-
-        setStartTime(moment())
-
-        for (const file of files) {
-            setCurrentFileName(file.name)
-
-            let retries = 0
-            while (true) {
-                try {
-                    const uploadSession = uploadSessions.find(session => session.key.includes(file.name))
-                    if (!uploadSession) throw new Error("Failed to find upload session for file")
-
-                    const fileUpload = await uploadFile(uploadUrls, file, uploadSession)
-                    fileUploads.push(fileUpload)
-                    break
-                } catch (error) {
-                    console.log(error)
-                    dispatch({ action: 'popup', data: { colour: 'error', message: `Failed to upload file ${file.name}, retrying...` } })
-                }
-
-                retries++
-
-                if (retries > 10) {
-                    dispatch({ action: 'popup', data: { colour: 'error', message: `Failed to upload file ${file.name}, please try again later` } })
-                    break
-                }
-            }
-        }
-
-        await authAction<{ urls: string[] }>('storage-file/upload/complete', "POST", JSON.stringify({ fileUploads }))
-        navigate('/deep-storage')
-    }
-
-    const uploadFile = async (uploadUrls: Map<string, string[]>, file: File, uploadSession: UploadSession) => {
-        setFileProgress(0.01)
-        let fileBytesUploaded = 0
-
-        const urls = uploadUrls.get(file.name)
-        if (!urls) throw new Error("Failed to find upload urls for file");
-
-        const parts: {
-            ETag: string
-            PartNumber: number
-        }[] = [];
-
-        const uploadChunks: {
-            blob: Blob
-            url: string
-            bytes: number
-            partNumber: number
-        }[] = [];
-
-        for (let i = 0; i < urls.length; i++) {
-            const start = i * mb5;
-            const end = Math.min(file.size, (i + 1) * mb5);
-            const blob = file.slice(start, end);
-            uploadChunks.push({ blob, url: urls[i], bytes: end - start, partNumber: i + 1 });
-        }
-
-        for (const chunk of uploadChunks) {
-            const res = await fetch(chunk.url, {
-                method: 'PUT',
-                body: chunk.blob,
-            });
-
-            const etag = res.headers.get('ETag');
-            if (!etag) throw new Error(`Failed to upload file ${file.name} , no ETag returned`);
-            parts.push({ ETag: etag, PartNumber: chunk.partNumber });
-
-            fileBytesUploaded += chunk.bytes
-            setFileProgress((fileBytesUploaded / file.size) * 100)
-            setTotalProgress(old => old + chunk.bytes)
-        }
-
-        return {
-            uploadId: uploadSession.uploadId,
-            key: uploadSession.key,
-            parts
-        }
-    }
 
     return <DashboardLayout>
         <DynamicStack>
@@ -327,12 +186,7 @@ const FileUpload = () => {
                 a subscription and create an account you will be prompted to do so at this point.
             </GlassText>
         </TutorialModal>
-        <ProgressModal
-            fileProgress={fileProgress}
-            totalProgress={(totalProgress / totalSize) * 100}
-            currentFileName={currentFileName}
-            eta={eta}
-        />
+        <FileUploader totalSize={totalSize} files={files} startUpload={startUpload} />
         <AuthModal hideButton onClose={() => setAuthFlow('adding')} overrideState={authFlow == 'login'} />
         <PaymentModal
             state={authFlow == 'payment' ? 'open' : 'closed'}
