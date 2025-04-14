@@ -4,35 +4,40 @@ import { useAuth } from '@/auth/AuthContext'
 import moment, { Moment } from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import ProgressModal from './modal/ProgressModal'
+import { Stack, LinearProgress, CircularProgress, Alert } from '@mui/material'
+import GlassSpace from '../glassmorphism/GlassSpace'
+import GlassText from '../glassmorphism/GlassText'
+import BaseModal from './BaseModal'
 
 type UploadSession = { uploadId: string, key: string }
 
 type Props = {
-    totalSize: number
     files: File[]
     startUpload: boolean
 }
 const mb5 = 5 * 1024 * 1024
 
-const FileUploader = ({ totalSize, files, startUpload }: Props) => {
+const FileUploadModal = ({ files, startUpload }: Props) => {
     const { dispatch } = useContext(StateMachineDispatch)!
     const navigate = useNavigate()
 
     const { authAction } = useAuth()
     const [fileProgress, setFileProgress] = useState(0)
-    const [totalProgress, setTotalProgress] = useState(0)
+    const [totalUploaded, setTotalUploaded] = useState(0)
     const [currentFileName, setCurrentFileName] = useState("")
     const [startTime, setStartTime] = useState<Moment>()
     const [eta, setEta] = useState<string>()
+
+    const totalSize = files.length ? files.map(file => file.size).reduce((acc, cur) => acc + cur) : 0
+    const totalProgress = (totalUploaded / totalSize) * 100
 
     useEffect(() => {
         const now = moment()
         const duration = moment.duration(now.diff(startTime))
         const secondsElapsed = duration.asSeconds()
 
-        const uploadSpeed = totalProgress / secondsElapsed
-        const remainingBytes = totalSize - totalProgress
+        const uploadSpeed = totalUploaded / secondsElapsed
+        const remainingBytes = totalSize - totalUploaded
         const estimatedSecondsLeft = remainingBytes / uploadSpeed
 
         setEta(moment.duration(estimatedSecondsLeft, 'seconds').humanize())
@@ -149,7 +154,7 @@ const FileUploader = ({ totalSize, files, startUpload }: Props) => {
 
             fileBytesUploaded += chunk.bytes
             setFileProgress((fileBytesUploaded / file.size) * 100)
-            setTotalProgress(old => old + chunk.bytes)
+            setTotalUploaded(old => old + chunk.bytes)
         }
 
         return {
@@ -158,12 +163,41 @@ const FileUploader = ({ totalSize, files, startUpload }: Props) => {
             parts
         }
     }
-    return <ProgressModal
-        fileProgress={fileProgress}
-        totalProgress={(totalProgress / totalSize) * 100}
-        currentFileName={currentFileName}
-        eta={eta}
-    />
+    return <BaseModal state={fileProgress > 0 ? 'open' : 'closed'}>
+        <GlassSpace size="huge">
+            {(fileProgress < 100 || totalProgress < 100) && <>
+                <GlassText size="moderate">
+                    {currentFileName}
+                </GlassText>
+                <Stack direction="row" spacing={2} alignItems="center">
+                    <LinearProgress value={fileProgress} variant="determinate" style={{ flex: 1 }} />
+                    <GlassText size="moderate">
+                        {fileProgress.toFixed(1)}%
+                    </GlassText>
+                </Stack>
+                <GlassText size="moderate">
+                    Total Progress
+                </GlassText>
+                <Stack direction="row" spacing={2} alignItems="center">
+                    <LinearProgress value={totalProgress} variant="determinate" style={{ flex: 1 }} />
+                    <GlassText size="moderate">
+                        {totalProgress.toFixed(1)}%
+                    </GlassText>
+                </Stack>
+                {eta && <GlassText size="moderate">
+                    Approximately {eta} remaining
+                </GlassText>}
+            </>}
+            {fileProgress == 100 && totalProgress == 100 && <>
+                <CircularProgress />
+            </>}
+        </GlassSpace>
+        <Alert
+            severity='warning'
+        >
+            Upload in progress, please do not close the tab or refresh.
+        </Alert>
+    </BaseModal>
 }
 
-export default FileUploader
+export default FileUploadModal

@@ -20,7 +20,7 @@ import { useSize } from "@/hooks/useSize";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
-import FileUploader from "@/components/FileUploader";
+import FileUploadModal from "@/components/modal/FileUploadModal";
 
 const removeDuplicates = (files: File[]) => files.reduce((unique: File[], o) => {
     if (!unique.some(file => file.name === o.name)) {
@@ -186,7 +186,7 @@ const FileUpload = () => {
                 a subscription and create an account you will be prompted to do so at this point.
             </GlassText>
         </TutorialModal>
-        <FileUploader totalSize={totalSize} files={files} startUpload={startUpload} />
+        <FileUploadModal files={files} startUpload={startUpload} />
         <AuthModal hideButton onClose={() => setAuthFlow('adding')} overrideState={authFlow == 'login'} />
         <PaymentModal
             state={authFlow == 'payment' ? 'open' : 'closed'}
