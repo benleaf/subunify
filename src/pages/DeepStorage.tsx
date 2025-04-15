@@ -104,18 +104,19 @@ const DeepStorage = () => {
 
     const onDownload = async (id: string) => {
         context.dispatch({ action: 'loading', data: true })
-        const url = await authAction<string>(`storage-file/download/${id}`, 'GET')
+        const response = await authAction<{ url: string }>(`storage-file/download/${id}`, 'GET')
         const record = deepStorageFiles.find(file => file.id == id)
 
-        if (isError(url)) {
+        if (isError(response)) {
             context.dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to request access to file' } })
             context.dispatch({ action: 'loading', data: false })
-            console.log(url)
+            console.log(response)
             return
         }
 
         context.dispatch({ action: 'loading', data: false })
         const a = document.createElement('a');
+        const { url } = response
         a.href = url;
         a.download = record.name;
         document.body.appendChild(a);
