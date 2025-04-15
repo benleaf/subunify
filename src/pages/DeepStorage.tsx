@@ -117,8 +117,7 @@ const DeepStorage = () => {
             return
         }
 
-        const blob = await updatedFile.blob();
-        const url = window.URL.createObjectURL(blob);
+        const { url } = await updatedFile.json();
         const a = document.createElement('a');
         a.href = url;
         a.download = record.name;
