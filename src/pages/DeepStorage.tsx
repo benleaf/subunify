@@ -103,21 +103,25 @@ const DeepStorage = () => {
     }
 
     const onDownload = async (id: string) => {
+        context.dispatch({ action: 'loading', data: true })
         const updatedFile = await rawAuthAction(`storage-file/download/${id}`, 'GET')
         const record = deepStorageFiles.find(file => file.id == id)
 
         if (isError(updatedFile)) {
             context.dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to request access to file' } })
+            context.dispatch({ action: 'loading', data: false })
             console.log(updatedFile)
             return
         }
 
         if (!updatedFile.ok) {
             context.dispatch({ action: 'popup', data: { colour: 'warning', message: 'File is still being restored' } })
+            context.dispatch({ action: 'loading', data: false })
             return
         }
 
         const { url } = await updatedFile.json();
+        context.dispatch({ action: 'loading', data: false })
         const a = document.createElement('a');
         a.href = url;
         a.download = record.name;
