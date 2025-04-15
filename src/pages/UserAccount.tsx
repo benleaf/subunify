@@ -2,21 +2,24 @@ import { useContext, useState } from "react";
 import { StateMachineDispatch } from "@/App";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useAuth } from "@/auth/AuthContext";
-import { Button, Divider, TextField } from "@mui/material";
+import { Button, Divider, Stack, TextField } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { isError } from "@/api/isError";
 import BaseModal from "@/components/modal/BaseModal";
 import { CssSizes } from "@/constants/CssSizes";
+import { useNavigate } from "react-router";
 
 const UserAccount = () => {
     const { dispatch } = useContext(StateMachineDispatch)!
+    const navigate = useNavigate()
     const { user, logout, authAction } = useAuth()
     const [endSubscriptionModal, setEndSubscriptionModal] = useState(false)
     const [conformationMessage, setConformationMessage] = useState('')
     const handleLogout = () => {
         dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout successful' } })
         logout()
+        navigate('/')
     }
 
     const handleEndSubscription = async () => {
@@ -29,11 +32,21 @@ const UserAccount = () => {
 
     return <DashboardLayout>
         <GlassSpace size="small">
-            <GlassText size="large">
-                User Account for ({user?.email})
-            </GlassText>
-            <Button onClick={handleLogout}>Logout</Button>
-            <Button onClick={() => setEndSubscriptionModal(true)}>End Subscription</Button>
+            <Stack spacing={1}>
+                <GlassText size="large">
+                    User Account for ({user?.email})
+                </GlassText>
+                <Divider />
+                <GlassText size="moderate">
+                    For any specific requests please contact us at:
+                </GlassText>
+                <GlassText size="moderate">product@subunify.com</GlassText>
+                <Divider />
+                <div>
+                    <Button onClick={handleLogout}>Logout</Button>
+                    <Button color="error" onClick={() => setEndSubscriptionModal(true)}>End Subscription</Button>
+                </div>
+            </Stack>
         </GlassSpace>
         <BaseModal state={endSubscriptionModal ? 'open' : 'closed'} close={() => setEndSubscriptionModal(false)} maxWidth={600}>
             <GlassSpace size='moderate'>

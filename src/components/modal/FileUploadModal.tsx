@@ -10,14 +10,15 @@ import GlassText from '../glassmorphism/GlassText'
 import BaseModal from './BaseModal'
 
 type UploadSession = { uploadId: string, key: string }
+type FileRecord = { file: File, description: string }
 
 type Props = {
-    files: File[]
+    fileRecords: FileRecord[]
     startUpload: boolean
 }
 const mb5 = 5 * 1024 * 1024
 
-const FileUploadModal = ({ files, startUpload }: Props) => {
+const FileUploadModal = ({ fileRecords, startUpload }: Props) => {
     const { dispatch } = useContext(StateMachineDispatch)!
     const navigate = useNavigate()
 
@@ -28,7 +29,7 @@ const FileUploadModal = ({ files, startUpload }: Props) => {
     const [startTime, setStartTime] = useState<Moment>()
     const [eta, setEta] = useState<string>()
 
-    const totalSize = files.length ? files.map(file => file.size).reduce((acc, cur) => acc + cur) : 0
+    const totalSize = fileRecords.length ? fileRecords.map(fileRecord => fileRecord.file.size).reduce((acc, cur) => acc + cur) : 0
     const totalProgress = (totalUploaded / totalSize) * 100
 
     useEffect(() => {
@@ -54,16 +55,20 @@ const FileUploadModal = ({ files, startUpload }: Props) => {
         const uploadUrls: Map<string, string[]> = new Map()
 
         const uploadSessions = await authAction<UploadSession[]>('storage-file/upload/start', "POST", JSON.stringify({
-            files: files.map(file => ({ name: file.name, description: file.name, size: file.size }))
+            files: fileRecords.map(fileRecord => ({
+                name: fileRecord.file.name,
+                description: fileRecord.description,
+                size: fileRecord.file.size
+            }))
         }))
 
         if (isError(uploadSessions)) throw new Error("Failed to start upload session");
 
-        for (const file of files) {
-            const uploadSession = uploadSessions.find(session => session.key.includes(file.name))
+        for (const fileRecord of fileRecords) {
+            const uploadSession = uploadSessions.find(session => session.key.includes(fileRecord.file.name))
             if (!uploadSession) throw new Error("Failed to find upload session for file");
 
-            const parts = Math.ceil(file.size / mb5)
+            const parts = Math.ceil(fileRecord.file.size / mb5)
             const response = await authAction<{ urls: string[] }>('storage-file/upload/presigned-parts', "POST", JSON.stringify({
                 key: uploadSession.key,
                 uploadId: uploadSession.uploadId,
@@ -72,7 +77,7 @@ const FileUploadModal = ({ files, startUpload }: Props) => {
 
             if (isError(response)) throw new Error("Failed to get presigned urls");
 
-            uploadUrls.set(file.name, response.urls)
+            uploadUrls.set(fileRecord.file.name, response.urls)
         }
 
         const fileUploads: {
@@ -86,27 +91,27 @@ const FileUploadModal = ({ files, startUpload }: Props) => {
 
         setStartTime(moment())
 
-        for (const file of files) {
-            setCurrentFileName(file.name)
+        for (const fileRecord of fileRecords) {
+            setCurrentFileName(fileRecord.file.name)
 
             let retries = 0
             while (true) {
                 try {
-                    const uploadSession = uploadSessions.find(session => session.key.includes(file.name))
+                    const uploadSession = uploadSessions.find(session => session.key.includes(fileRecord.file.name))
                     if (!uploadSession) throw new Error("Failed to find upload session for file")
 
-                    const fileUpload = await uploadFile(uploadUrls, file, uploadSession)
+                    const fileUpload = await uploadFile(uploadUrls, fileRecord.file, uploadSession)
                     fileUploads.push(fileUpload)
                     break
                 } catch (error) {
                     console.log(error)
-                    dispatch({ action: 'popup', data: { colour: 'error', message: `Failed to upload file ${file.name}, retrying...` } })
+                    dispatch({ action: 'popup', data: { colour: 'error', message: `Failed to upload file ${fileRecord.file.name}, retrying...` } })
                 }
 
                 retries++
 
                 if (retries > 10) {
-                    dispatch({ action: 'popup', data: { colour: 'error', message: `Failed to upload file ${file.name}, please try again later` } })
+                    dispatch({ action: 'popup', data: { colour: 'error', message: `Failed to upload file ${fileRecord.file.name}, please try again later` } })
                     break
                 }
             }
@@ -192,9 +197,7 @@ const FileUploadModal = ({ files, startUpload }: Props) => {
                 <CircularProgress />
             </>}
         </GlassSpace>
-        <Alert
-            severity='warning'
-        >
+        <Alert severity='warning'>
             Upload in progress, please do not close the tab or refresh.
         </Alert>
     </BaseModal>
