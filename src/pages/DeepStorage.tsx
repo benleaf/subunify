@@ -124,7 +124,7 @@ const DeepStorage = () => {
         a.remove();
         window.URL.revokeObjectURL(url);
 
-        context.dispatch({ action: 'popup', data: { colour: 'success', message: 'File downloaded!' } })
+        context.dispatch({ action: 'popup', data: { colour: 'success', message: `Downloading ${record.name}` } })
     }
 
     const getAccessButton = (id: string, state: string | null) => {
