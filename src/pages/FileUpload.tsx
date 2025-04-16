@@ -1,6 +1,6 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Alert, Button, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Alert, Button, Divider, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useAuth } from "@/auth/AuthContext";
 import { useCallback } from 'react';
@@ -31,13 +31,18 @@ const FileUpload = () => {
 
     const { authAction, user } = useAuth()
     const [authFlow, setAuthFlow] = useState('adding')
+    const [userCurrentBytes, setUserCurrentBytes] = useState(0)
 
     const [startUpload, setStartUpload] = useState(false)
     const [fileRecords, setFileRecords] = useState<FileRecord[]>([])
 
     const totalSize = fileRecords.length ? fileRecords.map(fileRecord => fileRecord.file.size).reduce((acc, cur) => acc + cur) : 0
     const absoluteMonthlyCost = getNumericFileMonthlyCost(totalSize)
-    const monthlyCost = absoluteMonthlyCost < 0.01 ? '<$0.01' : `$${absoluteMonthlyCost.toFixed(2)}`
+    const userCurrentMonthlyCost = getNumericFileMonthlyCost(userCurrentBytes)
+    const absoluteMonthlyCostAfterUpload = Math.max(0.6, absoluteMonthlyCost + userCurrentMonthlyCost)
+
+    const monthlyCost = absoluteMonthlyCostAfterUpload <= 0.6 ? '$0.00' : `$${absoluteMonthlyCost.toFixed(2)}`
+    const monthlyCostAfterUpload = `$${absoluteMonthlyCostAfterUpload.toFixed(2)}`
     const uploadFee = (Math.max(0.5, getNumericFileUploadCost(totalSize))).toFixed(2)
 
     const removeDuplicates = (fileRecords: FileRecord[]) => {
@@ -104,6 +109,15 @@ const FileUpload = () => {
 
     useEffect(() => {
         if (user && authFlow == 'login') uploadFlow()
+
+        const getUserBytes = async () => {
+            const result = await authAction<{ bytes: number }>(`storage-file/user-bytes`, "GET");
+            if (!isError(result)) {
+                setUserCurrentBytes(result.bytes)
+            }
+        }
+
+        if (user) getUserBytes()
     }, [user])
 
 
@@ -138,8 +152,12 @@ const FileUpload = () => {
                 </div>
                 <GlassCard marginSize="moderate" paddingSize="moderate">
                     <Stack >
-                        <GlassText size="moderate">Total size: {getFileSize(totalSize)}</GlassText>
+                        <GlassText size="moderate">Upload size: {getFileSize(totalSize)}</GlassText>
+                        <GlassText size="moderate">Total store size after upload: {getFileSize(userCurrentBytes + totalSize)}</GlassText>
+                        <Divider style={{ margin: '0.4em' }} />
                         <GlassText size="moderate">Monthly Cost of new files: {monthlyCost}</GlassText>
+                        <GlassText size="moderate">Monthly Cost after upload: {monthlyCostAfterUpload}</GlassText>
+                        <Divider style={{ margin: '0.4em' }} />
                         <GlassText size="moderate">Upload Fee: ${uploadFee}</GlassText>
                     </Stack>
                 </GlassCard>
@@ -201,22 +219,17 @@ const FileUpload = () => {
                             <GlassText size="moderate">Files to upload: {fileRecords.length}</GlassText>
                         </GlassCard>
                         <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate">Total size: {getFileSize(totalSize)}</GlassText>
+                            <GlassText size="moderate">Size: {getFileSize(totalSize)}</GlassText>
                         </GlassCard>
                         <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate">
-                                Monthly cost for new files: {monthlyCost}
-                            </GlassText>
-                        </GlassCard>
-                        <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate">
-                                Monthly account fee: $0.60
-                            </GlassText>
+                            <GlassText size="moderate"> Monthly cost for new files: {monthlyCost}</GlassText>
                         </GlassCard>
                         <GlassCard marginSize="tiny" paddingSize="small">
                             <GlassText size="moderate">Upload fee: ${uploadFee}</GlassText>
                         </GlassCard>
-
+                        <GlassCard marginSize="tiny" paddingSize="small">
+                            <GlassText size="moderate">New monthly cost: {monthlyCostAfterUpload}</GlassText>
+                        </GlassCard>
                     </div>
                     <GlassText size='moderate'>If you are yet to create an account and start a subscription, you will be prompted to do that first</GlassText>
                     <Alert severity='warning' sx={{ width: '100%' }}>

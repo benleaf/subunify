@@ -13,7 +13,7 @@ const CostCalculator = () => {
     const deepStorageCost = 1.5
     const initialStorageCost = 6.5
 
-    const costValue = deepStorageCost * totalGB + 0.6
+    const costValue = Math.max(0.6, deepStorageCost * totalGB)
     const initialCost = Math.max(0.5, initialStorageCost * totalGB)
     const { width } = useSize()
     return <>
@@ -48,7 +48,7 @@ const CostCalculator = () => {
                     {width <= ScreenWidths.Mobile && <Divider style={{ margin: '0.4em' }} />}
                     <GlassText size="large">${initialCost.toFixed(2)} Initial storage cost</GlassText>
                     <Divider style={{ margin: '0.4em' }} />
-                    <GlassText size="large">${costValue.toFixed(2)} Per Month (including $0.60 account fee)</GlassText>
+                    <GlassText size="large">${costValue.toFixed(2)} Per Month</GlassText>
                     {width <= ScreenWidths.Mobile && <Divider style={{ margin: '0.4em' }} />}
                     <GlassText size="moderate">${(costValue * 12).toFixed(2)} Per Year</GlassText>
                 </GlassCard>

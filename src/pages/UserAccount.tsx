@@ -24,10 +24,16 @@ const UserAccount = () => {
 
     const handleEndSubscription = async () => {
         const sessionResult = await authAction<null>(`user/end-subscription`, "DELETE");
+        if (isError(sessionResult) && sessionResult.message == 'Unauthorized') {
+            return
+        }
         if (isError(sessionResult)) {
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Unable to end subscription, please contact support' } })
+            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to end subscription, please contact support' } })
+            setEndSubscriptionModal(false)
+            return
         }
         dispatch({ action: 'popup', data: { colour: 'success', message: 'Subscription ended successful, all files deleted' } })
+        setEndSubscriptionModal(false)
     }
 
     return <DashboardLayout>

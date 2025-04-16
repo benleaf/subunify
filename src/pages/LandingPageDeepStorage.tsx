@@ -67,13 +67,11 @@ const LandingPageDeepStorage = () => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Cost of TB per month</TableCell>
-                                    <TableCell>Monthly account fee</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow >
-                                    <TableCell>$1.50</TableCell>
-                                    <TableCell>$0.60</TableCell>
+                                    <TableCell>$1.50 ($0.60 minimum payment)</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
