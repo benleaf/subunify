@@ -49,7 +49,7 @@ const TopBar = () => {
                         </Drawer>
                     </>
                     }
-                    <ButtonBase href={user ? "/deep-storage" : '/'}>
+                    <ButtonBase href={user?.email_verified ? "/deep-storage" : '/'}>
                         <GlassText size="huge">SUBUNIFY</GlassText>
                     </ButtonBase>
                 </Stack>
@@ -70,7 +70,7 @@ const TopBar = () => {
                     <AuthModal />
                 </>}
             </Stack>
-        </GlassSurface>
+        </GlassSurface >
 
         <div style={{
             margin: '0px',

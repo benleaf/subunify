@@ -1,6 +1,6 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Button, Divider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
+import { Button, Divider, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import ExampleTable from "@/components/TablesDataTable/ExampleTable";
@@ -10,14 +10,18 @@ import FirstLineMessaging from "@/components/promo/FirstLineMessaging";
 import CostCalculator from "@/components/promo/CostCalculator";
 import BlackHoleCanvas2 from "@/components/graphics/BlackHoleCanvas2";
 import { CssSizes } from "@/constants/CssSizes";
+import { ArrowDownward } from "@mui/icons-material";
+import { ElementRef, useRef } from "react";
 
 const LandingPageDeepStorage = () => {
     const { width } = useSize()
+    const myRef = useRef<ElementRef<'div'>>(null)
+    const executeScroll = () => myRef.current!.scrollIntoView({ behavior: 'smooth' })
 
     return <div>
         {width < ScreenWidths.Mobile && <div style={{ height: '35vh' }} />}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '95vh' : '20vh', alignItems: 'center', width: '80vh' }}>
+            <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <GlassText size="large" style={{ letterSpacing: '0.15em' }}>THE SUBUNIFY</GlassText>
@@ -35,13 +39,18 @@ const LandingPageDeepStorage = () => {
                 </GlassSpace>
             </div>
             {width > ScreenWidths.Mobile && <>
-                <div style={{ display: 'flex', height: '95vh', alignItems: 'center', width: '50%' }}>
+                <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
                     <BlackHoleCanvas width={width * 0.45} />
                 </div>
             </>}
         </div>
-        {width < ScreenWidths.Tablet && <div style={{ height: '25vh' }} />}
-        <div style={{ flex: 1, padding: '2em' }} />
+        {width < ScreenWidths.Mobile && <div style={{ height: '20vh' }} />}
+        <div style={{ display: 'flex', padding: '2em', justifyContent: 'center' }} >
+            <IconButton onClick={executeScroll} color="primary">
+                <ArrowDownward />
+            </IconButton>
+        </div>
+        <div style={{ height: '15vh' }} ref={myRef} />
         <FirstLineMessaging />
         {width <= ScreenWidths.Mobile && <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.huge }} >
             <BlackHoleCanvas2 width={width - 20} />
