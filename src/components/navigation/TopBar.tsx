@@ -38,7 +38,7 @@ const TopBar = () => {
         >
             <GlassSpace size="tiny">
                 <Stack direction='row' spacing={1} alignItems='center'>
-                    {width <= ScreenWidths.Mobile && <>
+                    {width <= ScreenWidths.Mobile && user && <>
                         <div>
                             <IconButton onClick={toggleDrawer(true)} color="primary">
                                 <MenuTwoTone />

@@ -13,7 +13,7 @@ type Props = {
 
 const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
     const style: CSSProperties = {
-        position: 'absolute' as 'absolute',
+        position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
@@ -23,25 +23,22 @@ const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
     }
 
     return <Modal
-        hideBackdrop
         open={state === "open"}
         onClose={close}
     >
-        <>
-            <div style={{ ...style, position: "relative" }}>
-                {close && <Fab
-                    color="primary"
-                    onClick={close}
-                    size='small'
-                    style={{ position: "absolute", right: -5, top: -5 }}
-                >
-                    <Close />
-                </Fab>}
-                <GlassCard>
-                    {children}
-                </GlassCard>
-            </div>
-        </>
+        <div style={{ ...style, position: "relative" }}>
+            {close && <Fab
+                color="primary"
+                onClick={close}
+                size='small'
+                style={{ position: "absolute", right: -5, top: -5 }}
+            >
+                <Close />
+            </Fab>}
+            <GlassCard>
+                {children}
+            </GlassCard>
+        </div>
     </Modal>
 }
 
