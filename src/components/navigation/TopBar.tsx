@@ -49,7 +49,7 @@ const TopBar = () => {
                         </Drawer>
                     </>
                     }
-                    <ButtonBase href="/deep-storage">
+                    <ButtonBase href={user ? "/deep-storage" : '/'}>
                         <GlassText size="huge">SUBUNIFY</GlassText>
                     </ButtonBase>
                 </Stack>
