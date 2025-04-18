@@ -114,9 +114,12 @@ const DeepStorage = () => {
             return
         }
 
+        // Warm up browser for file download, prevents accidental redirect
+        const { url } = response
+        await authAction<TODO>(url, 'GET')
+
         context.dispatch({ action: 'loading', data: false })
         const a = document.createElement('a');
-        const { url } = response
         a.href = url;
         a.download = record.name;
         document.body.appendChild(a);
