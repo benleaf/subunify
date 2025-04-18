@@ -5,7 +5,7 @@
             "headers": [
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://static.hotjar.com 'unsafe-inline'; connect-src 'self' https://*.hotjar.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+                    "value": "default-src 'self'; script-src 'self' https://js.stripe.com https://www.googletagmanager.com https://static.hotjar.com 'unsafe-inline'; frame-src https://js.stripe.com https://hooks.stripe.com https://*.stripe.com; connect-src 'self' https://*.stripe.com https://*.hotjar.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
                 },
                 {
                     "key": "X-Content-Type-Options",
@@ -21,7 +21,7 @@
                 },
                 {
                     "key": "Permissions-Policy",
-                    "value": "camera=(), microphone=(), geolocation=()"
+                    "value": "camera=(), microphone=(), geolocation=(), payment=(self \"https://*.stripe.com\")"
                 },
                 {
                     "key": "Strict-Transport-Security",
