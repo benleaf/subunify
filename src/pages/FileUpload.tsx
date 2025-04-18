@@ -4,7 +4,7 @@ import { Alert, Button, Divider, IconButton, Stack, Table, TableBody, TableCell,
 import { useContext, useEffect, useState } from "react";
 import { useAuth } from "@/auth/AuthContext";
 import { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, FileError } from 'react-dropzone';
 import { getFileCost, getFileSize, getNumericFileMonthlyCost, getNumericFileUploadCost } from "@/helpers/FileSize";
 import { Delete } from "@mui/icons-material";
 import { CssSizes } from "@/constants/CssSizes";
@@ -23,6 +23,12 @@ import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import FileUploadModal from "@/components/modal/FileUploadModal";
 
 type FileRecord = { file: File, description: string }
+
+const BLOCKED_EXTENSIONS = [
+    'exe', 'dll', 'com', 'msi', 'bat', 'cmd', 'sh', 'vbs', 'js',
+    'ts', 'html', 'htm', 'svg', 'php', 'jsp', 'asp', 'aspx', 'py',
+    'pl', 'rb', 'cgi', 'jar', 'apk', 'swf', 'scr', 'wsf', 'ps1'
+]
 
 const FileUpload = () => {
     const maxDescriptionLength = 5000
@@ -70,7 +76,18 @@ const FileUpload = () => {
         ])),
         []
     )
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        validator: file => {
+            const ext = file.name.split('.').pop()!
+            if (BLOCKED_EXTENSIONS.includes(ext)) {
+                const message = `Files of the following types are not allowed: ${BLOCKED_EXTENSIONS.join(', ')}`
+                dispatch({ action: 'popup', data: { colour: 'warning', message } })
+                return { message, code: 'FileTypeNotAllowed' } as FileError
+            }
+            return null
+        }
+    })
 
     const uploadFlow = async () => {
         setAuthFlow('adding')

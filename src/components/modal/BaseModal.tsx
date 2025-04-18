@@ -7,7 +7,7 @@ import GlassCard from '../glassmorphism/GlassCard'
 type Props = {
     children: React.ReactNode,
     state: "open" | "closed"
-    close?: () => void
+    close?: (e: {}, reason?: string) => void
     maxWidth?: CSSProperties['maxWidth']
 }
 
