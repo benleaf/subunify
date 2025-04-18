@@ -116,16 +116,7 @@ const DeepStorage = () => {
 
         // Warm up browser for file download, prevents accidental redirect
         const { url } = response
-        await fetch(url, { method: 'HEAD' })
-
-        context.dispatch({ action: 'loading', data: false })
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = record.name;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
+        window.open(url, '_self');
 
         context.dispatch({ action: 'popup', data: { colour: 'success', message: `Downloading ${record.name}` } })
     }
