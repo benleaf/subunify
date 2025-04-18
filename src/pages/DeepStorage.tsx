@@ -116,7 +116,7 @@ const DeepStorage = () => {
 
         // Warm up browser for file download, prevents accidental redirect
         const { url } = response
-        await authAction<TODO>(url, 'GET')
+        await fetch(url, { method: 'HEAD' })
 
         context.dispatch({ action: 'loading', data: false })
         const a = document.createElement('a');
