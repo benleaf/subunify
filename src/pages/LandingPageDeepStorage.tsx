@@ -19,7 +19,8 @@ const LandingPageDeepStorage = () => {
     const executeScroll = () => myRef.current!.scrollIntoView({ behavior: 'smooth' })
 
     return <div>
-        {width < ScreenWidths.Mobile && <div style={{ height: '35vh' }} />}
+        {width < ScreenWidths.Mobile && <div style={{ height: '25vh' }} />}
+        <div style={{ height: '10vh' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
