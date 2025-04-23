@@ -90,26 +90,24 @@ const LandingPageDeepStorage = () => {
             </GlassSpace>
             <GlassSpace size={"large"} style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <GlassText size="large">DOWNLOAD</GlassText>
-                <GlassText size="moderate">
-                    <Stack spacing={3} margin='1em'>
-                        <GlassText size="moderate">
-                            The way we achieve our low price is by embracing a key trade off: Retrieval time. We purposefully limit retrieval time to 12 hours,
-                            this allows our Amazon servers to optimize storage to unrivalled levels. Our price is made possible because of this.
-                        </GlassText>
-                        <GlassText size="moderate">
-                            Our service is not for day-to-day use, it is not for file sharing and streaming, it does one thing, and one thing excellently, it archives.
-                            If you wish these other things, we recommend other services, but, if you have Terabytes of data that you need to hold for years at a time, we
-                            can only recommend ourselves.
-                        </GlassText>
-                        <GlassText size="moderate">
-                            Due to the long restore time, we allow the creation of an access window after file restoration. In this window of time,
-                            a file can be downloaded freely and immediately. The length of this window is specified by you.
-                        </GlassText>
-                        <GlassText size="moderate">
-                            File restoration costs are added to the monthly storage costs and billed together monthly.
-                        </GlassText>
-                    </Stack>
-                </GlassText>
+                <Stack spacing={3} margin='1em'>
+                    <GlassText size="moderate">
+                        The way we achieve our low price is by embracing a key trade off: Retrieval time. We purposefully limit retrieval time to 12 hours,
+                        this allows our Amazon servers to optimize storage to unrivalled levels. Our price is made possible because of this.
+                    </GlassText>
+                    <GlassText size="moderate">
+                        Our service is not for day-to-day use, it is not for file sharing and streaming, it does one thing, and one thing excellently, it archives.
+                        If you wish these other things, we recommend other services, but, if you have Terabytes of data that you need to hold for years at a time, we
+                        can only recommend ourselves.
+                    </GlassText>
+                    <GlassText size="moderate">
+                        Due to the long restore time, we allow the creation of an access window after file restoration. In this window of time,
+                        a file can be downloaded freely and immediately. The length of this window is specified by you.
+                    </GlassText>
+                    <GlassText size="moderate">
+                        File restoration costs are added to the monthly storage costs and billed together monthly.
+                    </GlassText>
+                </Stack>
                 <TableContainer>
                     <Table stickyHeader size="small">
                         <TableHead>

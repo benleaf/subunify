@@ -13,12 +13,7 @@ type Props = {
 }
 
 const PaymentModal = ({ state, onClose, onComplete }: Props) => {
-  const context = useContext(StateMachineDispatch)
-
   const onPaymentCompleat = async () => {
-    context?.dispatch({ action: 'loading', data: true })
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    context?.dispatch({ action: 'loading', data: false })
     onClose && onClose()
     onComplete && onComplete()
   }
