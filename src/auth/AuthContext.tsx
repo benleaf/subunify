@@ -13,6 +13,7 @@ interface AuthContextType {
     user: AuthUser | null
     subscribed: boolean
     login: (email: string, password: string) => Promise<void>
+    loginWithGoogle: (googleIdToken: string) => Promise<void>
     logout: () => void
     authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
     rawAuthAction: (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => Promise<Partial<ApiError> | Response>
@@ -37,6 +38,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { token, cognitoUser } = await cognitoLogin(email, password);
         setCognitoUser(cognitoUser)
         setUser(jwtDecode(token));
+    };
+
+    const loginWithGoogle = async (googleIdToken: string) => {
+        localStorage.setItem("token", googleIdToken);
+        setUser(jwtDecode(googleIdToken));
     };
 
     const logout = () => {
@@ -84,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return result;
     }
 
-    return <AuthContext.Provider value={{ user, login, logout, authAction, rawAuthAction, subscribed }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, login, logout, authAction, rawAuthAction, subscribed, loginWithGoogle }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

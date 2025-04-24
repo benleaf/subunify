@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
 import { useAuth } from "./AuthContext";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
@@ -15,11 +15,31 @@ type Props = {
 }
 
 const Login = ({ goToConformation, onLogin }: Props) => {
+    const { login, loginWithGoogle } = useAuth();
+
+    const clientId = '668159150098-p2r666gu4qfcrfo8779uo4eethtu5cq7.apps.googleusercontent.com';
+
+    useEffect(() => {
+        (window as any).google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredentialResponse,
+        });
+
+        (window as any).google.accounts.id.renderButton(
+            document.getElementById('google-signin'),
+            { theme: 'outline', size: 'large' }
+        );
+    }, []);
+
+    const handleCredentialResponse = async (response: any) => {
+        await loginWithGoogle(response.credential)
+        dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })
+    };
+
     const { dispatch } = useContext(StateMachineDispatch)!
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -90,6 +110,7 @@ const Login = ({ goToConformation, onLogin }: Props) => {
         </FormControl>
 
         <Button fullWidth variant="outlined" onClick={handleLogin}>Login</Button>
+        <div id="google-signin" />
         {message && <Typography color="error">{message}</Typography>}
     </>
 };
