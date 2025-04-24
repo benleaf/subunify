@@ -6,7 +6,7 @@ import { ComponentSizes } from "@/constants/ComponentSizes";
 import CreateChartForm from "@/components/charts/CreateChartForm";
 import { StateMachineDispatch } from "@/App";
 import { isDashboard } from "@/stateManagement/stateMachines/getContext";
-import DashboardLayout from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 
 const Dashboard = () => {
     const context = useContext(StateMachineDispatch)!

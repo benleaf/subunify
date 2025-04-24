@@ -6,7 +6,7 @@ import EditableTable from "@/components/TablesDataTable/EditableTable";
 import { isError } from "@/api/isError";
 import { TableResult } from "@/types/server/TableResult";
 import { useAuth } from "@/auth/AuthContext";
-import DashboardLayout from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Button } from "@mui/material";
 import GlassText from "@/components/glassmorphism/GlassText";
 

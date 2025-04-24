@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Stack } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
@@ -6,7 +6,7 @@ import GlassText from "@/components/glassmorphism/GlassText";
 const TermsOfService = () => {
     return <DashboardLayout>
         <GlassSpace size="tiny" style={{ overflowY: 'scroll', height: '83vh' }}>
-            <Stack spacing={1}>
+            <Stack spacing={1} maxWidth={800}>
                 <GlassText size="large">Pricing</GlassText>
                 <GlassText size="moderate">
                     Subunify offers affordable, long-term file archiving using secure cold storage. Below is a detailed breakdown of pricing to help you make informed decisions before uploading your data.

@@ -1,12 +1,12 @@
-import DashboardLayout from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Stack } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
 
 const PrivacyPolicy = () => {
-    return <DashboardLayout>
+    return <DashboardLayout >
         <GlassSpace size="tiny" style={{ overflowY: 'scroll', height: '83vh' }}>
-            <Stack spacing={1}>
+            <Stack spacing={1} maxWidth={800}>
                 <GlassText size="huge">SUBUNIFY Privacy Policy</GlassText>
                 <GlassText size="moderate">
                     Effective Date: 04/24/2025

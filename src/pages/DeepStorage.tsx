@@ -9,7 +9,7 @@ import { Button, MenuItem, Select, Stack, Table, TableBody, TableCell, TableCont
 import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { Download } from "@mui/icons-material";
-import DashboardLayout from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 
 const retrievalTypeInfo = {
     Standard: { name: "Standard: 12 hour retrieval", cost: 0.2 },

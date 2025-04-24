@@ -5,7 +5,7 @@ import { isDashboard } from "@/stateManagement/stateMachines/getContext";
 import EditableTable from "@/components/TablesDataTable/EditableTable";
 import { isError } from "@/api/isError";
 import { useAuth } from "@/auth/AuthContext";
-import DashboardLayout from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useSearchParams } from "react-router";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { ServerColumn } from "@/types/application/ServerColumn";

@@ -6,7 +6,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { useCallback } from 'react';
 import { useDropzone, FileError } from 'react-dropzone';
 import { getFileCost, getFileSize, getNumericFileMonthlyCost, getNumericFileUploadCost } from "@/helpers/FileSize";
-import { Delete } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
 import { CssSizes } from "@/constants/CssSizes";
 import TutorialModal from "@/components/modal/TutorialModal";
 import { User } from "@/types/User";
@@ -14,7 +14,7 @@ import { isError } from "@/api/isError";
 import { StateMachineDispatch } from "@/App";
 import AuthModal from "@/auth/AuthModal";
 import PaymentModal from "@/components/modal/PaymentModal";
-import DashboardLayout from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import { useSize } from "@/hooks/useSize";
 import { ScreenWidths } from "@/constants/ScreenWidths";
@@ -22,7 +22,7 @@ import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import FileUploadModal from "@/components/modal/FileUploadModal";
 
-type FileRecord = { file: File, description: string }
+type FileRecord = { file: File, description: string, finishEdit: boolean }
 
 const BLOCKED_EXTENSIONS = [
     'exe', 'dll', 'com', 'msi', 'bat', 'cmd', 'sh', 'vbs', 'js',
@@ -72,7 +72,7 @@ const FileUpload = () => {
     const onDrop = useCallback(
         (acceptedFiles: File[]) => setFileRecords(old => removeDuplicates([
             ...old,
-            ...acceptedFiles.map(file => ({ file, description: '' }))
+            ...acceptedFiles.map(file => ({ file, description: '', finishEdit: false }))
         ])),
         []
     )
@@ -118,9 +118,14 @@ const FileUpload = () => {
 
     const updateFileDescription = (fileName: string, text: string) => {
         const limitedText = text.slice(0, maxDescriptionLength)
-        console.log(limitedText)
         setFileRecords(old => old.map(fr =>
             fr.file.name === fileName ? { ...fr, description: limitedText } : fr
+        ))
+    }
+
+    const setFinishEdit = (fileName: string, state: boolean) => {
+        setFileRecords(old => old.map(fr =>
+            fr.file.name === fileName ? { ...fr, finishEdit: state } : fr
         ))
     }
 
@@ -190,6 +195,7 @@ const FileUpload = () => {
                                     <TableCell>Cost Per Month</TableCell>
                                     <TableCell>Size</TableCell>
                                     <TableCell>Remove</TableCell>
+                                    <TableCell>Edit</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -203,11 +209,15 @@ const FileUpload = () => {
                                                 <Delete />
                                             </IconButton>
                                         </TableCell>
+                                        <TableCell>
+                                            <IconButton onClick={() => setFinishEdit(fileRecord.file.name, false)}>
+                                                <Edit />
+                                            </IconButton>
+                                        </TableCell>
                                     </TableRow>
-                                    <TableRow key={`${index}-description`} >
-                                        <TableCell colSpan={4}>
+                                    {!fileRecord.finishEdit && <TableRow key={`${index}-description`} >
+                                        <TableCell colSpan={5} style={{ padding: CssSizes.moderate }}>
                                             <TextField
-                                                style={{ marginBlock: CssSizes.moderate }}
                                                 variant="filled"
                                                 multiline
                                                 minRows={2}
@@ -217,8 +227,9 @@ const FileUpload = () => {
                                                 label={`Description for "${fileRecord.file.name}"`}
                                                 onChange={e => updateFileDescription(fileRecord.file.name, e.target.value)}
                                             />
+                                            <Button onClick={() => setFinishEdit(fileRecord.file.name, true)} fullWidth variant="outlined">Done</Button>
                                         </TableCell>
-                                    </TableRow>
+                                    </TableRow>}
                                 </>)}
                             </TableBody>
                         </Table>
