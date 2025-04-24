@@ -253,6 +253,10 @@ const FileUpload = () => {
                         The upload fee will be charged immediately upon upload
                     </Alert>
                     <Button onClick={uploadFlow} fullWidth variant="contained">Upload</Button>
+                    <Divider orientation="horizontal" style={{ marginBlock: CssSizes.moderate }}></Divider>
+                    <GlassText size="small" >
+                        See our <a href="/terms-of-service">Terms of Service</a> and our <a href="/privacy-policy">Privacy Policy</a> before uploading.
+                    </GlassText>
                 </Stack>
             </GlassSpace>
         </BaseModal>

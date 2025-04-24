@@ -202,6 +202,12 @@ const LandingPageDeepStorage = () => {
             </GlassSpace>
         </div>
 
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3em' }}>
+            <Button href='/privacy-policy'>Privacy Policy</Button>
+            <Button href='/terms-of-service'>Terms Of Service</Button>
+            <Button href='/pricing'>Pricing</Button>
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='huge' style={{ textAlign: 'center' }}>
                 <GlassText size="large">SUBUNIFY</GlassText>

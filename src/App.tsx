@@ -12,6 +12,9 @@ import LandingPageDeepStorage from './pages/LandingPageDeepStorage';
 import FileUpload from './pages/FileUpload';
 import DeepStorage from './pages/DeepStorage';
 import UserAccount from './pages/UserAccount';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import Pricing from './pages/Pricing';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -28,6 +31,9 @@ const App = () => {
           {/* <Route path="/original" element={<LandingPage />} /> */}
           <Route path="/" element={<LandingPageDeepStorage />} />
           <Route path="/file-upload" element={<FileUpload />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/deep-storage" element={<AuthWrapper><DeepStorage /></AuthWrapper>} />
           {/* <Route path="/excel-importer" element={<ExcelImportPage />} /> */}
           {/* <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} /> */}
