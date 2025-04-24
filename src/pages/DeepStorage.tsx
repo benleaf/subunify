@@ -32,11 +32,11 @@ const DeepStorage = () => {
         fileId: ""
     })
 
-    const { authAction, rawAuthAction } = useAuth()
+    const { authAction, user } = useAuth()
 
     useEffect(() => {
         getFiles()
-    }, [])
+    }, [user])
 
     const getFiles = async () => {
         const files = await authAction<TODO>('storage-file', 'GET')

@@ -34,13 +34,13 @@ const App = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/deep-storage" element={<AuthWrapper><DeepStorage /></AuthWrapper>} />
+          <Route path="/deep-storage" element={<DeepStorage />} />
           {/* <Route path="/excel-importer" element={<ExcelImportPage />} /> */}
           {/* <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} /> */}
           {/* <Route path="/column-manager" element={<AuthWrapper><ColumnManager /></AuthWrapper>} /> */}
           {/* <Route path="/dashboard" element={<AuthWrapper><Dashboard /></AuthWrapper>} /> */}
           {/* <Route path="/data-upload" element={<AuthWrapper><DataUpload /></AuthWrapper>} /> */}
-          <Route path="/user-account" element={<AuthWrapper><UserAccount /></AuthWrapper>} />
+          <Route path="/user-account" element={<UserAccount />} />
         </Routes>
       </BrowserRouter>
       <Backdrop

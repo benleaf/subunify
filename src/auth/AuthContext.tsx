@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleAction = <T,>(result: T) => {
         if (isError(result) && result.error == 'Unauthorized') {
             logout();
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Session Expired, please login again' } })
+            dispatch({ action: 'popup', data: { colour: 'warning', message: 'Please login to use this page' } })
         } else if (isError(result) && result.error == 'UserNotSubscribed') {
             setSubscribed(false)
             dispatch({ action: 'popup', data: { colour: 'warning', message: 'Subscription needed' } })
