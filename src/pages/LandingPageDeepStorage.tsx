@@ -17,15 +17,25 @@ import OpeningSplash from "@/components/promo/OpeningSplash";
 gsap.registerPlugin(ScrollTrigger);
 
 const LandingPageDeepStorage = () => {
-    const { width } = useSize()
-
     return <div>
         <OpeningSplash />
         <FirstLineMessaging />
-        {width <= ScreenWidths.Mobile && <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.big }} >
-            <BlackHoleCanvas2 width={width - 20} />
-        </div>}
+        <div style={{ height: '10vh' }} />
+        <GlassSpace size="small" >
+            <GlassText size="big">SLOW ACCESS DATA ARCHIVING</GlassText>
+            <GlassText size="moderate">Why pay for what you don't need?</GlassText>
+        </GlassSpace>
+        <div style={{
+            backgroundImage: `url(${manHoldingCamera})`,
+            backgroundPosition: 'center 75%',
+            backgroundSize: 'cover, contain',
+            backgroundRepeat: 'no-repeat',
+            width: '100%', height: '70vh', objectFit: 'cover', boxShadow: "0px -100px 50px 10px black inset"
+        }} />
+        <div style={{ height: '10vh' }} />
+
         <CostCalculator />
+        <div style={{ height: '10vh' }} />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
             <GlassSpace size="large" style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <GlassText size="large">STORAGE</GlassText>

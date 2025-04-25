@@ -5,6 +5,8 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useState } from "react"
+import BlackHoleCanvas2 from "../graphics/BlackHoleCanvas2"
+import { CssSizes } from "@/constants/CssSizes"
 
 const CostCalculator = () => {
     const [costCalculatorValue, setCostCalculatorValue] = useState({ size: 'TB', value: 100 })
@@ -17,10 +19,10 @@ const CostCalculator = () => {
     const initialCost = Math.max(0.5, initialStorageCost * totalGB)
     const { width } = useSize()
     return <>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GlassSpace size='small'>
-                <GlassText size="moderate">Calculate your costs before you upload with our calculator</GlassText>
-            </GlassSpace>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.big }} >
+            <div style={{ maxWidth: 800 }} >
+                <BlackHoleCanvas2 width={Math.min(width - 20, 800)} points={costCalculatorValue.value} />
+            </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ maxWidth: ScreenWidths.Mobile, width: '100%' }}>
@@ -46,7 +48,7 @@ const CostCalculator = () => {
                         onChange={(_, value) => setCostCalculatorValue(old => ({ ...old, value: +(value ?? 0) }))}
                     />
                     {width <= ScreenWidths.Mobile && <Divider style={{ margin: '0.4em' }} />}
-                    <GlassText size="large">${initialCost.toFixed(2)} Initial storage cost</GlassText>
+                    <GlassText size="large">${initialCost.toFixed(2)} Initial upload cost</GlassText>
                     <Divider style={{ margin: '0.4em' }} />
                     <GlassText size="large">${costValue.toFixed(2)} Per Month</GlassText>
                     {width <= ScreenWidths.Mobile && <Divider style={{ margin: '0.4em' }} />}
