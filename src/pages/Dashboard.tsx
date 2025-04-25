@@ -18,7 +18,7 @@ const Dashboard = () => {
 
     return isDashboard(context) && <DashboardLayout>
         {context.state.data.selectedScreen == 'Tables' && <>
-            <GlassText size='huge'>{context.state.data.selectedTable?.name ?? 'No Table Selected'}</GlassText>
+            <GlassText size='big'>{context.state.data.selectedTable?.name ?? 'No Table Selected'}</GlassText>
             <div style={{ height: height - ComponentSizes.topBar - 120 }}>
                 <TablesTable />
             </div>

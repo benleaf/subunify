@@ -7,7 +7,7 @@ const PrivacyPolicy = () => {
     return <DashboardLayout >
         <GlassSpace size="tiny" style={{ overflowY: 'scroll', height: '83vh' }}>
             <Stack spacing={1} maxWidth={800}>
-                <GlassText size="huge">SUBUNIFY Privacy Policy</GlassText>
+                <GlassText size="big">SUBUNIFY Privacy Policy</GlassText>
                 <GlassText size="moderate">
                     Effective Date: 04/24/2025
                 </GlassText>

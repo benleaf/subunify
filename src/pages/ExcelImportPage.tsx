@@ -36,7 +36,7 @@ const ExcelImportPage = () => {
     return isExcelImporter(context) && <>
         <BaseModal state={file ? "closed" : "open"}>
             <GlassSpace size={"small"}>
-                <GlassText size="huge">Select an Excel File</GlassText>
+                <GlassText size="big">Select an Excel File</GlassText>
                 <GlassSpace size={"small"}>
                     <GlassText size="moderate">
                         <ol>

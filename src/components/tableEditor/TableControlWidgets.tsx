@@ -37,7 +37,7 @@ const TableControlWidgets = ({ tables }: Props) => {
 
     return <GlassCard marginSize="small" paddingSize="small">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: CssSizes.small }}>
-            <GlassText size="huge">
+            <GlassText size="big">
                 TABLE CONTROL
             </GlassText>
             <Button

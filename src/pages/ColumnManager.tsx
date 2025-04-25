@@ -179,7 +179,7 @@ const ColumnManager = () => {
                     <ArrowBack color="primary" />
                 </IconButton>
             </div>
-            <GlassText size='huge'>{table?.name} Column Manager</GlassText>
+            <GlassText size='big'>{table?.name} Column Manager</GlassText>
         </Stack>
         <EditableTable
             name="Column"

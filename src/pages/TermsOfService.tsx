@@ -7,7 +7,7 @@ const TermsOfService = () => {
     return <DashboardLayout>
         <GlassSpace size="tiny" style={{ overflowY: 'scroll', height: '83vh' }}>
             <Stack spacing={1} maxWidth={800}>
-                <GlassText size="huge">SUBUNIFY Terms Of Service</GlassText>
+                <GlassText size="big">SUBUNIFY Terms Of Service</GlassText>
                 <GlassText size="large">Terms of Service</GlassText>
                 <GlassText size="moderate">
                     These Terms of Service (“Terms”) govern your access to and use of SUBUNIFY LLC (“SUBUNIFY”, “we”, “our”, or “us”), a file archiving platform. By using our website and services, you agree to be bound by these Terms. If you do not agree, you may not use the service.

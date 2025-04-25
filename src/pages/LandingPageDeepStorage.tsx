@@ -5,60 +5,29 @@ import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import ExampleTable from "@/components/TablesDataTable/ExampleTable";
 import { useSize } from "@/hooks/useSize";
-import BlackHoleCanvas from "@/components/graphics/BlackHoleCanvas";
 import FirstLineMessaging from "@/components/promo/FirstLineMessaging";
 import CostCalculator from "@/components/promo/CostCalculator";
 import BlackHoleCanvas2 from "@/components/graphics/BlackHoleCanvas2";
 import { CssSizes } from "@/constants/CssSizes";
-import { ArrowDownward } from "@mui/icons-material";
-import { ElementRef, useRef } from "react";
+import manHoldingCamera from '../images/man-holding-camera.jpg'
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import OpeningSplash from "@/components/promo/OpeningSplash";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const LandingPageDeepStorage = () => {
     const { width } = useSize()
-    const myRef = useRef<ElementRef<'div'>>(null)
-    const executeScroll = () => myRef.current!.scrollIntoView({ behavior: 'smooth' })
 
     return <div>
-        {width < ScreenWidths.Mobile && <div style={{ height: '25vh' }} />}
-        <div style={{ height: '10vh' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }}>
-                <GlassSpace size='moderate' style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <GlassText size="large" style={{ letterSpacing: '0.15em' }}>THE SUBUNIFY</GlassText>
-                        <Divider style={{ flex: 1 }} />
-                    </div>
-                    <GlassText size="gigantic" style={{ lineHeight: '10vw', fontWeight: 'bolder' }}>DEEP STORE</GlassText>
-
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <GlassText size="moderate" style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}>BLACK HOLE MEDIA ARCHIVING</GlassText>
-                        <Divider style={{ flex: 1 }} />
-                    </div>
-                    {width <= ScreenWidths.Mobile && <div >
-                        <BlackHoleCanvas width={Math.min(width * 0.95 - 70, 600)} />
-                    </div>}
-                </GlassSpace>
-            </div>
-            {width > ScreenWidths.Mobile && <>
-                <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
-                    <BlackHoleCanvas width={width * 0.45} />
-                </div>
-            </>}
-        </div>
-        {width < ScreenWidths.Mobile && <div style={{ height: '20vh' }} />}
-        <div style={{ display: 'flex', padding: '2em', justifyContent: 'center' }} >
-            <IconButton onClick={executeScroll} color="primary">
-                <ArrowDownward />
-            </IconButton>
-        </div>
-        <div style={{ height: '15vh' }} ref={myRef} />
+        <OpeningSplash />
         <FirstLineMessaging />
-        {width <= ScreenWidths.Mobile && <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.huge }} >
+        {width <= ScreenWidths.Mobile && <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.big }} >
             <BlackHoleCanvas2 width={width - 20} />
         </div>}
         <CostCalculator />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-            <GlassSpace size={"large"} style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <GlassSpace size="large" style={{ height: '100%', maxWidth: ScreenWidths.Mobile, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <GlassText size="large">STORAGE</GlassText>
                 <Stack spacing={3} margin='1em'>
                     <GlassText size="moderate">
@@ -209,7 +178,7 @@ const LandingPageDeepStorage = () => {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GlassSpace size='huge' style={{ textAlign: 'center' }}>
+            <GlassSpace size='big' style={{ textAlign: 'center' }}>
                 <GlassText size="large">SUBUNIFY</GlassText>
             </GlassSpace>
         </div>

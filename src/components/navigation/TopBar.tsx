@@ -50,7 +50,7 @@ const TopBar = () => {
                     </>
                     }
                     <ButtonBase href={user?.email_verified ? "/deep-storage" : '/'}>
-                        <GlassText size="huge">SUBUNIFY</GlassText>
+                        <GlassText size="big">SUBUNIFY</GlassText>
                     </ButtonBase>
                 </Stack>
             </GlassSpace>

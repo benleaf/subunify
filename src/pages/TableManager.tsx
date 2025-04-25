@@ -100,7 +100,7 @@ const TableManager = () => {
     }
 
     return isDashboard(context) && isDashboard(context) && <DashboardLayout>
-        <GlassText size='huge'>Table Manager</GlassText>
+        <GlassText size='big'>Table Manager</GlassText>
         <EditableTable
             name="Table"
             columns={[...columnMetadata]}

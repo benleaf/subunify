@@ -169,7 +169,7 @@ const FileUploadModal = ({ fileRecords, startUpload }: Props) => {
         }
     }
     return <BaseModal state={fileProgress > 0 ? 'open' : 'closed'}>
-        <GlassSpace size="huge">
+        <GlassSpace size="big">
             {(fileProgress < 100 || totalProgress < 100) && <>
                 <GlassText size="moderate">
                     {currentFileName}
