@@ -1,18 +1,15 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Button, Divider, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
+import { Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import ExampleTable from "@/components/TablesDataTable/ExampleTable";
-import { useSize } from "@/hooks/useSize";
 import FirstLineMessaging from "@/components/promo/FirstLineMessaging";
 import CostCalculator from "@/components/promo/CostCalculator";
-import BlackHoleCanvas2 from "@/components/graphics/BlackHoleCanvas2";
-import { CssSizes } from "@/constants/CssSizes";
-import manHoldingCamera from '../images/man-holding-camera.jpg'
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import OpeningSplash from "@/components/promo/OpeningSplash";
+import ImageSplash from "@/components/promo/ImageSplash";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,17 +18,7 @@ const LandingPageDeepStorage = () => {
         <OpeningSplash />
         <FirstLineMessaging />
         <div style={{ height: '10vh' }} />
-        <GlassSpace size="small" >
-            <GlassText size="big">SLOW ACCESS DATA ARCHIVING</GlassText>
-            <GlassText size="moderate">Why pay for what you don't need?</GlassText>
-        </GlassSpace>
-        <div style={{
-            backgroundImage: `url(${manHoldingCamera})`,
-            backgroundPosition: 'center 75%',
-            backgroundSize: 'cover, contain',
-            backgroundRepeat: 'no-repeat',
-            width: '100%', height: '70vh', objectFit: 'cover', boxShadow: "0px -100px 50px 10px black inset"
-        }} />
+        <ImageSplash />
         <div style={{ height: '10vh' }} />
 
         <CostCalculator />

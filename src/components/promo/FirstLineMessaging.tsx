@@ -114,9 +114,9 @@ const Mobile = () => {
             const middleTextTimeLine = gsap.timeline(timelineConfig(middleText.current!));
             const bottomTextTimeLine = gsap.timeline(timelineConfig(bottomText.current!));
 
-            topTextTimeLine.to(topText.current, { y: -300, opacity: 0 }, 0.5);
-            middleTextTimeLine.to(middleText.current, { y: -300, opacity: 0 }, 0.5);
-            bottomTextTimeLine.to(bottomText.current, { y: -200, opacity: 0 }, 0.5);
+            topTextTimeLine.to(topText.current, { y: -100, opacity: 0 }, 0.5);
+            middleTextTimeLine.to(middleText.current, { y: -100, opacity: 0 }, 0.5);
+            bottomTextTimeLine.to(bottomText.current, { y: -100, opacity: 0 }, 0.5);
         });
 
         return () => ctx.revert();
