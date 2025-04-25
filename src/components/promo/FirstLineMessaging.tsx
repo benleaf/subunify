@@ -23,7 +23,7 @@ const FileAndForgetTitle = () => <GlassIconText size={"big"} icon={<Folder style
 </GlassIconText>
 
 const FileAndForgetText = () => <GlassText size="moderate">
-    Data stored on encrypted Amazon servers with data redundancy protecting you from file corruption.
+    Data stored on encrypted Amazon servers with data redundancy protecting you from file corruption. <b>99.999999999% durability</b>.
 </GlassText>
 
 const CoreMessage = () => <GlassCard marginSize="small" paddingSize="small" flex={3}>
@@ -40,10 +40,10 @@ const CoreMessage = () => <GlassCard marginSize="small" paddingSize="small" flex
         <Button variant="contained" href="/file-upload">
             Archive A File
         </Button>
-        <GlassText size="small" style={{ alignSelf: 'end' }}>
-            *Additional fees apply for upload and extraction
-        </GlassText>
     </div>
+    <GlassText size="moderate" style={{ alignSelf: 'end' }}>
+        *Additional fees apply for upload and extraction
+    </GlassText>
 </GlassCard>
 
 const Desktop = () => {
@@ -101,19 +101,22 @@ const Mobile = () => {
     const bottomText = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
+        const timelineConfig = (ref: HTMLDivElement) => ({
+            scrollTrigger: {
+                trigger: ref,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+            },
+        })
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: container.current,
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: true,
-                },
-            });
+            const topTextTimeLine = gsap.timeline(timelineConfig(topText.current!));
+            const middleTextTimeLine = gsap.timeline(timelineConfig(middleText.current!));
+            const bottomTextTimeLine = gsap.timeline(timelineConfig(bottomText.current!));
 
-            tl.to(topText.current, { y: -400, opacity: 0 }, 0.5);
-            tl.to(middleText.current, { y: -300, opacity: 0 }, 0.5);
-            tl.to(bottomText.current, { y: -200, opacity: 0 }, 0.5);
+            topTextTimeLine.to(topText.current, { y: -300, opacity: 0 }, 0.5);
+            middleTextTimeLine.to(middleText.current, { y: -300, opacity: 0 }, 0.5);
+            bottomTextTimeLine.to(bottomText.current, { y: -200, opacity: 0 }, 0.5);
         });
 
         return () => ctx.revert();
@@ -131,7 +134,6 @@ const Mobile = () => {
                 </div>
             </GlassCard>
         </div>
-        <div ref={container} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }} ref={bottomText}>
             <GlassCard marginSize="small" paddingSize="small" flex={1}>
                 <FileAndForgetTitle />
@@ -141,6 +143,7 @@ const Mobile = () => {
                 </div>
             </GlassCard>
         </div>
+        <div ref={container} />
     </Stack>
 }
 
