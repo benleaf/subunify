@@ -1,5 +1,5 @@
 import { ColorSpace } from '@/helpers/ColorSpace';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 interface OrbitingPoint {
     angle: number;
@@ -9,13 +9,34 @@ interface OrbitingPoint {
     b: number;
 }
 
-const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
+type Props = {
+    width?: number,
+    pointMultiplier?: number,
+}
+
+const BlackHoleCanvas = ({ width = 800, pointMultiplier = 3 }: Props) => {
     const height = width / 3
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [orbitingPoints, setOrbitingPoints] = useState<OrbitingPoint[]>([])
+    const numberOfPoints = width * pointMultiplier;
+
+    useEffect(() => {
+        setOrbitingPoints([])
+        for (let i = 0; i < numberOfPoints; i++) {
+            const angle = Math.random() * Math.PI * 2
+            setOrbitingPoints(old => [...old, {
+                angle: angle,
+                speed: 0.0025,
+                a: (60 + Math.random() * 300) * (height / 250),
+                b: (10 + (Math.random() ** 2) * 50) * (width / 400),
+                color: ColorSpace.hSLToRGB(angle * (360 / (Math.PI * 2)), Math.random() * 50 + 50, Math.random() * 20 + 60)
+            }]);
+        }
+    }, [pointMultiplier])
 
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas || orbitingPoints.length == 0) return;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
@@ -24,19 +45,7 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
 
-        const orbitingPoints: OrbitingPoint[] = [];
-        const numberOfPoints = width * 5;
         const baseSpeed = 0.002
-        for (let i = 0; i < numberOfPoints; i++) {
-            const angle = Math.random() * Math.PI * 2
-            orbitingPoints.push({
-                angle: angle,
-                speed: 0.0025,
-                a: (60 + Math.random() * 300) * (height / 250),
-                b: (10 + (Math.random() ** 2) * 50) * (width / 400),
-                color: ColorSpace.hSLToRGB(angle * (360 / (Math.PI * 2)), Math.random() * 50 + 50, Math.random() * 20 + 60)
-            });
-        }
 
         let animationFrameId: number;
 
@@ -64,7 +73,7 @@ const BlackHoleCanvas = ({ width = 800 }: { width?: number }) => {
         return () => {
             cancelAnimationFrame(animationFrameId);
         };
-    }, []);
+    }, [orbitingPoints]);
 
     return <canvas ref={canvasRef} style={{ width, height }} />;
 };

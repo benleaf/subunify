@@ -4,9 +4,25 @@ import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
 import { ArrowDownward } from "@mui/icons-material"
-import { useRef, ElementRef, useLayoutEffect } from "react"
+import { useRef, ElementRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
 import BlackHoleCanvas from "../graphics/BlackHoleCanvas"
 import { gsap } from 'gsap';
+
+export function useOnScreen(ref: RefObject<HTMLElement>) {
+    const [isIntersecting, setIntersecting] = useState(false)
+
+    const observer = useMemo(() => new IntersectionObserver(
+        ([entry]) => setIntersecting(entry.isIntersecting)
+    ), [ref])
+
+
+    useEffect(() => {
+        observer.observe(ref.current!)
+        return () => observer.disconnect()
+    }, [])
+
+    return isIntersecting
+}
 
 const OpeningSplash = () => {
     const { width } = useSize()
@@ -17,6 +33,8 @@ const OpeningSplash = () => {
     const topText = useRef<HTMLDivElement>(null);
     const middleText = useRef<HTMLDivElement>(null);
     const bottomText = useRef<HTMLDivElement>(null);
+
+    const isIntersecting = useOnScreen(myRef)
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -76,7 +94,7 @@ const OpeningSplash = () => {
             </div>
             {width > ScreenWidths.Mobile && <>
                 <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
-                    <BlackHoleCanvas width={width * 0.45} />
+                    <BlackHoleCanvas width={width * 0.45} pointMultiplier={isIntersecting ? 5 : 0.1} />
                 </div>
             </>}
         </div>
