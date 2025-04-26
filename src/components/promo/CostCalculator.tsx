@@ -23,6 +23,10 @@ const CostCalculator = () => {
         setCostCalculatorValue(old => ({ ...old, value: valueToStore }))
     }
 
+    const setStorageSize = (size: string) => {
+        setCostCalculatorValue(old => ({ ...old, size }))
+    }
+
     return <>
         <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.big }} >
             <div style={{ maxWidth: 800 }} >
@@ -34,7 +38,7 @@ const CostCalculator = () => {
                 <GlassCard flex={1} marginSize="moderate" paddingSize="large">
                     <Stack direction='row' spacing={1} alignItems='center'>
                         <GlassText size="large">Cost Calculator</GlassText>
-                        <Select value={costCalculatorValue.size} onChange={e => setInputValue(e.target.value)}>
+                        <Select value={costCalculatorValue.size} onChange={e => setStorageSize(e.target.value)}>
                             <MenuItem value='GB'>GB</MenuItem>
                             <MenuItem value='TB'>TB</MenuItem>
                         </Select>
@@ -58,6 +62,7 @@ const CostCalculator = () => {
                     <GlassText size="large">${costValue.toFixed(2)} Per Month</GlassText>
                     {width <= ScreenWidths.Mobile && <Divider style={{ margin: '0.4em' }} />}
                     <GlassText size="moderate">${(costValue * 12).toFixed(2)} Per Year</GlassText>
+                    <GlassText size="small" color="primaryLight">See below for download fees</GlassText>
                 </GlassCard>
             </div>
         </div>

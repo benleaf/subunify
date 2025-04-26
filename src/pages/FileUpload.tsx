@@ -6,7 +6,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { useCallback } from 'react';
 import { useDropzone, FileError } from 'react-dropzone';
 import { getFileCost, getFileSize, getNumericFileMonthlyCost, getNumericFileUploadCost } from "@/helpers/FileSize";
-import { Delete, Edit } from "@mui/icons-material";
+import { ArrowDropDown, ArrowRight, Delete } from "@mui/icons-material";
 import { CssSizes } from "@/constants/CssSizes";
 import TutorialModal from "@/components/modal/TutorialModal";
 import { User } from "@/types/User";
@@ -21,6 +21,7 @@ import { ScreenWidths } from "@/constants/ScreenWidths";
 import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import FileUploadModal from "@/components/modal/FileUploadModal";
+import FilePreview from "@/images/FilePreview";
 
 type FileRecord = { file: File, description: string, finishEdit: boolean }
 
@@ -29,6 +30,8 @@ const BLOCKED_EXTENSIONS = [
     'ts', 'html', 'htm', 'svg', 'php', 'jsp', 'asp', 'aspx', 'py',
     'pl', 'rb', 'cgi', 'jar', 'apk', 'swf', 'scr', 'wsf', 'ps1'
 ]
+
+const getExtension = (file: File) => file.name.split('.').pop()!
 
 const FileUpload = () => {
     const maxDescriptionLength = 5000
@@ -79,7 +82,7 @@ const FileUpload = () => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         validator: file => {
-            const ext = file.name.split('.').pop()!
+            const ext = getExtension(file)
             if (BLOCKED_EXTENSIONS.includes(ext)) {
                 const message = `Files of the following types are not allowed: ${BLOCKED_EXTENSIONS.join(', ')}`
                 dispatch({ action: 'popup', data: { colour: 'warning', message } })
@@ -123,9 +126,9 @@ const FileUpload = () => {
         ))
     }
 
-    const setFinishEdit = (fileName: string, state: boolean) => {
+    const toggleEdit = (fileName: string) => {
         setFileRecords(old => old.map(fr =>
-            fr.file.name === fileName ? { ...fr, finishEdit: state } : fr
+            fr.file.name === fileName ? { ...fr, finishEdit: !fr.finishEdit } : fr
         ))
     }
 
@@ -191,16 +194,21 @@ const FileUpload = () => {
                         <Table stickyHeader size="small">
                             <TableHead style={{ backgroundColor: '#777' }}>
                                 <TableRow>
+                                    <TableCell></TableCell>
                                     <TableCell>File Name</TableCell>
                                     <TableCell>Cost Per Month</TableCell>
                                     <TableCell>Size</TableCell>
                                     <TableCell>Remove</TableCell>
-                                    <TableCell>Edit</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {fileRecords.map((fileRecord, index) => <>
                                     <TableRow key={index} >
+                                        <TableCell>
+                                            <IconButton onClick={() => toggleEdit(fileRecord.file.name)}>
+                                                {fileRecord.finishEdit ? <ArrowRight /> : <ArrowDropDown />}
+                                            </IconButton>
+                                        </TableCell>
                                         <TableCell>{fileRecord.file.name}</TableCell>
                                         <TableCell>{getFileCost(fileRecord.file.size)}</TableCell>
                                         <TableCell>{getFileSize(fileRecord.file.size)}</TableCell>
@@ -209,25 +217,24 @@ const FileUpload = () => {
                                                 <Delete />
                                             </IconButton>
                                         </TableCell>
-                                        <TableCell>
-                                            <IconButton onClick={() => setFinishEdit(fileRecord.file.name, false)}>
-                                                <Edit />
-                                            </IconButton>
-                                        </TableCell>
                                     </TableRow>
                                     {!fileRecord.finishEdit && <TableRow key={`${index}-description`} >
                                         <TableCell colSpan={5} style={{ padding: CssSizes.moderate }}>
-                                            <TextField
-                                                variant="filled"
-                                                multiline
-                                                minRows={2}
-                                                value={fileRecord.description}
-                                                error={fileRecord.description.length >= maxDescriptionLength}
-                                                fullWidth
-                                                label={`Description for "${fileRecord.file.name}"`}
-                                                onChange={e => updateFileDescription(fileRecord.file.name, e.target.value)}
-                                            />
-                                            <Button onClick={() => setFinishEdit(fileRecord.file.name, true)} fullWidth variant="outlined">Done</Button>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div style={{ margin: CssSizes.hairpin, width: 140, display: 'flex', justifyContent: 'center' }}>
+                                                    <FilePreview preview={fileRecord.file} />
+                                                </div>
+                                                <TextField
+                                                    variant="filled"
+                                                    multiline
+                                                    minRows={2}
+                                                    value={fileRecord.description}
+                                                    error={fileRecord.description.length >= maxDescriptionLength}
+                                                    fullWidth
+                                                    label={`Description for "${fileRecord.file.name}"`}
+                                                    onChange={e => updateFileDescription(fileRecord.file.name, e.target.value)}
+                                                />
+                                            </div>
                                         </TableCell>
                                     </TableRow>}
                                 </>)}

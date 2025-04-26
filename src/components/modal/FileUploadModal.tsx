@@ -33,6 +33,8 @@ const FileUploadModal = ({ fileRecords, startUpload }: Props) => {
     const totalProgress = (totalUploaded / totalSize) * 100
 
     useEffect(() => {
+        if (totalUploaded == 0) return
+
         const now = moment()
         const duration = moment.duration(now.diff(startTime))
         const secondsElapsed = duration.asSeconds()
