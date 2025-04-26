@@ -29,8 +29,8 @@ const OpeningSplash = () => {
                 },
             });
 
-            tl.to(topText.current, { y: -400 }, 0.5);
-            tl.to(middleText.current, { y: -200 }, 0.5);
+            tl.to(topText.current, { y: -200 }, 0.5);
+            tl.to(middleText.current, { y: -150 }, 0.5);
             tl.to(bottomText.current, { y: -100 }, 0.5);
         });
 
@@ -44,18 +44,32 @@ const OpeningSplash = () => {
             <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }} ref={container}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center' }} ref={topText}>
-                        <GlassText size="large" style={{ letterSpacing: '0.15em' }}>THE SUBUNIFY</GlassText>
+                        <GlassText
+                            size="large"
+                            style={{ letterSpacing: '0.15em' }}
+                            color="primaryLight"
+                        >THE SUBUNIFY</GlassText>
                         <Divider style={{ flex: 1 }} />
                     </div>
                     <div ref={middleText}>
-                        <GlassText size="gigantic" style={{ lineHeight: '10vw', fontWeight: 'bolder' }}>DEEP STORE</GlassText>
+                        <GlassText
+                            size="gigantic"
+                            style={{ lineHeight: '10vw', fontWeight: 'normal' }}
+                            color="primaryLight"
+                        >SLOW STORE</GlassText>
                     </div>
+                    {width > ScreenWidths.Mobile && <div ref={myRef} />}
 
                     <div style={{ display: 'flex', alignItems: 'center' }} ref={bottomText}>
-                        <GlassText size="moderate" style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}>BLACK HOLE MEDIA ARCHIVING</GlassText>
+                        <GlassText
+                            size="moderate"
+                            style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}
+                            color="primaryLight"
+                        >FILE AND FORGET ARCHIVING</GlassText>
                         <Divider style={{ flex: 1 }} />
                     </div>
                     {width <= ScreenWidths.Mobile && <div>
+                        <div style={{ padding: '0.5em' }} />
                         <BlackHoleCanvas width={Math.min(width * 0.95 - 70, 600)} />
                     </div>}
                 </GlassSpace>
@@ -67,12 +81,13 @@ const OpeningSplash = () => {
             </>}
         </div>
         {width < ScreenWidths.Mobile && <div style={{ height: '20vh' }} />}
+        {width <= ScreenWidths.Mobile && <div ref={myRef} />}
         <div style={{ display: 'flex', padding: '2em', justifyContent: 'center' }} >
             <IconButton onClick={executeScroll} color="primary">
                 <ArrowDownward />
             </IconButton>
         </div>
-        <div style={{ height: '5vh' }} ref={myRef} />
+        <div style={{ height: '5vh' }} />
     </>
 }
 

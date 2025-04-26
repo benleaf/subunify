@@ -3,8 +3,6 @@ import GlassCard from "@/components/glassmorphism/GlassCard";
 import { useSize } from "@/hooks/useSize";
 import { ComponentSizes } from "@/constants/ComponentSizes";
 import { ScreenWidths } from "@/constants/ScreenWidths";
-import { useAuth } from "@/auth/AuthContext";
-import { Button } from "@mui/material";
 
 type Props = {
     children: React.ReactNode | React.ReactNode[]
@@ -30,10 +28,6 @@ const DashboardLayout = ({ children }: Props) => {
                     </GlassCard>
                 </div>
             }
-        </div>
-        <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
-            <a href="/privacy-policy" style={{ paddingRight: '1em' }}>Privacy Policy</a>
-            <a href="/terms-of-service">Terms Of Service</a>
         </div>
     </>
 }

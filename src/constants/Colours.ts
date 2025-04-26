@@ -6,6 +6,7 @@ export const Colours = {
     darkGrey: glass.darkGrey,
     black: glass.black,
     primary: glass.colorPrimary,
+    primaryDark: glass.colorPrimaryDark,
     primaryLight: glass.colorPrimaryLight,
     secondary: glass.colorSecondary,
     primaryTransparent: glass.colorPrimaryTransparent,

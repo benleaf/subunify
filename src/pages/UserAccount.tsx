@@ -80,6 +80,10 @@ const UserAccount = () => {
                 </Button>
             </GlassSpace>
         </BaseModal>
+        <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
+            <a href="/privacy-policy" style={{ paddingRight: '1em' }}>Privacy Policy</a>
+            <a href="/terms-of-service">Terms Of Service</a>
+        </div>
     </DashboardLayout>
 }
 

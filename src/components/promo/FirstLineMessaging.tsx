@@ -19,7 +19,7 @@ const PayAsYouGoText = () => <GlassText size="moderate">
 </GlassText>
 
 const FileAndForgetTitle = () => <GlassIconText size={"big"} icon={<Folder style={{ fontSize: '2rem' }} color="primary" />}>
-    File And Forget
+    Safe And Sound
 </GlassIconText>
 
 const FileAndForgetText = () => <GlassText size="moderate">
@@ -30,7 +30,7 @@ const CoreMessage = () => <GlassCard marginSize="small" paddingSize="small" flex
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: "100%", textAlign: 'center' }}>
         <GlassSpace size={"moderate"} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
             <GlassText size="large">
-                12 Hour File Extraction
+                12 Hours To Retrieve Your Files
             </GlassText>
             <Divider orientation="horizontal" flexItem><GlassText size="small">ENABLES</GlassText></Divider>
             <GlassText size="big">
@@ -42,7 +42,7 @@ const CoreMessage = () => <GlassCard marginSize="small" paddingSize="small" flex
         </Button>
     </div>
     <GlassText size="moderate" style={{ alignSelf: 'end' }}>
-        *Additional fees apply for upload and extraction
+        *Additional fees may apply for upload, retrieval, and tax
     </GlassText>
 </GlassCard>
 
@@ -63,9 +63,9 @@ const Desktop = () => {
                 },
             });
 
-            tl.to(topText.current, { y: -300, opacity: 0 }, 0.5);
+            tl.to(topText.current, { y: -200, opacity: 0 }, 0.5);
             tl.to(middleText.current, { y: -200, opacity: 0 }, 0.5);
-            tl.to(bottomText.current, { y: -400, opacity: 0 }, 0.5);
+            tl.to(bottomText.current, { y: -200, opacity: 0 }, 0.5);
         });
 
         return () => ctx.revert();

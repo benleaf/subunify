@@ -1,10 +1,12 @@
+import { ColorSpace } from '@/helpers/ColorSpace';
 import { useRef, useEffect, useState } from 'react';
 
 interface OrbitingPoint {
-    angle: number;
-    speed: number;
-    a: number; // Major axis length of the ellipse
-    b: number; // Minor axis length of the ellipse
+    angle: number
+    speed: number
+    color: string
+    a: number
+    b: number
 }
 
 type Props = {
@@ -16,15 +18,16 @@ const BlackHoleCanvas2 = ({ width = 800, points = 800 }: Props) => {
     const height = width / 3
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [orbitingPoints, setOrbitingPoints] = useState<OrbitingPoint[]>([])
-    const baseSpeed = 0.002
 
     useEffect(() => {
         for (let i = 0; i <= 1024; i++) {
+            const angle = Math.random() * Math.PI * 2
             setOrbitingPoints(old => [...old, {
-                angle: Math.random() * Math.PI * 2,
-                speed: -(baseSpeed + Math.random() * (baseSpeed / 2)),
+                angle,
+                speed: -0.0025,
                 a: (60 + (Math.random() ** 5) * 300) * (height / 250),
-                b: (60 + (Math.random() ** -0.5) * 1) * (width / 700)
+                b: (60 + (Math.random() ** -0.5) * 1) * (width / 700),
+                color: ColorSpace.hSLToRGB(angle * (360 / (Math.PI * 2)), Math.random() * 50 + 50, Math.random() * 20 + 60)
             }])
         }
     }, [])
@@ -56,9 +59,9 @@ const BlackHoleCanvas2 = ({ width = 800, points = 800 }: Props) => {
                 const x = centerX + point.a * Math.cos(point.angle);
                 const y = centerY + point.b * Math.sin(point.angle);
 
-                ctx.fillStyle = '#D1B889'; // Or choose another color for a contrast effect
+                ctx.fillStyle = point.color // Or choose another color for a contrast effect
                 ctx.beginPath();
-                ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+                ctx.arc(x, y, 1, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Increment the angle for the next frame.
