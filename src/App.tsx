@@ -7,7 +7,6 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import { StateMachineContext } from './stateManagement/stateMachines/StateMachineContext';
 import UniversalAlert from './components/modal/UniversalAlert';
 import { AuthProvider } from './auth/AuthContext';
-import AuthWrapper from './auth/AuthWrapper';
 import LandingPageDeepStorage from './pages/LandingPageDeepStorage';
 import FileUpload from './pages/FileUpload';
 import DeepStorage from './pages/DeepStorage';
@@ -15,6 +14,7 @@ import UserAccount from './pages/UserAccount';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import Pricing from './pages/Pricing';
+import ComedyLandingPage from './pages/comedyTest/ComedyLandingPage';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -29,7 +29,8 @@ const App = () => {
         <TopBar />
         <Routes>
           {/* <Route path="/original" element={<LandingPage />} /> */}
-          <Route path="/" element={<LandingPageDeepStorage />} />
+          <Route path="/old" element={<LandingPageDeepStorage />} />
+          <Route path="/" element={<ComedyLandingPage />} />
           <Route path="/file-upload" element={<FileUpload />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />

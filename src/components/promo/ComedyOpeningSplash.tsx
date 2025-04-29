@@ -1,9 +1,9 @@
 import { ScreenWidths } from "@/constants/ScreenWidths"
-import { Divider, IconButton } from "@mui/material"
+import { Button, Divider, IconButton } from "@mui/material"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
-import { ArrowDownward } from "@mui/icons-material"
+import { ArrowDownward, KeyboardArrowDown, South, SouthWest } from "@mui/icons-material"
 import { useRef, ElementRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
 import BlackHoleCanvas from "../graphics/BlackHoleCanvas"
 import { gsap } from 'gsap';
@@ -24,7 +24,7 @@ export function useOnScreen(ref: RefObject<HTMLElement>) {
     return isIntersecting
 }
 
-const OpeningSplash = () => {
+const ComedyOpeningSplash = () => {
     const { width } = useSize()
     const myRef = useRef<ElementRef<'div'>>(null)
     const executeScroll = () => myRef.current!.scrollIntoView({ behavior: 'smooth' })
@@ -61,35 +61,29 @@ const OpeningSplash = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }} ref={container}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }} ref={topText}>
+                    <div ref={middleText} style={{ position: 'relative' }}>
                         <GlassText
-                            size="large"
-                            style={{ letterSpacing: '0.15em' }}
+                            size="gigantic"
+                            style={{ lineHeight: '1em', fontWeight: 'bold' }}
                             color="primaryLight"
-                        >THE SUBUNIFY</GlassText>
-                        <Divider style={{ flex: 1 }} />
+                        >Have the space to think</GlassText>
                     </div>
-                    <div ref={middleText}>
+                    <div ref={bottomText}>
                         <GlassText
-                            size="fullscreen"
-                            style={{ lineHeight: '10vw', fontWeight: 'normal' }}
-                            color="primaryLight"
-                        >SLOW STORE</GlassText>
-                    </div>
-                    {width > ScreenWidths.Mobile && <div ref={myRef} />}
-
-                    <div style={{ display: 'flex', alignItems: 'center' }} ref={bottomText}>
-                        <GlassText
-                            size="moderate"
+                            size="big"
                             style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}
                             color="primaryLight"
-                        >FILE AND FORGET ARCHIVING</GlassText>
-                        <Divider style={{ flex: 1 }} />
+                        >Helping you archive the files you need, but don't need <i>now</i></GlassText>
                     </div>
                     {width <= ScreenWidths.Mobile && <div>
                         <div style={{ padding: '0.5em' }} />
                         <BlackHoleCanvas width={Math.min(width * 0.95 - 70, 600)} />
                     </div>}
+                    <div style={{ padding: '0.5em' }} />
+                    <Button variant="outlined" href="/file-upload" fullWidth>
+                        Archive Today!
+                    </Button>
+                    {width > ScreenWidths.Mobile && <div ref={myRef} />}
                 </GlassSpace>
             </div>
             {width > ScreenWidths.Mobile && <>
@@ -109,4 +103,4 @@ const OpeningSplash = () => {
     </>
 }
 
-export default OpeningSplash
+export default ComedyOpeningSplash

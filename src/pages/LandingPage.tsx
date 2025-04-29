@@ -16,7 +16,7 @@ const LandingPage = () => {
     return <div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>
-                <GlassText size="gigantic" style={{ letterSpacing: '0.15em' }}>UNIFY YOUR RECORDS...</GlassText>
+                <GlassText size="fullscreen" style={{ letterSpacing: '0.15em' }}>UNIFY YOUR RECORDS...</GlassText>
             </GlassSpace>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

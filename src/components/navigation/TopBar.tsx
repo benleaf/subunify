@@ -64,9 +64,10 @@ const TopBar = () => {
                         <Settings />
                     </IconButton>
                 </> : <>
-                    {pathname == '/' && width > ScreenWidths.Mobile &&
+                    {pathname == '/' && width > ScreenWidths.Mobile && <>
+                        <Button variant="outlined" href="/pricing">Pricing</Button>
                         <Button variant="contained" href="/file-upload">Archive A File</Button>
-                    }
+                    </>}
                     <AuthModal />
                 </>}
             </Stack>

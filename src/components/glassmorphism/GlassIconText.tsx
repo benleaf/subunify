@@ -14,7 +14,7 @@ type Props = {
 }
 
 const GlassIconText = ({ children, icon, style, size = 'moderate', color = 'primary' }: Props) => {
-    return <div style={{ display: 'flex', alignItems: 'end' }}>
+    return <div style={{ display: 'flex', alignItems: 'center' }}>
         <div style={{ paddingRight: '1em' }}>{icon}</div>
         <p className={classes(glass.glassText)} style={{ ...style, fontSize: CssSizes[size], color: Colours[color] }}>{children}</p>
     </div>
