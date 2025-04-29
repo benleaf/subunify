@@ -74,7 +74,6 @@ const DeleteText = <Stack spacing={3} margin='1em'>
         Deletions are free of charge and can be performed at any time. If a file is deleted mid-way
         through the month, it will be charged for the time it was in storage during that month on a pro rata basis.
     </GlassText>
-    <Button variant="outlined" href='/pricing#delete'>Delete Pricing</Button>
 </Stack>
 
 const messages = [
