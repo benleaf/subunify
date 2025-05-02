@@ -26,7 +26,7 @@ const NeatAndTidyTitle = () => <GlassIconText size={"big"} icon={<List style={{ 
 
 const NeatAndTidyText = () => <div>
     <GlassText color="primaryLight" size="large" style={{ padding: '1em' }}>
-        Transform your workflow with files that are organized and ordered for the long term.
+        Transform your workflow with files that are organized for the long term.
     </GlassText>
     <Button variant="outlined" href='/pricing'>Learn about file management</Button>
 </div>
@@ -37,7 +37,7 @@ const FileAndForgetTitle = () => <GlassIconText size={"big"} icon={<Folder style
 
 const FileAndForgetText = () => <div>
     <GlassText color="primaryLight" size="large" style={{ padding: '1em' }}>
-        Enjoy the peace of mind of knowing that your files are protected and secure.
+        Enjoy peace of mind with 99.999999999% durability on all stored files.
     </GlassText>
     <Button variant="outlined" href='/pricing'>See how we achieve security</Button>
 </div>
@@ -116,6 +116,7 @@ const Mobile = () => {
 
         return () => ctx.revert();
     }, []);
+
     return <Stack direction="column" spacing={2} style={{ width: '100%', height: '100%' }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }} ref={topText}>
             <GlassCard marginSize="small" paddingSize="small" flex={1}>

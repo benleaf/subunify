@@ -3,7 +3,6 @@ import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
 import { useRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
-import NebulaCanvas from "../graphics/NebulaCanvas"
 import { gsap } from 'gsap';
 import CenterlessNebulaCanvas from "../graphics/CenterlessNebulaCanvas"
 
@@ -73,7 +72,7 @@ const NextDayDelivery = () => {
                             size="big"
                             style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}
                             color="primaryLight"
-                        >Why pay extra for instant access? 12 hour file retrievals allow our recurring prices to be upto <b>78% less</b>.</GlassText>
+                        >Why pay extra for instant access? 12 hour file retrievals allow our recurring prices to be up to <b>78% less</b>.</GlassText>
                     </div>
                     <div style={{ padding: '0.5em' }} />
                     {width <= ScreenWidths.Mobile && <div>
