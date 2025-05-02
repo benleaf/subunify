@@ -10,11 +10,7 @@ import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import { Download } from "@mui/icons-material";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-
-const retrievalTypeInfo = {
-    Standard: { name: "Standard: 12 hour retrieval", cost: 0.2 },
-    Economy: { name: "Economy: 48 hour retrieval", cost: 0.02 },
-}
+import { retrievalTypeInfo } from "@/constants/RetrievalTypes";
 
 const costPerDay = 0.002
 

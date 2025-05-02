@@ -4,7 +4,7 @@ import { Stack, Select, MenuItem, TextField, Slider, Divider } from "@mui/materi
 import GlassCard from "../glassmorphism/GlassCard"
 import GlassText from "../glassmorphism/GlassText"
 import { useState } from "react"
-import BlackHoleCanvas2 from "../graphics/BlackHoleCanvas2"
+import BlackHoleCanvas from "../graphics/BlackHoleCanvas"
 import { CssSizes } from "@/constants/CssSizes"
 
 const CostCalculator = () => {
@@ -30,7 +30,7 @@ const CostCalculator = () => {
     return <>
         <div style={{ display: 'flex', justifyContent: 'center', marginBlock: CssSizes.big }} >
             <div style={{ maxWidth: 800 }} >
-                <BlackHoleCanvas2 width={Math.min(width - 20, 800)} points={costCalculatorValue.value ?? 0} />
+                <BlackHoleCanvas width={Math.min(width - 20, 800)} points={costCalculatorValue.value ?? 0} />
             </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -62,7 +62,6 @@ const CostCalculator = () => {
                     <GlassText size="large">${costValue.toFixed(2)} Per Month</GlassText>
                     {width <= ScreenWidths.Mobile && <Divider style={{ margin: '0.4em' }} />}
                     <GlassText size="moderate">${(costValue * 12).toFixed(2)} Per Year</GlassText>
-                    <GlassText size="small" color="primaryLight">See below for download fees</GlassText>
                 </GlassCard>
             </div>
         </div>

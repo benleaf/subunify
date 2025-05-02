@@ -5,7 +5,7 @@ import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
 import { ArrowDownward } from "@mui/icons-material"
 import { useRef, ElementRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
-import BlackHoleCanvas from "../graphics/BlackHoleCanvas"
+import NebulaCanvas from "../graphics/NebulaCanvas"
 import { gsap } from 'gsap';
 
 export function useOnScreen(ref: RefObject<HTMLElement>) {
@@ -88,13 +88,13 @@ const OpeningSplash = () => {
                     </div>
                     {width <= ScreenWidths.Mobile && <div>
                         <div style={{ padding: '0.5em' }} />
-                        <BlackHoleCanvas width={Math.min(width * 0.95 - 70, 600)} />
+                        <NebulaCanvas width={Math.min(width * 0.95 - 70, 600)} />
                     </div>}
                 </GlassSpace>
             </div>
             {width > ScreenWidths.Mobile && <>
                 <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
-                    <BlackHoleCanvas width={width * 0.45} pointMultiplier={isIntersecting ? 5 : 0.1} />
+                    <NebulaCanvas width={width * 0.45} pointMultiplier={isIntersecting ? 5 : 0.1} />
                 </div>
             </>}
         </div>

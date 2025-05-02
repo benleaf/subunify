@@ -5,7 +5,7 @@ import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
 import { ArrowDownward, KeyboardArrowDown, South, SouthWest } from "@mui/icons-material"
 import { useRef, ElementRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
-import BlackHoleCanvas from "../graphics/BlackHoleCanvas"
+import NebulaCanvas from "../graphics/NebulaCanvas"
 import { gsap } from 'gsap';
 
 export function useOnScreen(ref: RefObject<HTMLElement>) {
@@ -26,15 +26,14 @@ export function useOnScreen(ref: RefObject<HTMLElement>) {
 
 const ComedyOpeningSplash = () => {
     const { width } = useSize()
-    const myRef = useRef<ElementRef<'div'>>(null)
-    const executeScroll = () => myRef.current!.scrollIntoView({ behavior: 'smooth' })
+    const renderDetailedNebula = useRef<ElementRef<'div'>>(null)
 
     const container = useRef<HTMLDivElement>(null);
     const topText = useRef<HTMLDivElement>(null);
     const middleText = useRef<HTMLDivElement>(null);
     const bottomText = useRef<HTMLDivElement>(null);
 
-    const isIntersecting = useOnScreen(myRef)
+    const isIntersecting = useOnScreen(renderDetailedNebula)
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -64,41 +63,36 @@ const ComedyOpeningSplash = () => {
                     <div ref={middleText} style={{ position: 'relative' }}>
                         <GlassText
                             size="gigantic"
-                            style={{ lineHeight: '1em', fontWeight: 'bold' }}
+                            style={{ lineHeight: '1em', fontWeight: 'normal' }}
                             color="primaryLight"
-                        >Have the space to think</GlassText>
+                        >Create. <b>Archive</b></GlassText>
                     </div>
                     <div ref={bottomText}>
                         <GlassText
                             size="big"
                             style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}
                             color="primaryLight"
-                        >Helping you archive the files you need, but don't need <i>now</i></GlassText>
+                        >Archive the file you need, for as long as you need, <i>securely</i></GlassText>
                     </div>
                     {width <= ScreenWidths.Mobile && <div>
                         <div style={{ padding: '0.5em' }} />
-                        <BlackHoleCanvas width={Math.min(width * 0.95 - 70, 600)} />
+                        <NebulaCanvas width={Math.min(width * 0.95 - 70, 600)} />
                     </div>}
                     <div style={{ padding: '0.5em' }} />
                     <Button variant="outlined" href="/file-upload" fullWidth>
                         Archive Today!
                     </Button>
-                    {width > ScreenWidths.Mobile && <div ref={myRef} />}
+                    {width > ScreenWidths.Mobile && <div ref={renderDetailedNebula} />}
                 </GlassSpace>
             </div>
             {width > ScreenWidths.Mobile && <>
                 <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
-                    <BlackHoleCanvas width={width * 0.45} pointMultiplier={isIntersecting ? 5 : 0.1} />
+                    <NebulaCanvas width={width * 0.45} pointMultiplier={isIntersecting ? 4 : 0.1} />
                 </div>
             </>}
         </div>
-        {width < ScreenWidths.Mobile && <div style={{ height: '20vh' }} />}
-        {width <= ScreenWidths.Mobile && <div ref={myRef} />}
-        <div style={{ display: 'flex', padding: '2em', justifyContent: 'center' }} >
-            <IconButton onClick={executeScroll} color="primary">
-                <ArrowDownward />
-            </IconButton>
-        </div>
+        {width < ScreenWidths.Mobile && <div style={{ height: '29vh' }} />}
+        {width <= ScreenWidths.Mobile && <div ref={renderDetailedNebula} />}
         <div style={{ height: '5vh' }} />
     </>
 }

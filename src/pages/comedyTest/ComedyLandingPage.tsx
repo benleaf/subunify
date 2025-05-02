@@ -7,12 +7,12 @@ import ExampleTable from "@/components/TablesDataTable/ExampleTable";
 import CostCalculator from "@/components/promo/CostCalculator";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import ImageSplash from "@/components/promo/ImageSplash";
 import ComedyOpeningSplash from "@/components/promo/ComedyOpeningSplash";
 import WhatWeAreFor from "@/components/promo/WhatWeAreFor";
 import FirstLineMessaging from "@/components/promo/FirstLineMessaging";
 import NextDayDelivery from "@/components/promo/NextDayDelivery";
 import PricingCarousel from "@/components/promo/PricingCarousel";
+import DownloadCalculator from "@/components/promo/DownloadCalculator";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,13 +22,14 @@ const ComedyLandingPage = () => {
         <WhatWeAreFor />
         <div style={{ height: '20vh' }} />
         <FirstLineMessaging />
+        <div style={{ height: '5vh' }} />
         <NextDayDelivery />
         <div style={{ height: '5vh' }} />
         <PricingCarousel />
         <div style={{ height: '10vh' }} />
         <CostCalculator />
+        <DownloadCalculator />
         <div style={{ height: '10vh' }} />
-        <ImageSplash />
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>

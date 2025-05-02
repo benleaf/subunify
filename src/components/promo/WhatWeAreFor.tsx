@@ -3,6 +3,7 @@ import GlassText from "../glassmorphism/GlassText"
 import { useRef, useLayoutEffect } from "react"
 import { gsap } from 'gsap';
 import { Divider } from "@mui/material";
+import { Colours } from "@/constants/Colours";
 
 const WhatWeAreFor = () => {
     const container = useRef<HTMLDivElement>(null);
@@ -26,16 +27,13 @@ const WhatWeAreFor = () => {
     }, []);
 
     return <div ref={container} style={{ display: 'flex', justifyContent: 'center' }}>
-        <Divider orientation="vertical" flexItem />
         <div style={{ display: 'flex', flexDirection: 'column' }} ref={image}>
-            <GlassSpace size="tiny" >
-                <GlassText size="big">You have files you won't need for a while (maybe ever).</GlassText>
-            </GlassSpace>
-            <GlassSpace size="tiny" >
-                <GlassText size="big" style={{ fontWeight: 'normal' }}>You don't want them <i>vanishing</i> after a routine Starbucks spill.</GlassText>
-            </GlassSpace>
-            <GlassSpace size="tiny" >
-                <GlassText size="big" style={{ fontWeight: 'bold' }}>You really don't want them taking up space on your computer.</GlassText>
+            <GlassSpace size="tiny" style={{ maxWidth: 800 }}>
+                <Divider color={Colours.primary} flexItem />
+                <GlassText size="big" style={{ textAlign: 'center' }}>
+                    SUBUNIFY presents the File Nebula, designed for creatives, built for resilience.
+                </GlassText>
+                <Divider color={Colours.primary} flexItem />
             </GlassSpace>
         </div>
     </div>

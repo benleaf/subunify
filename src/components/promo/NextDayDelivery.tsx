@@ -3,8 +3,9 @@ import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
 import { useRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
-import BlackHoleCanvas from "../graphics/BlackHoleCanvas"
+import NebulaCanvas from "../graphics/NebulaCanvas"
 import { gsap } from 'gsap';
+import CenterlessNebulaCanvas from "../graphics/CenterlessNebulaCanvas"
 
 export function useOnScreen(ref: RefObject<HTMLElement>) {
     const [isIntersecting, setIntersecting] = useState(false)
@@ -55,7 +56,7 @@ const NextDayDelivery = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             {width > ScreenWidths.Mobile && <>
                 <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
-                    <BlackHoleCanvas width={width * 0.45} pointMultiplier={0.1} />
+                    <CenterlessNebulaCanvas width={width * 0.45} pointMultiplier={0.1} />
                 </div>
             </>}
             <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }} ref={container}>
@@ -75,10 +76,14 @@ const NextDayDelivery = () => {
                         >Why pay extra for instant access? 12 hour file retrievals allow our recurring prices to be upto <b>78% less</b>.</GlassText>
                     </div>
                     <div style={{ padding: '0.5em' }} />
+                    {width <= ScreenWidths.Mobile && <div>
+                        <div style={{ padding: '0.5em' }} />
+                        <CenterlessNebulaCanvas width={Math.min(width * 0.95 - 70, 600)} pointMultiplier={0.5} />
+                    </div>}
                 </GlassSpace>
             </div>
         </div>
-        {width < ScreenWidths.Mobile && <div style={{ height: '5vh' }} />}
+        {width < ScreenWidths.Mobile && <div style={{ height: '40vh' }} />}
     </>
 }
 

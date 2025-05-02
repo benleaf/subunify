@@ -10,37 +10,28 @@ import { gsap } from 'gsap';
 import { useRef, useLayoutEffect } from "react"
 
 const PayAsYouGoTitle = () => <GlassIconText size={"big"} icon={<ShoppingCartCheckoutSharp style={{ fontSize: '2rem' }} color="primary" />}>
-    <b>Flexible To Change</b>
+    <b>Flexible</b>
 </GlassIconText>
 
-const PayAsYouGoText = () => <div>
-    <GlassText color="primaryLight" size="large" style={{ padding: '1em' }}>
-        Take advantage of a monthly plan that adjusts automatically to suit your needs.
-    </GlassText>
-    <Button variant="outlined" href='/pricing'>Explore our pricing</Button>
-</div>
+const PayAsYouGoText = () => <GlassText size="large" style={{ padding: '1em' }}>
+    Only pay for the files archived and the actions you perform. Billed monthly.
+</GlassText>
 
 const NeatAndTidyTitle = () => <GlassIconText size={"big"} icon={<List style={{ fontSize: '2rem' }} color="primary" />}>
-    <b>Maintain Like A Pro</b>
+    <b>Ordered</b>
 </GlassIconText>
 
-const NeatAndTidyText = () => <div>
-    <GlassText color="primaryLight" size="large" style={{ padding: '1em' }}>
-        Transform your workflow with files that are organized and ordered for the long term.
-    </GlassText>
-    <Button variant="outlined" href='/pricing'>Learn about file management</Button>
-</div>
+const NeatAndTidyText = () => <GlassText size="large" style={{ padding: '1em' }}>
+    Maintain order like a pro, use tags and descriptions to keep your files organized.
+</GlassText>
 
 const FileAndForgetTitle = () => <GlassIconText size={"big"} icon={<Folder style={{ fontSize: '2rem' }} color="primary" />}>
-    <b>A Safe Space</b>
+    <b>Safe</b>
 </GlassIconText>
 
-const FileAndForgetText = () => <div>
-    <GlassText color="primaryLight" size="large" style={{ padding: '1em' }}>
-        Enjoy the peace of mind of knowing that your files are protected and secure.
-    </GlassText>
-    <Button variant="outlined" href='/pricing'>See how we achieve security</Button>
-</div>
+const FileAndForgetText = () => <GlassText size="large" style={{ padding: '1em' }}>
+    Files stored on encrypted Amazon servers that boast world class protection. <b>99.999999999% durability</b>.
+</GlassText>
 
 const Desktop = () => {
     const container = useRef<HTMLDivElement>(null);
@@ -68,23 +59,31 @@ const Desktop = () => {
     }, []);
 
     return <Stack direction="row" spacing={2} style={{ width: '100%', height: '100%' }} ref={container}>
-        <div style={{ flex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} ref={topText}>
+        <div style={{ flex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', height: 300 }} ref={topText}>
             <FileAndForgetTitle />
-            <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <FileAndForgetText />
-            </div>
+            <GlassCard marginSize="small" paddingSize="small" flex={1}>
+                <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                    <FileAndForgetText />
+                </div>
+            </GlassCard>
         </div>
         <div style={{ flex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} ref={middleText}>
             <NeatAndTidyTitle />
-            <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <NeatAndTidyText />
-            </div>
+            <GlassCard marginSize="small" flex={1}>
+                <GlassCard flex={1}>
+                    <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                        <NeatAndTidyText />
+                    </div>
+                </GlassCard>
+            </GlassCard>
         </div>
         <div style={{ flex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} ref={bottomText}>
             <PayAsYouGoTitle />
-            <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <PayAsYouGoText />
-            </div>
+            <GlassCard marginSize="small" paddingSize="small" flex={1}>
+                <div style={{ height: "100%", display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                    <PayAsYouGoText />
+                </div>
+            </GlassCard>
         </div>
     </Stack>
 }
@@ -144,14 +143,17 @@ const Mobile = () => {
                 </div>
             </GlassCard>
         </div>
+        {/* <div ref={topText}>
+            <CoreMessage />
+        </div> */}
         <div ref={container} />
     </Stack>
 }
 
 
-const FirstLineMessaging = () => {
+const ApproachMessaging = () => {
     const { width } = useSize()
     return width <= ScreenWidths.Mobile ? <Mobile /> : <Desktop />
 }
 
-export default FirstLineMessaging
+export default ApproachMessaging
