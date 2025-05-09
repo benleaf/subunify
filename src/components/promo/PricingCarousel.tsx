@@ -4,7 +4,7 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
-import { Delete, Download, List, Looks, Looks3, Looks4, LooksOne, LooksTwo } from "@mui/icons-material"
+import { Looks3, Looks4, LooksOne, LooksTwo } from "@mui/icons-material"
 import GlassIconText from "../glassmorphism/GlassIconText"
 import Carousel, { ResponsiveType } from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";

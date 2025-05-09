@@ -1,300 +1,63 @@
-import GlassText from "@/components/glassmorphism/GlassText";
-import GlassCard from "@/components/glassmorphism/GlassCard";
-import { Alert, Button, Divider, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { useAuth } from "@/auth/AuthContext";
-import { useCallback } from 'react';
-import { useDropzone, FileError } from 'react-dropzone';
-import { getFileCost, getFileSize, getNumericFileMonthlyCost, getNumericFileUploadCost } from "@/helpers/FileSize";
-import { ArrowDropDown, ArrowRight, Delete } from "@mui/icons-material";
-import { CssSizes } from "@/constants/CssSizes";
-import TutorialModal from "@/components/modal/TutorialModal";
-import { User } from "@/types/User";
-import { isError } from "@/api/isError";
-import { StateMachineDispatch } from "@/App";
-import AuthModal from "@/auth/AuthModal";
-import PaymentModal from "@/components/modal/PaymentModal";
+import { Step, StepLabel, Stepper } from "@mui/material";
+import { useState } from "react";
+import { CloudUpload } from "@mui/icons-material";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import { useSize } from "@/hooks/useSize";
 import { ScreenWidths } from "@/constants/ScreenWidths";
-import BaseModal from "@/components/modal/BaseModal";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
-import FileUploadModal from "@/components/modal/FileUploadModal";
-import FilePreview from "@/images/FilePreview";
+import GlassIconText from "@/components/glassmorphism/GlassIconText";
+import AddFile from "@/components/upload/AddFile";
+import FileTagger from "@/components/upload/FileTagger";
+import AccountSetup from "@/components/upload/AccountSetup";
+import Uploader from "@/components/upload/Uploader";
+import TutorialModal from "@/components/modal/TutorialModal"
+import GlassText from "@/components/glassmorphism/GlassText";
+import FileUploadNebula from "@/components/graphics/FileUploadNebula";
 
-type FileRecord = { file: File, description: string, finishEdit: boolean }
-
-const BLOCKED_EXTENSIONS = [
-    'exe', 'dll', 'com', 'msi', 'bat', 'cmd', 'sh', 'vbs', 'js',
-    'ts', 'html', 'htm', 'svg', 'php', 'jsp', 'asp', 'aspx', 'py',
-    'pl', 'rb', 'cgi', 'jar', 'apk', 'swf', 'scr', 'wsf', 'ps1'
-]
-
-const getExtension = (file: File) => file.name.split('.').pop()!
+export type TaggedFile = {
+    file: File,
+    tags: string[],
+    thumbnail?: string | 'NO_PREVIEW_AVAILABLE'
+}
 
 const FileUpload = () => {
-    const maxDescriptionLength = 5000
-    const { dispatch } = useContext(StateMachineDispatch)!
     const { width } = useSize()
-
-    const { authAction, user } = useAuth()
-    const [authFlow, setAuthFlow] = useState('adding')
-    const [userCurrentBytes, setUserCurrentBytes] = useState(0)
-
-    const [startUpload, setStartUpload] = useState(false)
-    const [fileRecords, setFileRecords] = useState<FileRecord[]>([])
-
-    const totalSize = fileRecords.length ? fileRecords.map(fileRecord => fileRecord.file.size).reduce((acc, cur) => acc + cur) : 0
-    const absoluteMonthlyCost = getNumericFileMonthlyCost(totalSize)
-    const userCurrentMonthlyCost = getNumericFileMonthlyCost(userCurrentBytes)
-    const absoluteMonthlyCostAfterUpload = Math.max(0.6, absoluteMonthlyCost + userCurrentMonthlyCost)
-
-    const monthlyCost = absoluteMonthlyCostAfterUpload <= 0.6 ? '$0.00' : `$${absoluteMonthlyCost.toFixed(2)}`
-    const monthlyCostAfterUpload = `$${absoluteMonthlyCostAfterUpload.toFixed(2)}`
-    const uploadFee = (Math.max(0.5, getNumericFileUploadCost(totalSize))).toFixed(2)
-
-    const removeDuplicates = (fileRecords: FileRecord[]) => {
-        const duplicatesRemoved = fileRecords.reduce((unique: FileRecord[], o) => {
-            if (!unique.some(fileRecord => fileRecord.file.name === o.file.name)) {
-                unique.push(o);
-            }
-            return unique;
-        }, [])
-
-        if (duplicatesRemoved.length !== fileRecords.length) {
-            dispatch({
-                action: 'popup',
-                data: { colour: 'warning', message: 'Duplicate files detected and removed, file names must be unique' }
-            })
-        }
-
-        return duplicatesRemoved
-    }
-
-    const onDrop = useCallback(
-        (acceptedFiles: File[]) => setFileRecords(old => removeDuplicates([
-            ...old,
-            ...acceptedFiles.map(file => ({ file, description: '', finishEdit: false }))
-        ])),
-        []
-    )
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        validator: file => {
-            const ext = getExtension(file)
-            if (BLOCKED_EXTENSIONS.includes(ext)) {
-                const message = `Files of the following types are not allowed: ${BLOCKED_EXTENSIONS.join(', ')}`
-                dispatch({ action: 'popup', data: { colour: 'warning', message } })
-                return { message, code: 'FileTypeNotAllowed' } as FileError
-            }
-            return null
-        }
-    })
-
-    const uploadFlow = async () => {
-        setAuthFlow('adding')
-        if (!user) {
-            return setAuthFlow('login')
-        }
-
-        const userResult = await authAction<User>(`user`, "GET")
-
-        if ((isError(userResult) && userResult.error == 'UserNotSubscribed')) {
-            setAuthFlow('payment')
-        } else if (isError(userResult)) {
-            dispatch({
-                action: 'popup',
-                data: { colour: 'error', message: userResult.message ?? 'Failed to find user' }
-            })
-        } else if (userResult?.stripeSubscriptionId === null) {
-            setAuthFlow('payment')
-        } else {
-            setStartUpload(true)
-        }
-    }
-
-    const onPaymentCompleat = () => {
-        setAuthFlow('uploading')
-        setStartUpload(true)
-    }
-
-    const updateFileDescription = (fileName: string, text: string) => {
-        const limitedText = text.slice(0, maxDescriptionLength)
-        setFileRecords(old => old.map(fr =>
-            fr.file.name === fileName ? { ...fr, description: limitedText } : fr
-        ))
-    }
-
-    const toggleEdit = (fileName: string) => {
-        setFileRecords(old => old.map(fr =>
-            fr.file.name === fileName ? { ...fr, finishEdit: !fr.finishEdit } : fr
-        ))
-    }
-
-    useEffect(() => {
-        if (user && authFlow == 'login') uploadFlow()
-
-        const getUserBytes = async () => {
-            const result = await authAction<{ bytes: number }>(`storage-file/user-bytes`, "GET");
-            if (!isError(result)) {
-                setUserCurrentBytes(result.bytes)
-            }
-        }
-
-        if (user) getUserBytes()
-    }, [user])
-
+    const [taggedFiles, setTaggedFiles] = useState<TaggedFile[]>([])
+    const [step, setStep] = useState(0)
 
     return <DashboardLayout>
-        <DynamicStack>
-            <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, flex: 1 }}>
-                {fileRecords.length > 0 &&
-                    <div style={{ marginBottom: CssSizes.small }}>
-                        <Button onClick={() => setAuthFlow('message')} fullWidth variant="contained">Upload Files</Button>
+        <GlassIconText size="big" icon={<CloudUpload color="primary" />}>Upload To Your Nebula</GlassIconText>
+        <GlassSpace size='tiny'>
+            <Stepper activeStep={step}>
+                <Step>
+                    <StepLabel>{width > ScreenWidths.Mobile ? 'Select Files For Upload' : 'Add'}</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Tag {width > ScreenWidths.Mobile && 'Files For Archive'}</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Account {width > ScreenWidths.Mobile && 'Setup & Subscription'}</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Upload {width > ScreenWidths.Mobile && 'Files To Nebula'}</StepLabel>
+                </Step>
+            </Stepper>
+        </GlassSpace>
+        {step == 0 && <AddFile files={taggedFiles} setFiles={setTaggedFiles} done={() => setStep(1)} />}
+        {step == 1 && <FileTagger taggedFiles={taggedFiles} setFiles={setTaggedFiles} done={() => setStep(2)} />}
+        {step == 2 && <AccountSetup done={() => setStep(3)} taggedFiles={taggedFiles} />}
+        {step == 3 && <Uploader taggedFiles={taggedFiles} />}
+        <TutorialModal
+            modalName="file-upload-tutorial"
+            children={
+                <>
+                    <GlassText size='large'>Simply Add, Tag, Signup and Upload</GlassText>
+                    <GlassText size='moderate'>The first step is adding the files you want to upload!</GlassText>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <FileUploadNebula points={500} width={Math.min(width, 500) * 0.5} />
                     </div>
-                }
-                <div
-                    {...getRootProps()}
-                    style={{
-                        border: '1px dashed gray',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        margin: '0.2em',
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        minHeight: 300,
-                        flex: 1
-                    }}
-                >
-                    <input {...getInputProps()} />
-                    <div>
-                        <Button variant="outlined" >
-                            {isDragActive ? "Drop FILE" : "Add Files"}
-                        </Button>
-                    </div>
-                </div>
-                <GlassCard marginSize="moderate" paddingSize="moderate">
-                    <Stack >
-                        <GlassText size="moderate">Upload size: {getFileSize(totalSize)}</GlassText>
-                        <GlassText size="moderate">Total store size after upload: {getFileSize(userCurrentBytes + totalSize)}</GlassText>
-                        <Divider style={{ margin: '0.4em' }} />
-                        <GlassText size="moderate">Monthly Cost of new files: {monthlyCost}</GlassText>
-                        <GlassText size="moderate">Monthly Cost after upload: {monthlyCostAfterUpload}</GlassText>
-                        <Divider style={{ margin: '0.4em' }} />
-                        <GlassText size="moderate">Upload Fee: ${uploadFee}</GlassText>
-                    </Stack>
-                </GlassCard>
-            </div>
-            {fileRecords.length > 0 && <>
-                <div style={{ padding: '0.8em' }} />
-                <div style={{ flexGrow: 1, flex: 1 }}>
-                    <TableContainer style={width > ScreenWidths.Mobile ? { overflowY: 'scroll', height: '85vh' } : {}}>
-                        <Table stickyHeader size="small">
-                            <TableHead style={{ backgroundColor: '#777' }}>
-                                <TableRow>
-                                    <TableCell></TableCell>
-                                    <TableCell>File Name</TableCell>
-                                    <TableCell>Cost Per Month</TableCell>
-                                    <TableCell>Size</TableCell>
-                                    <TableCell>Remove</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {fileRecords.map((fileRecord, index) => <>
-                                    <TableRow key={index} >
-                                        <TableCell>
-                                            <IconButton onClick={() => toggleEdit(fileRecord.file.name)}>
-                                                {fileRecord.finishEdit ? <ArrowRight /> : <ArrowDropDown />}
-                                            </IconButton>
-                                        </TableCell>
-                                        <TableCell>{fileRecord.file.name}</TableCell>
-                                        <TableCell>{getFileCost(fileRecord.file.size)}</TableCell>
-                                        <TableCell>{getFileSize(fileRecord.file.size)}</TableCell>
-                                        <TableCell>
-                                            <IconButton onClick={() => setFileRecords(old => old.filter((_, innerIndex) => innerIndex != index))}>
-                                                <Delete />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                    {!fileRecord.finishEdit && <TableRow key={`${index}-description`} >
-                                        <TableCell colSpan={5} style={{ padding: CssSizes.moderate }}>
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div style={{ margin: CssSizes.hairpin, width: 140, display: 'flex', justifyContent: 'center' }}>
-                                                    <FilePreview preview={fileRecord.file} />
-                                                </div>
-                                                <TextField
-                                                    variant="filled"
-                                                    multiline
-                                                    minRows={2}
-                                                    value={fileRecord.description}
-                                                    error={fileRecord.description.length >= maxDescriptionLength}
-                                                    fullWidth
-                                                    label={`Description for "${fileRecord.file.name}"`}
-                                                    onChange={e => updateFileDescription(fileRecord.file.name, e.target.value)}
-                                                />
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>}
-                                </>)}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </div>
-            </>
+                </>
             }
-        </DynamicStack>
-        <BaseModal state={authFlow == 'message' ? 'open' : 'closed'} close={() => setAuthFlow('editing')} maxWidth={600}>
-            <GlassSpace size='moderate'>
-                <Stack spacing={1}>
-                    <GlassText size='large'>File Uploader</GlassText>
-                    <div style={{ display: "flex", flexWrap: 'wrap', paddingBottom: CssSizes.small }}>
-                        <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate">Files to upload: {fileRecords.length}</GlassText>
-                        </GlassCard>
-                        <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate">Size: {getFileSize(totalSize)}</GlassText>
-                        </GlassCard>
-                        <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate"> Monthly cost for new files: {monthlyCost}</GlassText>
-                        </GlassCard>
-                        <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate">Upload fee: ${uploadFee}</GlassText>
-                        </GlassCard>
-                        <GlassCard marginSize="tiny" paddingSize="small">
-                            <GlassText size="moderate">New monthly cost: {monthlyCostAfterUpload}</GlassText>
-                        </GlassCard>
-                    </div>
-                    <GlassText size='moderate'>If you are yet to create an account and start a subscription, you will be prompted to do that first</GlassText>
-                    <Alert severity='warning' sx={{ width: '100%' }}>
-                        The upload fee will be charged immediately upon upload
-                    </Alert>
-                    <Button onClick={uploadFlow} fullWidth variant="contained">Upload</Button>
-                    <Divider orientation="horizontal" style={{ marginBlock: CssSizes.moderate }}></Divider>
-                    <GlassText size="small" >
-                        See our <a href="/terms-of-service">Terms of Service</a> and our <a href="/privacy-policy">Privacy Policy</a> before uploading.
-                    </GlassText>
-                </Stack>
-            </GlassSpace>
-        </BaseModal>
-        <TutorialModal modalName="FileUpload">
-            <GlassText size='large'>Select Files For Deep Storage</GlassText>
-            <GlassText size='moderate'>Click the "Add File" button to stage files for upload</GlassText>
-            <GlassText size='moderate'>
-                Once you have added all your files, click the upload button, if you are yet to start
-                a subscription and create an account you will be prompted to do so at this point.
-            </GlassText>
-            <Alert severity='warning' sx={{ width: '100%' }}>
-                Files in deep storage can't be previewed, ensure you add meaningful descriptions
-            </Alert>
-        </TutorialModal>
-        <FileUploadModal fileRecords={fileRecords} startUpload={startUpload} />
-        <AuthModal hideButton onClose={() => setAuthFlow('adding')} overrideState={authFlow == 'login'} />
-        <PaymentModal
-            state={authFlow == 'payment' ? 'open' : 'closed'}
-            onComplete={onPaymentCompleat}
-            onClose={() => setAuthFlow('adding')}
         />
     </DashboardLayout>
 }

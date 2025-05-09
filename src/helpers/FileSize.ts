@@ -24,3 +24,5 @@ export const getNumericFileMonthlyCost = (bytes: number) => {
 export const getNumericFileUploadCost = (bytes: number) => {
     return bytes * (2 ** -40) * 6.5
 }
+
+export const largestSizeForMinPayment = getFileSize((2 ** 40 / 1.5) * 0.6)

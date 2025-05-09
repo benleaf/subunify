@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
     const resetPassword = async () => {
         if (!email) {
-            dispatch({ action: 'popup', data: { colour: 'warning', message: 'Please provide an email' } })
+            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide an email' } })
             return
         }
         try {
@@ -40,19 +40,19 @@ const ForgotPassword = () => {
 
     const confirmSignUp = async () => {
         if (!password) {
-            dispatch({ action: 'popup', data: { colour: 'warning', message: 'Please provide an email' } })
+            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide an email' } })
             return
         }
         if (!code) {
-            dispatch({ action: 'popup', data: { colour: 'warning', message: 'Please provide the verification code' } })
+            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide the verification code' } })
             return
         }
         if (!email) {
-            dispatch({ action: 'popup', data: { colour: 'warning', message: 'Please provide an email' } })
+            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide an email' } })
             return
         }
         if (password != confirmPassword) {
-            dispatch({ action: 'popup', data: { colour: 'warning', message: 'The passwords entered do not match' } })
+            dispatch({ action: 'popup', data: { colour: 'info', message: 'The passwords entered do not match' } })
             return
         }
 

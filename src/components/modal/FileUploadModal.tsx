@@ -199,7 +199,7 @@ const FileUploadModal = ({ fileRecords, startUpload }: Props) => {
                 <CircularProgress />
             </>}
         </GlassSpace>
-        <Alert severity='warning'>
+        <Alert severity='info'>
             Upload in progress, please do not close the tab or refresh.
         </Alert>
     </BaseModal>

@@ -1,189 +1,87 @@
-import { FileOpen } from "@mui/icons-material";
-import React, { useState, useEffect } from "react";
-
-export const FILE_TYPES = {
-    IMAGE: "image",
-    VIDEO: "video",
-    UNKNOWN: "unknown",
-};
-
-export const SUPPORTED_EXTENSIONS = {
-    IMAGE: ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg", "avif"],
-    VIDEO: ["mp4", "webm", "ogg"],
-};
-
-export const getFileExtension = (url: string) => {
-    if (!url.includes(".")) return "";
-    const extenstion = url?.split(".")?.pop()?.toLowerCase();
-    if (extenstion) {
-        return extenstion;
-    }
-    return "";
-};
-
-export const getFileType = async (
-    fileType: string | undefined,
-    preview: string | File,
-    axiosInstance: any = null
-): Promise<string> => {
-    if (fileType) return fileType;
-
-    try {
-
-        let extension;
-
-        if (typeof preview === 'object' && preview instanceof File)
-            extension = preview.type.split('/')[1];
-
-        else {
-            const url = new URL(preview);
-            const pathname = url.pathname.toLowerCase();
-            extension = getFileExtension(pathname);
-        }
-
-        if (SUPPORTED_EXTENSIONS.IMAGE.includes(extension)) {
-            return FILE_TYPES.IMAGE;
-        } else if (SUPPORTED_EXTENSIONS.VIDEO.includes(extension)) {
-            return FILE_TYPES.VIDEO;
-        }
-
-        const fetcher = axiosInstance ? axiosInstance.get : fetch;
-        const response = axiosInstance
-            ? await fetcher(preview)
-            : await fetcher(preview, { method: "GET" });
-        const contentType = axiosInstance
-            ? response.headers["content-type"]
-            : response.headers.get("Content-Type");
-
-        if (contentType.startsWith("image/")) return FILE_TYPES.IMAGE;
-        if (contentType.startsWith("video/")) return FILE_TYPES.VIDEO;
-    } catch (error) {
-        console.warn("Invalid URL or local file detected.", error);
-    }
-
-    return FILE_TYPES.UNKNOWN;
-};
-
-interface FilePreviewProps {
-    preview: string | File;
-    clarity?: number;
-    placeHolderImage?: string;
-    errorImage?: string;
-    fileType?: string;
-    axiosInstance?: any;
+function isImage(file: File) {
+    return file.type.startsWith("image/");
 }
 
-const FilePreview: React.FC<FilePreviewProps> = ({
-    preview,
-    clarity,
-    placeHolderImage,
-    errorImage,
-    fileType,
-    axiosInstance = null,
-}) => {
-    const [fileUrl, setFileUrl] = useState<string>('');
-    const [resolvedType, setResolvedType] = useState<string>(fileType ?? "");
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+function isVideo(file: File) {
+    return file.type.startsWith("video/");
+}
 
-    useEffect(() => {
-        // If preview is a File, create an object URL
-        if (preview instanceof File) {
-            const url = URL.createObjectURL(preview);
-            setFileUrl(url);
-            return () => URL.revokeObjectURL(url); // Cleanup on unmount
-        } else {
-            setFileUrl(preview);
-        }
-    }, [preview]);
 
-    useEffect(() => {
-        const resolveType = async () => {
-            const type = await getFileType(fileType, preview, axiosInstance);
-            setResolvedType(type);
+function generateImageThumbnail(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d")!;
+                const MAX_HEIGHT = 40;
+
+                const scale = MAX_HEIGHT / img.height;
+                canvas.height = MAX_HEIGHT;
+                canvas.width = Math.min(img.width * scale, 300);
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg"));
+            };
+            img.onerror = reject;
+            img.src = reader.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+
+function generateVideoThumbnail(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const video = document.createElement("video");
+
+        video.src = url;
+        video.muted = true;
+        video.playsInline = true;
+
+        video.onloadedmetadata = async () => {
+            try {
+                await video.play();
+
+                // Wait a short time for video to start playing (e.g. 500ms)
+                setTimeout(() => {
+                    const scale = 40 / video.videoHeight;
+                    const width = Math.min(video.videoWidth * scale * scale, 300)
+                    const height = 40;
+
+                    const canvas = document.createElement("canvas");
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext("2d")!;
+                    ctx.drawImage(video, 0, 0, width, height);
+
+                    const thumbnail = canvas.toDataURL("image/jpeg");
+                    video.pause();
+                    URL.revokeObjectURL(url);
+
+                    resolve(thumbnail);
+                }, 500); // Wait 500ms before capturing the frame
+            } catch (err) {
+                reject(err);
+            }
         };
 
-        resolveType();
-    }, [preview, fileType, axiosInstance]);
+        video.onerror = (e) => {
+            reject(new Error("Video load error"));
+        };
+    });
+}
 
-    const openInNewTab = (url: string) => {
-        if (url) {
-            window.open(url, "_blank", "noopener,noreferrer");
-        }
-    };
-
-    function rendered() {
-        //Render complete
-        setIsLoading(false);
+export async function generateThumbnail(file: File): Promise<string | 'NO_PREVIEW_AVAILABLE'> {
+    if (isImage(file)) {
+        return await generateImageThumbnail(file);
+    } else if (isVideo(file)) {
+        return await generateVideoThumbnail(file);
     }
 
-    function startRender() {
-        //Rendering start
-        requestAnimationFrame(rendered);
-    }
-
-    function loaded() {
-        requestAnimationFrame(startRender);
-    }
-
-    function renderFile() {
-        if (!resolvedType) {
-            return null;
-        }
-
-        if (resolvedType === FILE_TYPES.IMAGE) {
-            return (
-                <img
-                    onLoad={loaded}
-                    src={fileUrl}
-                    alt="Preview"
-                    style={{ maxWidth: 100, maxHeight: 75 }}
-                    className={`preview-file ${isLoading ? "hidden" : ""}`}
-                    onClick={() => openInNewTab(fileUrl)}
-                />
-            );
-        } else if (resolvedType === FILE_TYPES.VIDEO) {
-            return (
-                <video
-                    onLoad={loaded}
-                    src={fileUrl}
-                    controls
-                    style={{ maxWidth: 100, maxHeight: 75 }}
-                    className={`preview-file ${isLoading ? "hidden" : ""}`}
-                    onClick={() => openInNewTab(fileUrl)}
-                />
-            );
-        } else if (resolvedType === FILE_TYPES.UNKNOWN && errorImage) {
-            console.log("errorImage", errorImage);
-            return (
-                <img
-                    src={errorImage}
-                    width={40}
-                    height={40}
-                    alt="errorImage"
-                    className={`preview-file ${isLoading ? "hidden" : ""}`}
-                    onLoad={() => setIsLoading(false)}
-                />);
-        } else {
-            return <FileOpen />
-        }
-    }
-
-    if (!resolvedType && placeHolderImage) {
-        return (
-            <img src={placeHolderImage} alt="placeHolder" className="preview-file" />
-        );
-    }
-
-    return (
-        <>
-            {renderFile()}
-            {isLoading ? (
-                <div className="loader-container">
-                    <div className="loader"></div>
-                </div>
-            ) : null}
-        </>
-    );
-};
-
-export default FilePreview;
+    return 'NO_PREVIEW_AVAILABLE'
+}

@@ -38,7 +38,7 @@ const TopBar = () => {
         >
             <GlassSpace size="tiny">
                 <Stack direction='row' spacing={1} alignItems='center'>
-                    {width <= ScreenWidths.Mobile && user && <>
+                    {width <= ScreenWidths.Tablet && user && <>
                         <div>
                             <IconButton onClick={toggleDrawer(true)} color="primary">
                                 <MenuTwoTone />
@@ -56,7 +56,7 @@ const TopBar = () => {
             </GlassSpace>
             <Stack spacing={2} direction='row' paddingRight={CssSizes.moderate}>
                 {user ? <>
-                    {pathname == '/' && width > ScreenWidths.Mobile && <>
+                    {pathname == '/' && width > ScreenWidths.Tablet && <>
                         <Button variant="outlined" href="/file-upload">Upload</Button>
                         <Button variant="outlined" href="/deep-storage">Manage Files</Button>
                     </>}
@@ -64,7 +64,7 @@ const TopBar = () => {
                         <Settings />
                     </IconButton>
                 </> : <>
-                    {pathname == '/' && width > ScreenWidths.Mobile && <>
+                    {pathname == '/' && width > ScreenWidths.Tablet && <>
                         <Button variant="outlined" href="/pricing">Pricing</Button>
                         <Button variant="contained" href="/file-upload">Archive A File</Button>
                     </>}

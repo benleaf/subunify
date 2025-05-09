@@ -13,15 +13,15 @@ const DashboardLayout = ({ children }: Props) => {
 
     return <>
         <div style={{ display: 'flex' }}>
-            {width > ScreenWidths.Mobile && <Sidebar />}
-            {width > ScreenWidths.Mobile &&
+            {width > ScreenWidths.Tablet && <Sidebar />}
+            {width > ScreenWidths.Tablet &&
                 <div style={{ height: height - ComponentSizes.topBar, width: width - ComponentSizes.sideBar }}>
                     <GlassCard marginSize="moderate" paddingSize="moderate" height={(height - ComponentSizes.topBar) - 45}>
                         {children}
                     </GlassCard>
                 </div>
             }
-            {width <= ScreenWidths.Mobile &&
+            {width <= ScreenWidths.Tablet &&
                 <div style={{ minHeight: (height - ComponentSizes.topBar) - 45, width: width }}>
                     <GlassCard marginSize="small" paddingSize="small" grow>
                         {children}
