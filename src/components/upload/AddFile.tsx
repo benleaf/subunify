@@ -168,7 +168,7 @@ const AddFile = ({ files, setFiles, done }: Props) => {
                 </div>
             </>
         </DynamicStack>
-        {files.length > 0 && width <= ScreenWidths.Mobile && <div style={{ position: 'sticky', bottom: CssSizes.moderate, left: '100%' }}>
+        {files.length > 0 && width <= ScreenWidths.Mobile && <div style={{ position: 'sticky', bottom: CssSizes.moderate, left: '100%', zIndex: 100 }}>
             <Button onClick={done} fullWidth variant="contained">Next</Button>
         </div>}
     </>

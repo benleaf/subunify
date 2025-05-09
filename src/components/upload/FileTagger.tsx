@@ -12,6 +12,8 @@ import { useSize } from "@/hooks/useSize"
 import { ScreenWidths } from "@/constants/ScreenWidths"
 import { generateThumbnail } from "@/images/FilePreview"
 import TutorialModal from "../modal/TutorialModal"
+import BaseModal from "../modal/BaseModal"
+import { ComponentSizes } from "@/constants/ComponentSizes"
 
 type Row = {
     id: number,
@@ -29,9 +31,10 @@ type Props = {
 }
 
 const FileTagger = ({ taggedFiles, setFiles, done }: Props) => {
-    const { width } = useSize()
-    const apiRef = useGridApiRef();
+    const { width, height } = useSize()
     const [selected, setSelected] = useState<number[]>([-1])
+    const [editTagsModal, setEditTagsModal] = useState(false)
+
     useEffect(() => {
         if (!taggedFiles.length) {
             setFiles([
@@ -92,7 +95,7 @@ const FileTagger = ({ taggedFiles, setFiles, done }: Props) => {
             width: 40,
             renderCell: (params: { row: Row }) => thumbnail(params.row.thumbnail)
         },
-        { field: 'name', headerName: 'Name' },
+        { field: 'name', width: 200, headerName: 'Name' },
         {
             field: 'findability',
             headerName: 'Findability',
@@ -104,7 +107,7 @@ const FileTagger = ({ taggedFiles, setFiles, done }: Props) => {
         {
             field: 'tag',
             headerName: 'Tags',
-            flex: 1,
+            width: 800,
             align: 'left',
             headerAlign: 'left',
             renderCell: (params: { row: Row }) => params.row.tags.map(tag => <Chip label={tag} sx={{ marginRight: CssSizes.tiny }} />)
@@ -150,48 +153,51 @@ const FileTagger = ({ taggedFiles, setFiles, done }: Props) => {
         ))
     }
 
-    return <div style={{ height: '75vh', display: 'flex', flexDirection: 'column' }}>
+    return <div style={{ height: (height - ComponentSizes.topBar) - 70, display: 'flex', flexDirection: 'column' }}>
         <DynamicStack>
-            {selected.length > 0 && selected[0] >= 0 && <GlassCard marginSize="moderate" paddingSize="moderate" flex={1}>
-                <TagAdder
-                    options={allTags}
-                    tags={commonSelectedTags}
-                    setTags={setSelectedTags}
-                />
-            </GlassCard>}
-            {width > ScreenWidths.Mobile && <GlassCard marginSize="moderate" paddingSize="moderate" flex={1}>
-                <GlassText size="large">Findability</GlassText>
-                <GlassText size="moderate">
-                    How easy it will be to find a specific file when it's in your Nebula
-                </GlassText>
-                <Stack direction='row' spacing={1} alignItems='center'>
-                    <LinearProgress variant="determinate" value={averageFindability} style={{ flex: 1 }} />
-                    <GlassText size="moderate" color="white">{getPercentage(averageFindability)}</GlassText>
-                </Stack>
-            </GlassCard>}
+            {width <= ScreenWidths.Mobile && <Button onClick={() => setEditTagsModal(true)} fullWidth variant="outlined">Edit Tags</Button>}
+            {width > ScreenWidths.Mobile && <>
+                {selected.length > 0 && selected[0] >= 0 && <GlassCard marginSize="moderate" paddingSize="moderate" flex={1}>
+                    <TagAdder
+                        options={allTags}
+                        tags={commonSelectedTags}
+                        setTags={setSelectedTags}
+                    />
+                </GlassCard>}
+                <GlassCard marginSize="moderate" paddingSize="moderate" flex={1}>
+                    <GlassText size="large">Findability</GlassText>
+                    <GlassText size="moderate">
+                        How easy it will be to find a specific file when it's in your Nebula
+                    </GlassText>
+                    <Stack direction='row' spacing={1} alignItems='center'>
+                        <LinearProgress variant="determinate" value={averageFindability} style={{ flex: 1 }} />
+                        <GlassText size="moderate" color="white">{getPercentage(averageFindability)}</GlassText>
+                    </Stack>
+                </GlassCard>
+            </>}
         </DynamicStack>
         <div style={{ flex: 1, position: 'relative' }}>
             <div style={{ inset: 0, position: 'absolute' }}>
                 <DataGridPro
-                    apiRef={apiRef}
                     rows={rows}
                     columns={columns}
-                    pageSizeOptions={[5, 10]}
+                    pageSizeOptions={[25, 50, 100]}
                     checkboxSelection
                     rowSelectionModel={selected}
                     onRowSelectionModelChange={onRowChecked}
                     rowHeight={40}
-                    autosizeOptions={{
-                        expand: true,
-                        includeOutliers: true,
-                        includeHeaders: true,
+                    pagination
+                    initialState={{
+                        pagination: {
+                            paginationModel: {
+                                pageSize: 25,
+                            },
+                        },
                     }}
                 />
             </div>
         </div>
-        <div style={{ position: 'sticky', bottom: CssSizes.moderate, left: '100%' }}>
-            <Button onClick={done} fullWidth variant="contained">Next</Button>
-        </div>
+        <Button onClick={done} fullWidth variant="contained">Next</Button>
         <TutorialModal
             modalName="file-tagging-tutorial"
             children={
@@ -205,6 +211,19 @@ const FileTagger = ({ taggedFiles, setFiles, done }: Props) => {
                 </>
             }
         />
+        <BaseModal
+            state={editTagsModal ? 'open' : 'closed'}
+            maxWidth={600}
+            close={() => setEditTagsModal(false)}
+        >
+            <GlassCard marginSize="moderate" paddingSize="moderate" flex={1}>
+                <TagAdder
+                    options={allTags}
+                    tags={commonSelectedTags}
+                    setTags={setSelectedTags}
+                />
+            </GlassCard>
+        </BaseModal>
     </div>
 }
 

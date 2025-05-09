@@ -21,7 +21,6 @@ const getTimeOfDay = (timestamp: number) => {
 export const getTagsFromFile = (file: File) => {
     const pathParts = file.webkitRelativePath.split('/').filter(Boolean);
     const dir = pathParts.slice(0, -1); // everything except the file name
-    console.log(pathParts, dir)
     return [
         getExtension(file) ?? 'No Extension',
         getTimeOfDay(file.lastModified),

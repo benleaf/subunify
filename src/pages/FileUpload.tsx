@@ -1,4 +1,4 @@
-import { Step, StepLabel, Stepper } from "@mui/material";
+import { Step, StepButton, StepLabel, Stepper } from "@mui/material";
 import { useState } from "react";
 import { CloudUpload } from "@mui/icons-material";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
@@ -13,6 +13,7 @@ import Uploader from "@/components/upload/Uploader";
 import TutorialModal from "@/components/modal/TutorialModal"
 import GlassText from "@/components/glassmorphism/GlassText";
 import FileUploadNebula from "@/components/graphics/FileUploadNebula";
+import { CssSizes } from "@/constants/CssSizes";
 
 export type TaggedFile = {
     file: File,
@@ -26,23 +27,23 @@ const FileUpload = () => {
     const [step, setStep] = useState(0)
 
     return <DashboardLayout>
-        <GlassIconText size="big" icon={<CloudUpload color="primary" />}>Upload To Your Nebula</GlassIconText>
-        <GlassSpace size='tiny'>
+        <GlassSpace size='hairpin'>
             <Stepper activeStep={step}>
                 <Step>
-                    <StepLabel>{width > ScreenWidths.Mobile ? 'Select Files For Upload' : 'Add'}</StepLabel>
+                    <StepButton onClick={() => setStep(0)}>{width > ScreenWidths.Mobile ? 'Select Files For Upload' : 'Add'}</StepButton>
                 </Step>
                 <Step>
-                    <StepLabel>Tag {width > ScreenWidths.Mobile && 'Files For Archive'}</StepLabel>
+                    <StepButton onClick={() => step <= 1 && setStep(1)}>Tag {width > ScreenWidths.Mobile && 'Files For Archive'}</StepButton>
                 </Step>
                 <Step>
-                    <StepLabel>Account {width > ScreenWidths.Mobile && 'Setup & Subscription'}</StepLabel>
+                    <StepButton onClick={() => step <= 2 && setStep(2)}>Account {width > ScreenWidths.Mobile && 'Setup & Subscription'}</StepButton>
                 </Step>
                 <Step>
-                    <StepLabel>Upload {width > ScreenWidths.Mobile && 'Files To Nebula'}</StepLabel>
+                    <StepButton onClick={() => step <= 3 && setStep(3)}>Upload {width > ScreenWidths.Mobile && 'Files To Nebula'}</StepButton>
                 </Step>
             </Stepper>
         </GlassSpace>
+        <div style={{ padding: '0.5em' }} />
         {step == 0 && <AddFile files={taggedFiles} setFiles={setTaggedFiles} done={() => setStep(1)} />}
         {step == 1 && <FileTagger taggedFiles={taggedFiles} setFiles={setTaggedFiles} done={() => setStep(2)} />}
         {step == 2 && <AccountSetup done={() => setStep(3)} taggedFiles={taggedFiles} />}
