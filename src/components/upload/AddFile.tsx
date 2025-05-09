@@ -168,13 +168,6 @@ const AddFile = ({ files, setFiles, done }: Props) => {
                 </div>
             </>
         </DynamicStack>
-        <TutorialModal modalName="FileUpload">
-            <GlassText size='large'>Welcome to the Nebula Upload</GlassText>
-            <GlassText size='moderate'>Add files, give them descriptions and upload them to Nebula</GlassText>
-            <Alert severity='info' sx={{ width: '100%' }}>
-                Files in Nebula cannot be previewed, ensure you add meaningful descriptions
-            </Alert>
-        </TutorialModal>
         {files.length > 0 && width <= ScreenWidths.Mobile && <div style={{ position: 'sticky', bottom: CssSizes.moderate, left: '100%' }}>
             <Button onClick={done} fullWidth variant="contained">Next</Button>
         </div>}
