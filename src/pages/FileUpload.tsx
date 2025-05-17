@@ -1,11 +1,9 @@
-import { Step, StepButton, StepLabel, Stepper } from "@mui/material";
+import { Step, StepButton, Stepper } from "@mui/material";
 import { useState } from "react";
-import { CloudUpload } from "@mui/icons-material";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useSize } from "@/hooks/useSize";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
-import GlassIconText from "@/components/glassmorphism/GlassIconText";
 import AddFile from "@/components/upload/AddFile";
 import FileTagger from "@/components/upload/FileTagger";
 import AccountSetup from "@/components/upload/AccountSetup";
@@ -13,7 +11,6 @@ import Uploader from "@/components/upload/Uploader";
 import TutorialModal from "@/components/modal/TutorialModal"
 import GlassText from "@/components/glassmorphism/GlassText";
 import FileUploadNebula from "@/components/graphics/FileUploadNebula";
-import { CssSizes } from "@/constants/CssSizes";
 
 export type TaggedFile = {
     file: File,

@@ -49,7 +49,7 @@ function generateVideoThumbnail(file: File): Promise<string> {
                 // Wait a short time for video to start playing (e.g. 500ms)
                 setTimeout(() => {
                     const scale = 40 / video.videoHeight;
-                    const width = Math.min(video.videoWidth * scale * scale, 300)
+                    const width = Math.min(video.videoWidth * scale, 300)
                     const height = 40;
 
                     const canvas = document.createElement("canvas");

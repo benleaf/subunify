@@ -21,6 +21,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const abortController = new AbortController()
+    const { signal } = abortController
+
     const [user, setUser] = useState<AuthUser | null>(null);
     const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
     const [subscribed, setSubscribed] = useState<any>(true);
@@ -31,6 +34,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (storedToken) {
             setUser(jwtDecode(storedToken));
         }
+        return () => {
+            console.log("Cleaning up AuthContext");
+            abortController.abort()
+        };
     }, []);
 
     const login = async (email: string, password: string) => {
@@ -47,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
         dispatch({ action: 'loading', data: true })
         try {
-            const result = await apiAction<T>(endpoint, method, body);
+            const result = await apiAction<T>(endpoint, method, body, signal);
             dispatch({ action: 'loading', data: false })
             return handleAction(result);
         } catch (error: TODO) {
@@ -62,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const rawAuthAction = async (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
-        const result = await rawApiAction(endpoint, method, body);
+        const result = await rawApiAction(endpoint, method, body, signal);
         return handleAction(result);
     };
 

@@ -35,33 +35,22 @@ const FileTagger = ({ taggedFiles, setFiles, done }: Props) => {
     const [selected, setSelected] = useState<number[]>([-1])
     const [editTagsModal, setEditTagsModal] = useState(false)
 
-    useEffect(() => {
-        if (!taggedFiles.length) {
-            setFiles([
-                { file: { name: 'test.png' } as File, tags: ['png', 'Q1'] },
-                { file: { name: 'test2.png' } as File, tags: ['png', 'Q2'] },
-                { file: { name: 'test3.png' } as File, tags: ['jpg', 'Q3'] },
-                { file: { name: 'test4.png' } as File, tags: ['png', 'Q4'] },
-            ])
-        }
-    }, [])
-
-    useEffect(() => {
-        const updatePreviews = async () => {
-            for (const taggedFile of taggedFiles) {
-                const thumbnailPromise = generateThumbnail(taggedFile.file)
-                thumbnailPromise.then(thumbnail => setFiles(oldTaggedFiles => {
-                    return oldTaggedFiles.map(old => ({
-                        ...old,
-                        thumbnail: old.file.name == taggedFile.file.name ?
-                            thumbnail :
-                            old.thumbnail
-                    }))
-                }))
-            }
-        }
-        updatePreviews()
-    }, [])
+    // useEffect(() => {
+    //     const updatePreviews = async () => {
+    //         for (const taggedFile of taggedFiles) {
+    //             const thumbnailPromise = generateThumbnail(taggedFile.file)
+    //             thumbnailPromise.then(thumbnail => setFiles(oldTaggedFiles => {
+    //                 return oldTaggedFiles.map(old => ({
+    //                     ...old,
+    //                     thumbnail: old.file.name == taggedFile.file.name ?
+    //                         thumbnail :
+    //                         old.thumbnail
+    //                 }))
+    //             }))
+    //         }
+    //     }
+    //     updatePreviews()
+    // }, [])
 
     const selectedTags = selected.map(index => taggedFiles[index]?.tags)
 

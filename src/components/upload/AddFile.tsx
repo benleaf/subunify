@@ -59,18 +59,22 @@ const AddFile = ({ files, setFiles, done }: Props) => {
     }
 
     const onDrop = useCallback(
-        (acceptedFiles: File[]) => setFiles(old => removeDuplicates([
-            ...old,
-            ...acceptedFiles.map(file => ({
-                file,
-                tags: getTagsFromFile(file)
-            }))
-        ])),
+        (acceptedFiles: File[]) => {
+            dispatch({ action: 'loading', data: false })
+            setFiles(old => removeDuplicates([
+                ...old,
+                ...acceptedFiles.map(file => ({
+                    file,
+                    tags: getTagsFromFile(file)
+                }))
+            ]))
+        },
         []
     )
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
+        onFileDialogOpen: () => dispatch({ action: 'loading', data: true }),
         validator: file => {
             const ext = getExtension(file)
             if (BLOCKED_EXTENSIONS.includes(ext)) {
@@ -79,7 +83,8 @@ const AddFile = ({ files, setFiles, done }: Props) => {
                 return { message, code: 'FileTypeNotAllowed' } as FileError
             }
             return null
-        }
+        },
+
     })
     return <>
         <DynamicStack>
