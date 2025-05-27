@@ -8,7 +8,6 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import FileUploadNebula from "../graphics/FileUploadNebula"
-import TutorialModal from "../modal/TutorialModal"
 import { getExtension, getTagsFromFile } from "@/helpers/FileProperties"
 import { useCallback, useContext, useState } from "react"
 import { useDropzone, FileError } from "react-dropzone"
@@ -60,7 +59,6 @@ const AddFile = ({ files, setFiles, done }: Props) => {
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
-            dispatch({ action: 'loading', data: false })
             setFiles(old => removeDuplicates([
                 ...old,
                 ...acceptedFiles.map(file => ({
@@ -74,7 +72,6 @@ const AddFile = ({ files, setFiles, done }: Props) => {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
-        onFileDialogOpen: () => dispatch({ action: 'loading', data: true }),
         validator: file => {
             const ext = getExtension(file)
             if (BLOCKED_EXTENSIONS.includes(ext)) {

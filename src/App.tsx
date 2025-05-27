@@ -15,6 +15,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import Pricing from './pages/Pricing';
 import ComedyLandingPage from './pages/comedyTest/ComedyLandingPage';
+import Onboarding from './pages/Onboarding';
 
 
 export const StateMachineDispatch = createContext<StateMachineContext>(undefined);
@@ -26,10 +27,11 @@ const App = () => {
     <AuthProvider>
       <UniversalAlert />
       <BrowserRouter>
-        <TopBar />
+        {/* <TopBar /> */}
         <Routes>
           {/* <Route path="/original" element={<LandingPage />} /> */}
           <Route path="/old" element={<LandingPageDeepStorage />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/" element={<ComedyLandingPage />} />
           <Route path="/file-upload" element={<FileUpload />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />

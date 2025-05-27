@@ -41,7 +41,11 @@ const AccountSetup = ({ done, taggedFiles }: Props) => {
     }, [authPage])
 
     useEffect(() => {
-        if (user?.email_verified) setAuthPage('payment')
+        if (!user) {
+            setAuthPage('login')
+        } else if (user?.email_verified) {
+            setAuthPage('payment')
+        }
     }, [user])
 
     return <div style={{ display: 'flex', justifyContent: 'space-around' }}>

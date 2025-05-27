@@ -2,24 +2,28 @@ import { ApiError } from "@/types/server/ApiError";
 import { ApiResponse } from "@/types/server/ApiResponse"
 import { RequestMethod } from "@/types/server/RequestMethod"
 import { isError } from "./isError";
+import { CognitoUserSession } from "amazon-cognito-identity-js";
 
-export const apiAction = async <T>(endpoint: string, method: RequestMethod, body?: string | FormData | Blob, signal?: AbortSignal): Promise<ApiResponse<T>> => {
-    const response = await rawApiAction(endpoint, method, body, signal)
+export type ApiActionParams = {
+    endpoint: string,
+    method: RequestMethod,
+    body?: string | FormData | Blob,
+    signal?: AbortSignal,
+    session: CognitoUserSession | null
+}
+
+export const apiAction = async <T>(params: ApiActionParams): Promise<ApiResponse<T>> => {
+    const response = await rawApiAction(params)
     if (isError(response)) return response
     return (await response.json()) as ApiResponse<T>
 }
 
-export const rawApiAction = async (
-    endpoint: string,
-    method: RequestMethod,
-    body?: string | FormData | Blob,
-    signal?: AbortSignal
-): Promise<Response | Partial<ApiError>> => {
+export const rawApiAction = async ({ endpoint, method, body, signal, session }: ApiActionParams): Promise<Response | Partial<ApiError>> => {
     const contentType = typeof body == 'string' ? { "content-type": 'application/json' } : undefined
 
     try {
-        const jwtToken = localStorage.getItem("token");
-        if (!jwtToken) return { message: 'No Token Supplied, request not sent', error: 'Unauthorized' }
+        const tokenValid = session && session.getAccessToken().getExpiration() > Date.now() / 1000
+        if (!tokenValid) return { message: 'No Token Supplied, request not sent', error: 'Unauthorized' }
 
         return fetch(
             import.meta.env.VITE_SERVER_URL + endpoint,
@@ -29,7 +33,7 @@ export const rawApiAction = async (
                 body,
                 headers: {
                     ...contentType,
-                    "authorization": `Bearer ${jwtToken}`,
+                    "authorization": `Bearer ${session.getAccessToken().getJwtToken()}`,
                 }
             }
         )

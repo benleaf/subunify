@@ -5,9 +5,9 @@ const poolData = {
     ClientId: "78ehhe2nvbnhuc88bvpiki1446",
 };
 
-const UserPool = new CognitoUserPool(poolData);
+export const UserPool = new CognitoUserPool(poolData);
 
-type TokenUser = { token: string, cognitoUser: CognitoUser }
+type SessionUser = { session: CognitoUserSession, cognitoUser: CognitoUser }
 
 export const cognitoRefreshTokens = (cognitoUser: CognitoUser) => {
     cognitoUser.getSession((error: Error | null, session: CognitoUserSession | null) => {
@@ -59,16 +59,14 @@ export const cognitoResendConfirm = (email: string): Promise<void> => {
     });
 };
 
-export const cognitoLogin = async (email: string, password: string): Promise<TokenUser> => {
+export const cognitoLogin = async (email: string, password: string): Promise<SessionUser> => {
     const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
     const authDetails = new AuthenticationDetails({ Username: email, Password: password });
 
-    const token: string = await new Promise((resolve, reject) => {
+    const session: CognitoUserSession = await new Promise((resolve, reject) => {
         cognitoUser.authenticateUser(authDetails, {
             onSuccess: (session) => {
-                const token = session.getIdToken().getJwtToken();
-                localStorage.setItem("token", token);
-                resolve(token);
+                resolve(session);
             },
             onFailure: (err) => {
                 console.log(err)
@@ -77,13 +75,13 @@ export const cognitoLogin = async (email: string, password: string): Promise<Tok
         });
     });
 
-    return { token, cognitoUser }
+    return { session, cognitoUser }
 };
 
-export const cognitoForgotPassword = async (email: string): Promise<TokenUser> => {
+export const cognitoForgotPassword = async (email: string) => {
     const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
 
-    const token: string = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         cognitoUser.forgotPassword({
             onSuccess: () => {
                 resolve(email);
@@ -95,13 +93,13 @@ export const cognitoForgotPassword = async (email: string): Promise<TokenUser> =
         });
     });
 
-    return { token, cognitoUser }
+    return { email, cognitoUser }
 };
 
-export const cognitoConfirmSignUp = async (email: string, newPassword: string, code: string): Promise<TokenUser> => {
+export const cognitoConfirmSignUp = async (email: string, newPassword: string, code: string) => {
     const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
 
-    const token: string = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         cognitoUser.confirmPassword(code, newPassword, {
             onSuccess: () => {
                 resolve(newPassword);
@@ -113,5 +111,5 @@ export const cognitoConfirmSignUp = async (email: string, newPassword: string, c
         });
     });
 
-    return { token, cognitoUser }
+    return { newPassword, cognitoUser }
 };

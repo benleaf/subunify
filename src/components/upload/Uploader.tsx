@@ -3,67 +3,106 @@ import { Stack, LinearProgress, CircularProgress, Alert, Chip } from "@mui/mater
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useNavigate } from "react-router"
-import { StateMachineDispatch } from "@/App"
 import { useAuth } from "@/auth/AuthContext"
 import moment, { Moment } from "moment"
-import { useContext, useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { isError } from "@/api/isError"
 import { Time } from "@/helpers/Time"
 import GlassCard from "../glassmorphism/GlassCard"
-import { CssSharp } from "@mui/icons-material"
 import { CssSizes } from "@/constants/CssSizes"
 
 type Props = {
     taggedFiles: TaggedFile[]
 }
 
-type UploadSession = { uploadId: string, key: string }
+type ChunkUploadResult = {
+    response: Promise<Response>,
+    chunk: Chunk,
+}
+
+type FileUploadPart = {
+    ETag: string
+    PartNumber: number
+}
+
+type FileUploadResult = {
+    uploadId: string
+    key: string
+    parts: FileUploadPart[]
+}
+
+type Chunk = { blob: Blob, url: string, bytes: number }
+
+type UploadSession = { uploadId: string, key: string, file: File, description: string }
+
+type UploadObject = { url: string, uploadSession: UploadSession, index: number }
 
 const mb5 = 5 * 1024 * 1024
 
-const Uploader = ({ taggedFiles }: Props) => {
+const MAX_UPLOAD_CONCURRENCY = 3;
+const MAX_STAGING_SIZE = 100;
+
+const Uploader2 = ({ taggedFiles }: Props) => {
     const fileRecords = taggedFiles.map(file => ({ ...file, description: file.tags.join() }))
-
-    const { dispatch } = useContext(StateMachineDispatch)!
     const navigate = useNavigate()
-
     const { authAction } = useAuth()
-    const [totalUploaded, setTotalUploaded] = useState(0)
-    const [startTime, setStartTime] = useState<Moment>()
-    const [eta, setEta] = useState<string>()
+
+    const started = useRef<'waiting' | 'gettingParts' | 'inProgress'>('waiting');
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const totalUploaded = useRef(0);
+    const startTime = useRef<Moment>(moment());
+    const uploadSessions = useRef<UploadSession[]>();
+    const stagingQueue = useRef<UploadObject[]>([]);
+    const uploadQueue = useRef<Promise<Response>[]>([]);
+    const finished = useRef<FileUploadResult[]>([]);
+
     const [filesInUpload, setFilesInUpload] = useState(new Map<string, { total: number, current: number, percentage: number }>())
+    const [eta, setEta] = useState<string>()
     const [mbps, setMbps] = useState<number>()
 
     const totalSize = fileRecords.length ? fileRecords.map(fileRecord => fileRecord.file.size).reduce((acc, cur) => acc + cur) : 0
-    const totalProgress = (totalUploaded / totalSize) * 100
+    const totalProgress = (totalUploaded.current / totalSize) * 100
 
     useEffect(() => {
-        if (totalUploaded == 0) return
+        if (totalUploaded.current == 0) return
 
         const now = moment()
-        const duration = moment.duration(now.diff(startTime))
+        const duration = moment.duration(now.diff(startTime.current))
         const secondsElapsed = duration.asSeconds()
 
-        const uploadSpeed = totalUploaded / secondsElapsed
+        const uploadSpeed = totalUploaded.current / secondsElapsed
         setMbps((uploadSpeed * 8) / 1024 / 1024)
-        const remainingBytes = totalSize - totalUploaded
+        const remainingBytes = totalSize - totalUploaded.current
         const estimatedSecondsLeft = remainingBytes / uploadSpeed
 
         setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
-    }, [totalProgress])
+    }, [filesInUpload])
 
     useEffect(() => {
         const abortController = new AbortController()
-        const { signal } = abortController
-        uploadFiles(signal)
+        console.log(uploadSessions.current?.length, started.current)
+        if (!intervalRef.current?.hasRef()) {
+            getUploadSessions(fileRecords)
+        }
+
         return () => {
             console.log("Cleaning up AuthContext");
             abortController.abort()
         };
     }, [])
 
+    useEffect(() => {
+        if (!uploadSessions.current || uploadSessions.current.length === 0 || started.current != 'waiting') return
+        startTime.current = moment()
+
+        intervalRef.current = setInterval(() => {
+            void checkQueues()
+        }, 100)
+    }, [uploadSessions.current != undefined])
+
     const getUploadSessions = async (fileRecords: { file: File, description: string }[]) => {
-        const uploadSessions = await authAction<UploadSession[]>('storage-file/upload/start', "POST", JSON.stringify({
+        console.log("Getting upload sessions")
+        const newUploadSessions = await authAction<UploadSession[]>('storage-file/upload/start', "POST", JSON.stringify({
             files: fileRecords.map(fileRecord => ({
                 name: fileRecord.file.name,
                 description: fileRecord.description,
@@ -71,18 +110,30 @@ const Uploader = ({ taggedFiles }: Props) => {
             }))
         }))
 
-        if (isError(uploadSessions)) {
+        if (isError(newUploadSessions)) {
             console.error(uploadSessions)
             throw new Error("Failed to start upload session")
         }
-        console.log("uploadSessions", uploadSessions)
-        return uploadSessions
+
+        for (const uploadSession of newUploadSessions) {
+            const fileRecord = fileRecords.find(fileRecord => uploadSession.key.includes(fileRecord.file.name))
+            if (!fileRecord) throw new Error(`Failed to find file record for upload session ${uploadSession.key}`)
+            uploadSession.file = fileRecord.file
+            uploadSession.description = fileRecord.description
+        }
+
+        console.log(`Adding ${newUploadSessions.length} upload sessions`)
+        if (uploadSessions.current == undefined) {
+            uploadSessions.current = newUploadSessions
+        } else {
+            uploadSessions.current!.push(...newUploadSessions)
+        }
     }
 
-    const getPresignedUrls = async (uploadSession: UploadSession, fileRecord: { file: File, description: string }) => {
+    const getPresignedUrls = async (uploadSession: UploadSession): Promise<UploadObject[]> => {
         if (!uploadSession) throw new Error("Failed to find upload session for file");
 
-        const parts = Math.ceil(fileRecord.file.size / mb5)
+        const parts = Math.ceil(uploadSession.file.size / mb5)
         const response = await authAction<{ urls: string[] }>('storage-file/upload/presigned-parts', "POST", JSON.stringify({
             key: uploadSession.key,
             uploadId: uploadSession.uploadId,
@@ -95,10 +146,9 @@ const Uploader = ({ taggedFiles }: Props) => {
         }
 
         console.log("response.urls", response.urls)
-        return response.urls
+        return response.urls.map((url, index) => ({ url, uploadSession, index }))
     }
 
-    type Chunk = { blob: Blob, url: string, bytes: number }
     const getUploadChunk = (file: File, uploadUrl: string, index: number): Chunk => {
         const start = index * mb5;
         const end = Math.min(file.size, (index + 1) * mb5);
@@ -106,111 +156,75 @@ const Uploader = ({ taggedFiles }: Props) => {
         return { blob, url: uploadUrl, bytes: end - start }
     }
 
-    const uploadFiles = async (signal: AbortSignal): Promise<void> => {
-        console.log("UPLOAD START")
-        if (signal.aborted) return
-        const uploadSessions = await getUploadSessions(fileRecords)
+    const checkQueues = async () => {
+        if (!uploadSessions.current) return
+        // Fill staging queue
+        while (started.current != 'gettingParts' && stagingQueue.current.length < MAX_STAGING_SIZE && uploadSessions.current.length > 0) {
+            const uploadSession = uploadSessions.current.shift()!
+            started.current = 'gettingParts'
+            const uploadObjects = await getPresignedUrls(uploadSession);
+            started.current = 'inProgress'
+            stagingQueue.current.push(...uploadObjects);
+            console.log("Staging queue", stagingQueue.current)
+        }
 
-        const parts = new Map<string, { ETag: string, PartNumber: number }[]>()
-        const fileUploadBatchResults: {
-            response: Promise<Response | undefined>,
-            index: number,
-            uploadSession: UploadSession,
-            bytesInFile: number,
-            uploadedBytes: number,
-            fileName: string,
-        }[] = []
-        const pendingUrlData: { url: string, uploadSession: UploadSession, index: number, totalInFile: number }[] = []
+        // Fill upload queue
+        while (uploadQueue.current.length < MAX_UPLOAD_CONCURRENCY && stagingQueue.current.length > 0) {
+            const uploadObj = stagingQueue.current.shift()!;
+            console.log("Filling upload queue", uploadObj.index, uploadObj.url)
+            const chunkUploadResult = uploadFile(uploadObj)
+            chunkUploadResult.response.finally(() => {
+                // Remove resolved promise
+                uploadQueue.current = uploadQueue.current.filter(p => p !== chunkUploadResult.response);
+            })
 
-        setStartTime(moment())
+            handlePartUpload(uploadObj, chunkUploadResult)
+            uploadQueue.current.push(chunkUploadResult.response);
+        }
 
-        for (const fileRecord of fileRecords) {
-            if (signal.aborted) return
-            const uploadSession = uploadSessions.find(session => session.key.includes(fileRecord.file.name))
-            if (!uploadSession) throw new Error("Failed to find upload session for file")
+        if (
+            started.current &&
+            uploadSessions.current?.length === 0 &&
+            stagingQueue.current.length === 0 &&
+            uploadQueue.current.length === 0
+        ) {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            console.log('All uploads complete');
+            await authAction<{ urls: string[] }>('storage-file/upload/complete', "POST", JSON.stringify({ fileUploads: finished.current }))
+            navigate('/deep-storage')
+        }
+    };
 
-            const uploadUrls = await getPresignedUrls(uploadSession, fileRecord)
-            console.log("Total Urls for:", fileRecord.file.name, uploadUrls.length)
+    const uploadFile = (uploadObject: UploadObject): ChunkUploadResult => {
+        const chunk = getUploadChunk(uploadObject.uploadSession.file, uploadObject.url, uploadObject.index)
+        const result = uploadChunk(chunk)
+        return { response: result, chunk }
+    }
 
+    const handlePartUpload = async (uploadObj: UploadObject, { chunk, response }: ChunkUploadResult) => {
+        response.then(async (result) => {
+            const key = uploadObj.uploadSession.file.name
 
-            for (const index in uploadUrls) {
-                pendingUrlData.push({
-                    url: uploadUrls[index],
-                    uploadSession,
-                    index: +index,
-                    totalInFile: uploadUrls.length
+            totalUploaded.current += chunk.bytes
+            setFilesInUpload(old => old.set(key, {
+                total: uploadObj.uploadSession.file.size,
+                current: (old.get(key)?.current ?? 0) + chunk.bytes,
+                percentage: ((old.get(key)?.current ?? 0) + chunk.bytes) / uploadObj.uploadSession.file.size * 100
+            }))
+
+            const uploadSessionKey = uploadObj.uploadSession.key
+            const finishedParts = finished.current.find(upload => upload.key === uploadSessionKey)
+
+            if (finishedParts) {
+                finishedParts.parts.push({ ETag: result.headers.get('ETag')!, PartNumber: uploadObj.index + 1 })
+            } else {
+                finished.current.push({
+                    uploadId: uploadObj.uploadSession.uploadId,
+                    key: uploadSessionKey,
+                    parts: [{ ETag: result.headers.get('ETag')!, PartNumber: uploadObj.index + 1 }]
                 })
             }
-
-            while (pendingUrlData.length > 10) {
-                console.log("Pending urls:", pendingUrlData)
-
-                if (signal.aborted) return
-
-                for (let index = 0; index < 10; index++) {
-                    const pendingUrl = pendingUrlData.pop()!
-                    const chunk = getUploadChunk(fileRecord.file, pendingUrl.url, pendingUrl.index)
-                    const response = uploadChunk(chunk)
-
-                    fileUploadBatchResults.push({
-                        response,
-                        fileName: fileRecord.file.name,
-                        index: pendingUrl.index,
-                        uploadedBytes: chunk.bytes,
-                        bytesInFile: fileRecord.file.size,
-                        uploadSession: pendingUrl.uploadSession
-                    })
-                }
-
-                const resolvedFileUploads = await Promise.all(fileUploadBatchResults.map(async fileUploadBatchResult => {
-                    const response = await fileUploadBatchResult.response
-                    const key = fileUploadBatchResult.fileName
-                    setFilesInUpload(old => {
-                        return old.set(key, {
-                            total: fileUploadBatchResult.bytesInFile,
-                            current: (old.get(key)?.current ?? 0) + fileUploadBatchResult.uploadedBytes,
-                            percentage: ((old.get(key)?.current ?? 0) + fileUploadBatchResult.uploadedBytes) / fileUploadBatchResult.bytesInFile * 100
-                        })
-                    })
-                    setTotalUploaded(old => old + fileUploadBatchResult.uploadedBytes)
-                    return { ...fileUploadBatchResult, response }
-                }))
-
-                for (const fileUploadBatchResult of resolvedFileUploads) {
-                    console.log(fileUploadBatchResult.fileName, fileUploadBatchResult.index,)
-                    const resultUploadSessionKey = fileUploadBatchResult.uploadSession.key
-                    if (!fileUploadBatchResult.response) throw new Error(`Failed to upload file, no response returned`)
-
-                    const etag = fileUploadBatchResult.response.headers.get('ETag');
-                    if (!etag) throw new Error(`Failed to upload file, no ETag returned`);
-                    const oldParts = parts.get(resultUploadSessionKey) ?? []
-                    parts.set(resultUploadSessionKey, [...oldParts, { ETag: etag, PartNumber: fileUploadBatchResult.index + 1 }])
-                }
-
-                fileUploadBatchResults.length = 0
-            }
-        }
-
-        const fileUploads: ({
-            uploadId: string
-            key: string
-            parts: {
-                ETag: string
-                PartNumber: number
-            }[]
-        } | undefined)[] = []
-
-        for (const uploadSession of uploadSessions) {
-            fileUploads.push({
-                uploadId: uploadSession.uploadId,
-                key: uploadSession.key,
-                parts: parts.get(uploadSession.key) ?? []
-            })
-        }
-
-        await Promise.all(fileUploads)
-        await authAction<{ urls: string[] }>('storage-file/upload/complete', "POST", JSON.stringify({ fileUploads }))
-        navigate('/deep-storage')
+        })
     }
 
     const uploadChunk = async (chunk: Chunk) => {
@@ -249,8 +263,7 @@ const Uploader = ({ taggedFiles }: Props) => {
                 <CircularProgress />
             </>}
         </GlassSpace>
-
     </div>
 }
 
-export default Uploader
+export default Uploader2

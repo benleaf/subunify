@@ -11,6 +11,7 @@ import Uploader from "@/components/upload/Uploader";
 import TutorialModal from "@/components/modal/TutorialModal"
 import GlassText from "@/components/glassmorphism/GlassText";
 import FileUploadNebula from "@/components/graphics/FileUploadNebula";
+import Uploader2 from "@/components/upload/Uploader2";
 
 export type TaggedFile = {
     file: File,
@@ -44,7 +45,7 @@ const FileUpload = () => {
         {step == 0 && <AddFile files={taggedFiles} setFiles={setTaggedFiles} done={() => setStep(1)} />}
         {step == 1 && <FileTagger taggedFiles={taggedFiles} setFiles={setTaggedFiles} done={() => setStep(2)} />}
         {step == 2 && <AccountSetup done={() => setStep(3)} taggedFiles={taggedFiles} />}
-        {step == 3 && <Uploader taggedFiles={taggedFiles} />}
+        {step == 3 && <Uploader2 taggedFiles={taggedFiles} />}
         <TutorialModal
             modalName="file-upload-tutorial"
             children={

@@ -3,40 +3,36 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import { StrictMode } from 'react'
+import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createTheme, CssBaseline } from '@mui/material';
 import type { } from '@mui/x-data-grid/themeAugmentation';
 import { ThemeProvider } from '@emotion/react';
 import { Colours } from './constants/Colours';
-import App from './App';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LicenseInfo } from '@mui/x-license';
+import App from './App';
 
 LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_KEY);
 
 const theme = createTheme({
   palette: {
     background: {
-      default: Colours.black,
-      paper: Colours.black,
+      default: Colours.white,
+      paper: Colours.white,
     },
     common: {
       black: Colours.black,
       white: Colours.white,
     },
     primary: {
-      main: Colours.primary,
+      main: Colours.primaryDark,
       light: Colours.primaryLight
     },
     secondary: {
       main: Colours.secondary
     },
-    mode: 'dark',
-  },
-  colorSchemes: {
-    dark: true,
   },
   mixins: {
     MuiDataGrid: {

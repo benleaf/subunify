@@ -1,7 +1,10 @@
 export type User = {
     id: string
-    name: string
+    firstName: string
+    lastName: string
     email: string
+    color: string
+    thumbnail: string
     stripeSubscriptionId: string
-    permission: string
+    email_verified: boolean
 }
