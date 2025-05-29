@@ -114,7 +114,7 @@ const PricingCarousel = () => {
     return <>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
             <GlassSpace size="large" style={{ height: '100%', maxWidth: ScreenWidths.Mobile, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <GlassText size="huge">We do subscriptions <i>different</i></GlassText>
+                <GlassText size="massive">We do subscriptions <i>different</i></GlassText>
                 <Stack spacing={3} margin='1em'>
                     <GlassText size="big" color="primaryLight">
                         We've built our subscription model from the ground up to work best for you. A mix of pay monthly and pay as you go

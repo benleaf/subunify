@@ -4,7 +4,7 @@ import { StateMachineDispatch } from "@/App";
 import { useNavigate } from "react-router";
 import Stripe from "stripe";
 import { isError } from "@/api/isError";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 type SessionResult = {
     status: Stripe.Checkout.Session.Status | null;

@@ -10,7 +10,7 @@ import GlassText from "../glassmorphism/GlassText"
 import Login from "@/auth/Login"
 import PaymentModal from "../modal/PaymentModal"
 import { TaggedFile } from "@/pages/FileUpload"
-import { useAuth } from "@/auth/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { isError } from "@/api/isError"
 import { User } from "@/types/User"
 

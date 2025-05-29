@@ -12,10 +12,10 @@ type Props = {
     color?: keyof typeof Colours
 }
 
-const GlassText = ({ children, style, size = 'moderate', color = 'primary' }: Props) => {
+const GlassText = ({ children, style, size = 'moderate', color = 'darkGrey' }: Props) => {
     return <p
         className={classes(glass.glassText)}
-        style={{ fontSize: CssSizes[size], color: Colours[color], ...style }}
+        style={{ fontSize: CssSizes[size], color: Colours[color], ...style, wordBreak: 'break-word' }}
     >
         {children}
     </p>

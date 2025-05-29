@@ -4,7 +4,7 @@ import { GridColDef, GridRowModel, GridValidRowModel } from "@mui/x-data-grid";
 import { isDashboard } from "@/stateManagement/stateMachines/getContext";
 import EditableTable from "@/components/TablesDataTable/EditableTable";
 import { isError } from "@/api/isError";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useSearchParams } from "react-router";
 import GlassText from "@/components/glassmorphism/GlassText";

@@ -3,7 +3,7 @@ import { Stack, LinearProgress, CircularProgress, Alert, Chip } from "@mui/mater
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useNavigate } from "react-router"
-import { useAuth } from "@/auth/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import moment, { Moment } from "moment"
 import { useState, useEffect, useRef } from "react"
 import { Time } from "@/helpers/Time"
@@ -80,6 +80,11 @@ const Uploader2 = ({ taggedFiles }: Props) => {
             abortController.abort()
         };
     }, [])
+
+    useEffect(() => {
+        uploadManagerRef.current?.update(fileRecords)
+    }, [fileRecords])
+
 
     return <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <GlassSpace size="big">

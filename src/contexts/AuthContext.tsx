@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { cognitoLogin, cognitoRefreshTokens, UserPool } from "./AuthService";
+import { cognitoLogin, cognitoRefreshTokens, UserPool } from "../auth/AuthService";
 import { apiAction, rawApiAction } from "@/api/apiAction";
 import { RequestMethod } from "@/types/server/RequestMethod";
 import { isError } from "@/api/isError";
@@ -27,13 +27,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
     const [subscribed, setSubscribed] = useState<any>(true);
     const [session, setSession] = useState<CognitoUserSession | null>(null);
-    const [user, setUser] = useState<Partial<User>>({});
+    const [user, setUser] = useState<Partial<User>>({
+        color: '#f00'
+    });
     const { dispatch } = useContext(StateMachineDispatch)!
+
+    const getStoredAttributes = () => {
+        return JSON.parse(localStorage.getItem('user') || '{}') as Partial<User>
+    }
+
+    const updateUser = (cognitoUser: CognitoUser) => {
+        cognitoUser.getUserAttributes((error, result) => {
+            if (error) return console.error("Get user attributes error: ", error);
+            const attributes = result?.reduce((acc, attr) => {
+                acc[attr.getName()] = attr.getValue();
+                return acc;
+            }, {} as { [key: string]: string }) || {};
+            setUserAttributes(attributes)
+        })
+    }
 
     useEffect(() => {
         const currentUser = UserPool.getCurrentUser();
-        setUser((JSON.parse(localStorage.getItem('user') || '{}')))
-        console.log((JSON.parse(localStorage.getItem('user') || '{}')))
+        setUser(getStoredAttributes())
 
         if (!currentUser) return;
 
@@ -44,15 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setUser({})
                 return
             }
-            currentUser.getUserAttributes((error, result) => {
-                if (error) return console.error("Get user attributes error: ", error);
-                const attributes = result?.reduce((acc, attr) => {
-                    acc[attr.getName()] = attr.getValue();
-                    return acc;
-                }, {} as { [key: string]: string }) || {};
-                setUserAttributes(attributes)
-            })
 
+            updateUser(currentUser)
             setCognitoUser(currentUser)
             setSession(session)
         })
@@ -64,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const setUserAttributes = (attributes: Partial<User>) => {
-        localStorage.setItem('user', JSON.stringify({ ...user, ...attributes }));
+        localStorage.setItem('user', JSON.stringify({ ...getStoredAttributes(), ...user, ...attributes }));
         setUser(prev => ({ ...prev, ...attributes }));
     }
 
@@ -72,19 +81,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { cognitoUser, session } = await cognitoLogin(email, password);
         setCognitoUser(cognitoUser)
         setSession(session)
+        updateUser(cognitoUser)
     };
 
     const logout = () => {
-        cognitoUser?.globalSignOut({
-            onSuccess: () => {
-                setSession(null);
-                setCognitoUser(undefined)
-                dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout Successful' } })
-            },
-            onFailure: (error: Error) => {
-                console.error("Logout error: ", error);
-                dispatch({ action: 'popup', data: { colour: 'error', message: 'Logout Failed' } })
-            }
+        console.log(user)
+        cognitoUser?.signOut(() => {
+            setSession(null);
+            setCognitoUser(undefined)
+            localStorage.removeItem('user')
+            setUser({})
+            dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout Successful' } })
         })
     };
 

@@ -20,8 +20,8 @@ const GlassCard = ({ children, grow, paddingSize, marginSize, flex, width, heigh
         style={{
             display: 'flex',
             flexDirection: 'column',
-            padding: paddingSize ? CssSizes[paddingSize] : 0,
-            margin: marginSize ? CssSizes[marginSize] : 0,
+            padding: paddingSize ? CssSizes[paddingSize] : undefined,
+            margin: marginSize ? CssSizes[marginSize] : undefined,
             flex,
             width,
             height,

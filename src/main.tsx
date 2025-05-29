@@ -3,7 +3,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import { StrictMode, useEffect } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createTheme, CssBaseline } from '@mui/material';
 import type { } from '@mui/x-data-grid/themeAugmentation';
@@ -27,8 +27,9 @@ const theme = createTheme({
       white: Colours.white,
     },
     primary: {
-      main: Colours.primaryDark,
-      light: Colours.primaryLight
+      main: Colours.primary,
+      light: Colours.primaryLight,
+      dark: Colours.primaryDark
     },
     secondary: {
       main: Colours.secondary
@@ -40,18 +41,6 @@ const theme = createTheme({
       containerBackground: Colours.lightGrey,
     },
   },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        head: {
-          backgroundColor: Colours.lightGrey,
-        },
-        body: {
-          backgroundColor: Colours.darkGrey,
-        },
-      }
-    }
-  }
 });
 
 declare global {

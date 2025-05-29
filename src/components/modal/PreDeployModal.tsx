@@ -6,7 +6,7 @@ import { useContext, useEffect } from "react";
 import { StateMachineDispatch } from "@/App";
 import { isExcelImporter } from "@/stateManagement/stateMachines/getContext";
 import { TablesDeployer } from "@/helpers/TablesDeployer";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { isError } from "@/api/isError";
 import { User } from "@/types/User";

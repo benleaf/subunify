@@ -5,6 +5,8 @@ import { ComponentSizes } from "@/constants/ComponentSizes";
 import { ScreenWidths } from "@/constants/ScreenWidths";
 import GlassSurface from "../glassmorphism/GlassSurface";
 import { CssSizes } from "@/constants/CssSizes";
+import TopBar from "../navigation/TopBar";
+import CollaboratorsPanel from "../navigation/CollaboratorsPanel";
 
 type Props = {
     children: React.ReactNode | React.ReactNode[]
@@ -14,6 +16,7 @@ const DashboardLayout = ({ children }: Props) => {
     const { height, width } = useSize()
 
     return <>
+        <TopBar />
         <div style={{ display: 'flex' }}>
             {width > ScreenWidths.Tablet && <Sidebar />}
             {width > ScreenWidths.Tablet &&
@@ -30,6 +33,7 @@ const DashboardLayout = ({ children }: Props) => {
                     </GlassSurface>
                 </div>
             }
+            {width > ScreenWidths.Tablet && <CollaboratorsPanel />}
         </div>
     </>
 }

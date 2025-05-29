@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel } from "@mui/material";
-import { useAuth } from "./AuthContext";
+import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel, TextField } from "@mui/material";
+import { useAuth } from "../contexts/AuthContext";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import React from "react";
 import GlassText from "@/components/glassmorphism/GlassText";
@@ -59,37 +59,38 @@ const Login = ({ goToConformation, onLogin }: Props) => {
     };
 
     return <>
-        <GlassText size="large">Login</GlassText>
         <FormControl variant="standard">
-            <InputLabel>Email</InputLabel>
-            <Input
+            <TextField
+                label="Email"
                 onChange={(e) => setEmail(e.target.value)}
                 type='text'
             />
         </FormControl>
         <FormControl variant="standard">
-            <InputLabel>Password</InputLabel>
-            <Input
+            <TextField
+                label="Password"
                 onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? 'text' : 'password'}
-                endAdornment={
-                    <InputAdornment position="end">
-                        <IconButton
-                            aria-label={
-                                showPassword ? 'hide the password' : 'display the password'
-                            }
-                            onClick={handleClickShowPassword}
-                            onMouseDown={e => e.preventDefault()}
-                            onMouseUp={e => e.preventDefault()}
-                        >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                    </InputAdornment>
-                }
+                slotProps={{
+                    input: {
+                        endAdornment: <InputAdornment position="end">
+                            <IconButton
+                                aria-label={
+                                    showPassword ? 'hide the password' : 'display the password'
+                                }
+                                onClick={handleClickShowPassword}
+                                onMouseDown={e => e.preventDefault()}
+                                onMouseUp={e => e.preventDefault()}
+                            >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                        </InputAdornment>
+                    },
+                }}
             />
         </FormControl>
 
-        <Button fullWidth variant="outlined" onClick={handleLogin}>Login</Button>
+        <Button fullWidth variant="contained" onClick={handleLogin}>Login</Button>
         {message && <Typography color="error">{message}</Typography>}
     </>
 };

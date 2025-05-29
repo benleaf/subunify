@@ -1,6 +1,6 @@
 import { isError } from '@/api/isError'
 import { StateMachineDispatch } from '@/App'
-import { useAuth } from '@/auth/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'

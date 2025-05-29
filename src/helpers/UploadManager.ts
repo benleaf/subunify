@@ -40,6 +40,10 @@ class UploadManager {
         this.isRunning = true
     }
 
+    async update(fileRecords: { file: File, description: string }[]) {
+        this.fileRecords = fileRecords
+    }
+
     async cancel() {
         this.isRunning = false
         this.uploadSessions = []

@@ -1,1 +1,1 @@
-export type Sizes = 'fullscreen' | 'gigantic' | 'huge' | 'big' | 'large' | 'moderate' | 'small' | 'tiny' | 'hairpin'
+export type Sizes = 'fullscreen' | 'gigantic' | 'massive' | 'huge' | 'big' | 'large' | 'moderate' | 'small' | 'tiny' | 'hairpin'

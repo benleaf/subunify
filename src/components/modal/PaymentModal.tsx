@@ -34,7 +34,7 @@ const PaymentModal = ({ state, onClose, onComplete, taggedFiles }: Props) => {
     <GlassSpace size="moderate">
       <Stack spacing={2}>
         {step == 0 && <>
-          <GlassText size="huge">Unleash <b>Your</b> <i>Potential</i></GlassText>
+          <GlassText size="massive">Unleash <b>Your</b> <i>Potential</i></GlassText>
           <GlassText size="moderate">Subscribe to SUBUNIFY and discover the power of the File Nebula</GlassText>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <FileUploadNebula points={1000} width={Math.min(width, 500) * 0.5} />
@@ -43,7 +43,7 @@ const PaymentModal = ({ state, onClose, onComplete, taggedFiles }: Props) => {
         </>}
         {step == 1 && taggedFiles && <>
           <Stack >
-            <GlassText size="huge"><b>Your</b> Subscription</GlassText>
+            <GlassText size="massive"><b>Your</b> Subscription</GlassText>
             <GlassText size="moderate" color="white">Upload size: {getFileSize(totalSize)}</GlassText>
             <Divider style={{ margin: '0.4em' }} />
             <GlassText size="moderate" color="white">Subscription: {monthlyCost} per month</GlassText>

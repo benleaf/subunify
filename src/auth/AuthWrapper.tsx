@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { useAuth } from "./AuthContext"
+import { useAuth } from "../contexts/AuthContext"
 import AuthModal from "./AuthModal"
 import PaymentModal from "@/components/modal/PaymentModal"
 
@@ -9,7 +9,7 @@ type Props = {
 
 const AuthWrapper = ({ children }: Props) => {
     const { user, subscribed } = useAuth()
-    if (user == null) {
+    if (!user.email_verified) {
         return <AuthModal overrideState={true} hideButton />
     } else if (!subscribed) {
         return <PaymentModal state={'open'} />

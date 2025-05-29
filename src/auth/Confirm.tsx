@@ -3,7 +3,7 @@ import { Button, Typography, FormControl, Input, InputLabel } from "@mui/materia
 import GlassText from "@/components/glassmorphism/GlassText";
 import { confirmRegistration } from './AuthService'
 import { Credentials } from "@/types/Credentials";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import { StateMachineDispatch } from "@/App";
 
 type Props = {

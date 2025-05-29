@@ -4,7 +4,7 @@ import GlassText from "@/components/glassmorphism/GlassText";
 import { cognitoConfirmSignUp, cognitoForgotPassword } from './AuthService'
 import { StateMachineDispatch } from "@/App";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState<string>();

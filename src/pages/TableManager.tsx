@@ -5,7 +5,7 @@ import { isDashboard } from "@/stateManagement/stateMachines/getContext";
 import EditableTable from "@/components/TablesDataTable/EditableTable";
 import { isError } from "@/api/isError";
 import { TableResult } from "@/types/server/TableResult";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Button } from "@mui/material";
 import GlassText from "@/components/glassmorphism/GlassText";

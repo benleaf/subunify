@@ -13,7 +13,7 @@ type Props = {
     color?: keyof typeof Colours
 }
 
-const GlassIconText = ({ children, icon, style, size = 'moderate', color = 'primary' }: Props) => {
+const GlassIconText = ({ children, icon, style, size = 'moderate', color = 'darkGrey' }: Props) => {
     return <div style={{ display: 'flex', alignItems: 'center' }}>
         <div style={{ paddingRight: '1em' }}>{icon}</div>
         <p className={classes(glass.glassText)} style={{ ...style, fontSize: CssSizes[size], color: Colours[color] }}>{children}</p>

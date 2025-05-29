@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { BarChart } from "@mui/x-charts"
 import GlassText from '../glassmorphism/GlassText'
 import { isError } from '@/api/isError'
-import { useAuth } from '@/auth/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 type Props = {
     tableId: string

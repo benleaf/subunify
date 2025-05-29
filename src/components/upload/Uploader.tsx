@@ -3,7 +3,7 @@ import { Stack, LinearProgress, CircularProgress, Alert, Chip } from "@mui/mater
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useNavigate } from "react-router"
-import { useAuth } from "@/auth/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import moment, { Moment } from "moment"
 import { useState, useEffect, useRef } from "react"
 import { isError } from "@/api/isError"

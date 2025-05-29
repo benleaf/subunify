@@ -1,12 +1,15 @@
-import { StateMachineDispatch } from "@/App"
-import { useAuth } from "@/auth/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import GlassSpace from "@/components/glassmorphism/GlassSpace"
-import Account from "@/components/onboarding/Account"
-import Name from "@/components/onboarding/Name"
+import Account from "@/components/flows/onboarding/Account"
+import Attributes from "@/components/flows/onboarding/Attributes"
+import Collaborators from "@/components/flows/onboarding/Collaborators"
+import Name from "@/components/flows/onboarding/Name"
+import NextSteps from "@/components/flows/onboarding/NextSteps"
 import { CssSizes } from "@/constants/CssSizes"
 import { useSize } from "@/hooks/useSize"
 import { Button } from "@mui/material"
-import { useContext, useState } from "react"
+import { useState } from "react"
+import DoubleExposureGraphic from '@/images/DoubleExposureGraphic.png'
 
 
 
@@ -17,11 +20,10 @@ const Onboarding = () => {
 
     const stepInfoValid = [
         user.firstName && user.lastName,
-        user.email && user.emailVerified, // Email
-        true, // Password
-        true, // Profile Picture
-        true, // Interests
-        true, // Preferences
+        user.email && user.email_verified,
+        user.tagLine,
+        true,
+        false,
     ]
 
     const nextPanel = () => {
@@ -30,23 +32,29 @@ const Onboarding = () => {
         }
     }
 
-    return <div style={{ height, width, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{
-            width: 'min(100%, 700px)',
-            height: 'min(100vh, 700px)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            padding: CssSizes.small
-        }}>
-            <div>
-                {step == 0 && <Name />}
-                {step == 1 && <Account />}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'row', marginTop: CssSizes.hairpin, justifyContent: 'space-between' }}>
-                {step > 0 && <Button variant="outlined" onClick={() => setStep(old => --old)}>Back</Button>}
-                {step == 0 && <GlassSpace size='hairpin' />}
-                {stepInfoValid[step] && <Button variant="outlined" onClick={nextPanel}>Continue</Button>}
+    return <div style={{ height, width, display: 'flex', alignItems: 'center' }}>
+        {width > 1200 && <img src={DoubleExposureGraphic} height={height} />}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+            <div style={{
+                width: 'min(100%, 700px)',
+                height: 'min(100vh, 700px)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: CssSizes.small
+            }}>
+                <div>
+                    {step == 0 && <Name />}
+                    {step == 1 && <Account />}
+                    {step == 2 && <Attributes />}
+                    {step == 3 && <Collaborators />}
+                    {step == 4 && <NextSteps />}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'row', marginTop: CssSizes.hairpin, justifyContent: 'space-between' }}>
+                    {step > 0 && <Button variant="outlined" onClick={() => setStep(old => --old)}>Back</Button>}
+                    {step == 0 && <GlassSpace size='hairpin' />}
+                    {stepInfoValid[step] && <Button variant="outlined" onClick={nextPanel}>Continue</Button>}
+                </div>
             </div>
         </div>
     </div>

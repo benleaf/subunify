@@ -6,7 +6,7 @@ import { StateMachineDispatch } from "@/App"
 import { isDashboard } from "@/stateManagement/stateMachines/getContext"
 import { isError } from "@/api/isError"
 import EditableTable from "./EditableTable"
-import { useAuth } from "@/auth/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { DataGridValueFormatter } from "@/helpers/DataGridValueFormatter"
 
 const TablesTable = () => {

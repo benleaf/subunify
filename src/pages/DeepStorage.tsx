@@ -1,7 +1,7 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import EditableTable from "@/components/TablesDataTable/EditableTable";
 import { GridColDef, GridRowModel } from "@mui/x-data-grid";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { isError } from "@/api/isError";
 import { StateMachineDispatch } from "@/App";

@@ -3,7 +3,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe
 import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
 import { isError } from '@/api/isError';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.

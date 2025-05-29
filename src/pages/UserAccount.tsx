@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { StateMachineDispatch } from "@/App";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button, Divider, Stack, TextField } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
