@@ -1,3 +1,5 @@
+import { User } from "../User"
+
 export type ProjectResult = {
     clusters: ClusterPreviewResult[]
 } & ProjectPreviewResult
@@ -31,8 +33,17 @@ export type ProjectPreviewResult = {
     id: string
     name: string
     description: string
-    uploaded: number
+    totalUploaded: number
     collaborators: number
     daysToArchive: number
+}
+
+export type Project = {
+    name: string,
+    codeName: string,
+    description: string,
+    id: string,
+    projectType: 'large' | 'pro' | 'enterprise'
+    collaborators: Partial<User>[],
 }
 

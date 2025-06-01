@@ -7,7 +7,25 @@ const poolData = {
 
 export const UserPool = new CognitoUserPool(poolData);
 
-type SessionUser = { session: CognitoUserSession, cognitoUser: CognitoUser }
+export type SessionUser = { session: CognitoUserSession, cognitoUser: CognitoUser }
+
+export const getValidAccessToken = async (sessionUser: SessionUser): Promise<string> => {
+    const expiresAt = sessionUser.session.getAccessToken().getExpiration()
+    const now = Math.floor(Date.now() / 1000)
+
+    if (now < expiresAt) {
+        return sessionUser.session.getIdToken().getJwtToken()
+    }
+
+    const newSession: CognitoUserSession = await new Promise((res, rej) =>
+        sessionUser.cognitoUser.refreshSession(
+            sessionUser.session.getRefreshToken(),
+            (err, newSession) => err ? rej(err) : res(newSession)
+        )
+    );
+
+    return newSession.getIdToken().getJwtToken();
+}
 
 export const cognitoRefreshTokens = (cognitoUser: CognitoUser) => {
     cognitoUser.getSession((error: Error | null, session: CognitoUserSession | null) => {
@@ -63,10 +81,13 @@ export const cognitoLogin = async (email: string, password: string): Promise<Ses
     const cognitoUser = new CognitoUser({ Username: email, Pool: UserPool });
     const authDetails = new AuthenticationDetails({ Username: email, Password: password });
 
-    const session: CognitoUserSession = await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         cognitoUser.authenticateUser(authDetails, {
             onSuccess: (session) => {
-                resolve(session);
+                cognitoUser.getUserAttributes(async (error, result) => {
+                    if (error) reject(error)
+                    resolve({ session, cognitoUser });
+                })
             },
             onFailure: (err) => {
                 console.log(err)
@@ -74,8 +95,6 @@ export const cognitoLogin = async (email: string, password: string): Promise<Ses
             },
         });
     });
-
-    return { session, cognitoUser }
 };
 
 export const cognitoForgotPassword = async (email: string) => {

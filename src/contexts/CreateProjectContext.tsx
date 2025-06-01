@@ -1,14 +1,5 @@
 import React, { createContext, useState, useContext } from "react";
-import { User } from "@/types/User";
-
-type Project = {
-    name: string,
-    codeName: string,
-    description: string,
-    id: string,
-    projectType: 'large' | 'pro' | 'enterprise'
-    collaborators: Partial<User>[],
-}
+import { Project } from "@/types/server/ProjectResult";
 
 interface CreateProjectType {
     updateProject: (properties: Partial<Project>) => void,

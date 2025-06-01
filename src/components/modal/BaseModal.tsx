@@ -19,7 +19,6 @@ const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
         transform: 'translate(-50%, -50%)',
         width: "95%",
         maxWidth,
-        backgroundColor: '#fff0'
     }
 
     return <Modal

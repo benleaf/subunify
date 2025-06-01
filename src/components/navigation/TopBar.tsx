@@ -12,8 +12,10 @@ import { ScreenWidths } from "@/constants/ScreenWidths"
 import { MenuTwoTone, Settings } from "@mui/icons-material"
 import { useLocation } from "react-router"
 import { CssSizes } from "@/constants/CssSizes"
+import { useDashboard } from "@/contexts/DashboardContext"
 
 const TopBar = () => {
+    const { updateProperties } = useDashboard()
     const { pathname } = useLocation()
     const { width } = useSize()
     const { user } = useAuth()
@@ -60,7 +62,11 @@ const TopBar = () => {
                         <Button variant="outlined" href="/file-upload">Upload</Button>
                         <Button variant="outlined" href="/deep-storage">Manage Files</Button>
                     </>}
-                    <IconButton href="/user-account" color="primary">
+                    <Stack spacing={1} direction='row' paddingRight={CssSizes.small}>
+                        <GlassText size="large">{user.firstName}</GlassText>
+                        <GlassText size="large">{user.lastName}</GlassText>
+                    </Stack>
+                    <IconButton onClick={() => updateProperties({ page: 'account' })} color="primary">
                         <Settings />
                     </IconButton>
                 </> : <>

@@ -11,10 +11,12 @@ import Payment from "@/components/flows/startProject/Payment"
 import { CreateProjectProvider, useCreateProject } from "@/contexts/CreateProjectContext"
 import WhatIsAProject from "@/components/flows/startProject/WhatIsAProject"
 import HowAProjectWorks from "@/components/flows/startProject/HowAProjectWorks"
+import { Project } from "@/types/server/ProjectResult"
+import { isError } from "@/api/isError"
 
 const StartAProjectWithContext = () => {
-    const { user } = useAuth()
-    const { project } = useCreateProject()
+    const { user, authAction } = useAuth()
+    const { project, updateProject } = useCreateProject()
 
     const [step, setStep] = useState(0)
     const { height, width } = useSize()
@@ -31,6 +33,17 @@ const StartAProjectWithContext = () => {
     const nextPanel = () => {
         if (stepInfoValid[step]) {
             setStep(old => ++old)
+        }
+
+        if (step == 1) {
+            const action = project.id ? 'PATCH' : 'POST'
+            authAction<Partial<Project>>('project', action, JSON.stringify(project))
+                .then(project => {
+                    if (!isError(project)) {
+                        updateProject(project)
+                        console.log(project)
+                    }
+                })
         }
     }
 

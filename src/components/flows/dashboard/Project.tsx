@@ -75,7 +75,7 @@ const Project = () => {
         <ColorGlassCard paddingSize="small">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <IconButton onClick={() => updateProperties({ page: 'projects' })} size="large">
+                    <IconButton onClick={() => updateProperties({ page: 'projects', selectedProject: undefined })} size="large">
                         <ArrowCircleLeft fontSize="large" />
                     </IconButton>
                     <div>
@@ -85,7 +85,7 @@ const Project = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                        <GlassText size="large">{properties.selectedProject!.uploaded} TB</GlassText>
+                        <GlassText size="large">{properties.selectedProject!.totalUploaded} TB</GlassText>
                         <GlassText size="small">Uploaded</GlassText>
                     </div>
                     <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />

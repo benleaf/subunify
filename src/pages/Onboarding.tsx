@@ -10,11 +10,11 @@ import { useSize } from "@/hooks/useSize"
 import { Button } from "@mui/material"
 import { useState } from "react"
 import DoubleExposureGraphic from '@/images/DoubleExposureGraphic.png'
-
-
+import { User } from "@/types/User"
+import { isError } from "@/api/isError"
 
 const Onboarding = () => {
-    const { user } = useAuth()
+    const { user, authAction, setUserAttributes } = useAuth()
     const [step, setStep] = useState(0)
     const { height, width } = useSize()
 
@@ -30,6 +30,9 @@ const Onboarding = () => {
         if (stepInfoValid[step]) {
             setStep(old => ++old)
         }
+
+        authAction<User>('user', 'POST', JSON.stringify(user))
+            .then(user => !isError(user) && setUserAttributes(user))
     }
 
     return <div style={{ height, width, display: 'flex', alignItems: 'center' }}>

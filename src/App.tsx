@@ -10,7 +10,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import LandingPageDeepStorage from './pages/LandingPageDeepStorage';
 import FileUpload from './pages/FileUpload';
 import DeepStorage from './pages/DeepStorage';
-import UserAccount from './pages/UserAccount';
+import UserAccount from './components/flows/dashboard/UserAccount';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import Pricing from './pages/Pricing';
@@ -47,7 +47,6 @@ const App = () => {
           {/* <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} /> */}
           {/* <Route path="/column-manager" element={<AuthWrapper><ColumnManager /></AuthWrapper>} /> */}
           {/* <Route path="/data-upload" element={<AuthWrapper><DataUpload /></AuthWrapper>} /> */}
-          <Route path="/user-account" element={<UserAccount />} />
         </Routes>
       </BrowserRouter>
       <Backdrop

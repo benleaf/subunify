@@ -36,7 +36,7 @@ const UserAccount = () => {
         setEndSubscriptionModal(false)
     }
 
-    return <DashboardLayout>
+    return <>
         <GlassSpace size="small">
             <Stack spacing={1}>
                 <GlassText size="large">
@@ -84,7 +84,7 @@ const UserAccount = () => {
             <a href="/privacy-policy" style={{ paddingRight: '1em' }}>Privacy Policy</a>
             <a href="/terms-of-service">Terms Of Service</a>
         </div>
-    </DashboardLayout>
+    </>
 }
 
 export default UserAccount

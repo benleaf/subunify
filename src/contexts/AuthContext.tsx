@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { cognitoLogin, cognitoRefreshTokens, UserPool } from "../auth/AuthService";
+import { cognitoLogin, SessionUser, UserPool } from "../auth/AuthService";
 import { apiAction, rawApiAction } from "@/api/apiAction";
 import { RequestMethod } from "@/types/server/RequestMethod";
 import { isError } from "@/api/isError";
@@ -24,46 +24,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const abortController = new AbortController()
     const { signal } = abortController
 
-    const [cognitoUser, setCognitoUser] = useState<CognitoUser>();
     const [subscribed, setSubscribed] = useState<any>(true);
-    const [session, setSession] = useState<CognitoUserSession | null>(null);
-    const [user, setUser] = useState<Partial<User>>({
-        color: '#f00'
-    });
+    const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
+    const [user, setUser] = useState<Partial<User>>({})
     const { dispatch } = useContext(StateMachineDispatch)!
 
-    const getStoredAttributes = () => {
-        return JSON.parse(localStorage.getItem('user') || '{}') as Partial<User>
-    }
-
-    const updateUser = (cognitoUser: CognitoUser) => {
-        cognitoUser.getUserAttributes((error, result) => {
+    const updateUser = (currentUser: CognitoUser) => {
+        currentUser.getUserAttributes(async (error, result) => {
             if (error) return console.error("Get user attributes error: ", error);
-            const attributes = result?.reduce((acc, attr) => {
+
+            const attributes: Partial<User> = result?.reduce((acc, attr) => {
                 acc[attr.getName()] = attr.getValue();
                 return acc;
             }, {} as { [key: string]: string }) || {};
-            setUserAttributes(attributes)
+
+            setUser(attributes)
         })
     }
 
     useEffect(() => {
-        const currentUser = UserPool.getCurrentUser();
-        setUser(getStoredAttributes())
+        const cognitoUser = UserPool.getCurrentUser();
+        if (!cognitoUser) return logout()
 
-        if (!currentUser) return;
-
-        currentUser.getSession((err: Error, session: CognitoUserSession | null) => {
+        cognitoUser.getSession((err: Error, session: CognitoUserSession | null) => {
             if (err || !session?.isValid()) {
-                setCognitoUser(undefined)
-                setSession(null)
+                setSessionUser(null)
                 setUser({})
                 return
             }
 
-            updateUser(currentUser)
-            setCognitoUser(currentUser)
-            setSession(session)
+            setSessionUser({ session, cognitoUser })
+            updateUser(cognitoUser)
         })
 
         return () => {
@@ -72,33 +63,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
     }, []);
 
+    useEffect(() => {
+        if (user.email && !user.id) setServerUser()
+    }, [user])
+
+
+    const setServerUser = async () => {
+        const serverUser = await authAction<User>('user', 'GET')
+        if (!isError(serverUser)) {
+            setUserAttributes(serverUser)
+        }
+    }
+
     const setUserAttributes = (attributes: Partial<User>) => {
-        localStorage.setItem('user', JSON.stringify({ ...getStoredAttributes(), ...user, ...attributes }));
         setUser(prev => ({ ...prev, ...attributes }));
     }
 
     const login = async (email: string, password: string) => {
-        const { cognitoUser, session } = await cognitoLogin(email, password);
-        setCognitoUser(cognitoUser)
-        setSession(session)
-        updateUser(cognitoUser)
+        const oldUser = UserPool.getCurrentUser()
+        if (oldUser) oldUser.signOut()
+
+        const sessionUser = await cognitoLogin(email, password);
+        setSessionUser(sessionUser)
+        updateUser(sessionUser.cognitoUser)
     };
 
-    const logout = () => {
-        console.log(user)
-        cognitoUser?.signOut(() => {
-            setSession(null);
-            setCognitoUser(undefined)
-            localStorage.removeItem('user')
-            setUser({})
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout Successful' } })
-        })
+    const logout = (popup: boolean = true) => {
+        UserPool.getCurrentUser()?.signOut()
+        setSessionUser(null);
+        setUser({})
+        popup && dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout Successful' } })
     };
 
     const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
         dispatch({ action: 'loading', data: true })
+        if (!sessionUser) return { message: 'No Login Session Found', error: 'Unauthorized' } as Partial<ApiError>
+
         try {
-            const result = await apiAction<T>({ endpoint, method, body, signal, session });
+            const result = await apiAction<T>({ endpoint, method, body, signal, sessionUser });
             dispatch({ action: 'loading', data: false })
             return handleAction(result);
         } catch (error: TODO) {
@@ -113,13 +115,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const rawAuthAction = async (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
-        const result = await rawApiAction({ endpoint, method, body, signal, session });
+        if (!sessionUser) return { message: 'No Login Session Found', error: 'Unauthorized' } as Partial<ApiError>
+        const result = await rawApiAction({ endpoint, method, body, signal, sessionUser });
         return handleAction(result);
     };
 
     const handleAction = <T,>(result: T) => {
         if (isError(result) && result.error == 'Unauthorized') {
-            logout();
+            logout(false);
             dispatch({ action: 'popup', data: { colour: 'info', message: 'Please login to use this page' } })
         } else if (isError(result) && result.error == 'UserNotSubscribed') {
             setSubscribed(false)
@@ -127,10 +130,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         setSubscribed(true)
-
-        if (cognitoUser) {
-            cognitoRefreshTokens(cognitoUser)
-        }
 
         return result;
     }

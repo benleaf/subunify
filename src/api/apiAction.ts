@@ -2,14 +2,14 @@ import { ApiError } from "@/types/server/ApiError";
 import { ApiResponse } from "@/types/server/ApiResponse"
 import { RequestMethod } from "@/types/server/RequestMethod"
 import { isError } from "./isError";
-import { CognitoUserSession } from "amazon-cognito-identity-js";
+import { getValidAccessToken, SessionUser } from "@/auth/AuthService";
 
 export type ApiActionParams = {
     endpoint: string,
     method: RequestMethod,
     body?: string | FormData | Blob,
     signal?: AbortSignal,
-    session: CognitoUserSession | null
+    sessionUser: SessionUser
 }
 
 export const apiAction = async <T>(params: ApiActionParams): Promise<ApiResponse<T>> => {
@@ -18,13 +18,11 @@ export const apiAction = async <T>(params: ApiActionParams): Promise<ApiResponse
     return (await response.json()) as ApiResponse<T>
 }
 
-export const rawApiAction = async ({ endpoint, method, body, signal, session }: ApiActionParams): Promise<Response | Partial<ApiError>> => {
+export const rawApiAction = async ({ endpoint, method, body, signal, sessionUser }: ApiActionParams): Promise<Response | Partial<ApiError>> => {
     const contentType = typeof body == 'string' ? { "content-type": 'application/json' } : undefined
+    const token = await getValidAccessToken(sessionUser)
 
     try {
-        const tokenValid = session && session.getAccessToken().getExpiration() > Date.now() / 1000
-        if (!tokenValid) return { message: 'No Token Supplied, request not sent', error: 'Unauthorized' }
-
         return fetch(
             import.meta.env.VITE_SERVER_URL + endpoint,
             {
@@ -33,7 +31,7 @@ export const rawApiAction = async ({ endpoint, method, body, signal, session }: 
                 body,
                 headers: {
                     ...contentType,
-                    "authorization": `Bearer ${session.getAccessToken().getJwtToken()}`,
+                    "authorization": `Bearer ${token}`,
                 }
             }
         )

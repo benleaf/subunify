@@ -1,32 +1,26 @@
+import { isError } from "@/api/isError"
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
+import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
+import { ProjectPreviewResult, ProjectResult } from "@/types/server/ProjectResult"
 import { Stack, TextField, Divider } from "@mui/material"
-import test from '@/images/man-holding-camera.jpg'
-import test2 from '@/images/DoubleExposureGraphic.png'
-import { ProjectResult } from "@/types/server/ProjectResult"
 
 const Projects = () => {
     const { properties, updateProperties } = useDashboard()
 
-    const projectFromServer: ProjectResult = {
-        clusters: [
-            { id: 'test', name: '3-4pm This is to test extra long text that may not fit', previewImages: [test, test2, test2, test2, test2, test2], fileCount: 11 },
-            { id: 'test', name: '4-5pm', previewImages: [test, test2], fileCount: 9 },
-            { id: 'test', name: '5-6pm', previewImages: [test, test2], fileCount: 2 },
-        ],
-        id: '1',
-        name: 'Apple V1',
-        description: 'This is an example project',
-        uploaded: 1.5,
-        collaborators: 2,
-        daysToArchive: 90
+    const { authAction } = useAuth()
+    const setSelectedProject = async (projectPreview: ProjectPreviewResult) => {
+        const projectResult = await authAction<ProjectResult>(`project/user-project/${projectPreview.id}`, 'GET')
+        if (!isError(projectResult) && projectResult) {
+            updateProperties({ page: 'project', selectedProject: projectResult })
+        }
     }
 
     return <Stack spacing={1}>
         <TextField label='Search Projects' />
         {properties.projects?.map(project =>
-            <ColorGlassCard paddingSize="small" onClick={() => updateProperties({ page: 'project', selectedProject: projectFromServer })}>
+            <ColorGlassCard paddingSize="small" onClick={() => setSelectedProject(project)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <GlassText size="large">{project.name}</GlassText>
@@ -34,7 +28,7 @@ const Projects = () => {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <GlassText size="large">{project.uploaded} TB</GlassText>
+                            <GlassText size="large">{project.totalUploaded} TB</GlassText>
                             <GlassText size="small">Uploaded</GlassText>
                         </div>
                         <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />

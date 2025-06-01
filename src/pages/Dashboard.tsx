@@ -4,6 +4,7 @@ import Projects from "@/components/flows/dashboard/Projects";
 import Upload from "@/components/flows/dashboard/Upload";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { DashboardProvider, useDashboard } from "@/contexts/DashboardContext";
+import UserAccount from "../components/flows/dashboard/UserAccount";
 
 const DashboardWithContext = () => {
     const { properties } = useDashboard()
@@ -13,6 +14,7 @@ const DashboardWithContext = () => {
         {properties.page == 'project' && <Project />}
         {properties.page == 'cluster' && <Cluster />}
         {properties.page == 'upload' && <Upload />}
+        {properties.page == 'account' && <UserAccount />}
     </DashboardLayout>
 }
 

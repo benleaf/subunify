@@ -1,23 +1,41 @@
 import { useSize } from "../../hooks/useSize"
-import { FileUpload, ListAlt } from "@mui/icons-material"
-import { ButtonBase, List, ListItem, ListItemButton, ListItemIcon, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
 import GlassText from "../glassmorphism/GlassText"
 import { ComponentSizes } from "@/constants/ComponentSizes"
 import { CssSizes } from "@/constants/CssSizes"
 import Profile from "../form/Profile"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import { User } from "@/types/User"
+import { useDashboard } from "@/contexts/DashboardContext"
+import { useEffect, useState } from "react"
+import { useAuth } from "@/contexts/AuthContext"
+import { isError } from "@/api/isError"
+import AddCollaborator from "../modal/AddCollaborator"
 
 const CollaboratorsPanel = () => {
     const { height } = useSize()
+    const { authAction } = useAuth()
+    const { properties } = useDashboard()
+    const { selectedProject } = properties
 
-    const fakeUsers: Partial<User>[] = [
-        { firstName: 'Hannah', lastName: 'Jones', tagLine: 'Freelance Video Editor based out of Brooklyn' },
-        { firstName: 'Sam', lastName: 'Timon', tagLine: 'Line Producer working mainly on commercials' },
-        { firstName: 'Chris', lastName: 'Smith', tagLine: 'Freelance Camera Operator' },
-        { firstName: 'Laura', lastName: 'Carter', tagLine: 'Digital Imaging Technician of 10 years' },
-        { firstName: 'Abby', lastName: 'Taylor', tagLine: 'NY based photographer and videographer' },
-    ]
+    const [collaborators, setCollaborators] = useState<User[]>([])
+
+    const getCollaborators = async () => {
+        const collaborators = await authAction<Partial<User[]>>(`project/collaborators/${selectedProject!.id}`, 'GET')
+        if (!isError(collaborators)) {
+            setCollaborators(collaborators.filter(collaborator => collaborator !== undefined))
+            console.log(collaborators)
+        }
+    }
+
+    useEffect(() => {
+        if (selectedProject?.id) {
+            getCollaborators()
+        } else {
+            setCollaborators([])
+        }
+    }, [selectedProject])
+
 
     return <div style={{
         height: height - ComponentSizes.topBar,
@@ -26,9 +44,12 @@ const CollaboratorsPanel = () => {
         scrollbarWidth: 'none'
     }}>
         <Stack margin={CssSizes.moderate}>
-            <GlassText size="moderate">Collaborators</GlassText>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <GlassText size="moderate">Collaborators</GlassText>
+                {selectedProject && <AddCollaborator project={selectedProject} />}
+            </div>
             <Stack spacing={1}>
-                {fakeUsers.map(user =>
+                {collaborators.map(user =>
                     <ColorGlassCard flex={1} paddingSize="hairpin" onClick={console.log}>
                         <Stack direction='row' spacing={2} alignItems='center'>
                             <Profile size="massive" textSize="moderate" user={user} />

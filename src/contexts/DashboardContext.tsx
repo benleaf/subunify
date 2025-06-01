@@ -1,5 +1,7 @@
 import { ClusterResult, ProjectPreviewResult, ProjectResult } from "@/types/server/ProjectResult";
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { useAuth } from "./AuthContext";
+import { isError } from "@/api/isError";
 
 const exampleProjects = [
     { id: '1', color: 'red', name: 'Apple V1', description: 'This is an example project to show what navigation in subunify might look like', uploaded: 1.5, collaborators: 2, daysToArchive: 90 },
@@ -9,10 +11,10 @@ const exampleProjects = [
 ]
 
 type Project = {
-    projects: Partial<ProjectPreviewResult>[],
+    projects: ProjectPreviewResult[],
     selectedProject: ProjectResult,
     selectedCluster: ClusterResult,
-    page: 'projects' | 'project' | 'cluster' | 'statistics' | 'billing' | 'settings' | 'upload'
+    page: 'projects' | 'project' | 'cluster' | 'statistics' | 'billing' | 'settings' | 'upload' | 'account'
 }
 
 interface DashboardType {
@@ -23,11 +25,24 @@ interface DashboardType {
 const DashboardContext = createContext<DashboardType | undefined>(undefined)
 
 export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [project, setProject] = useState<Partial<Project>>({ projects: exampleProjects, page: 'projects' });
+    const { authAction } = useAuth()
+    const [project, setProject] = useState<Partial<Project>>({ page: 'projects' });
 
     const updateProperties = (properties: Partial<Project>) => {
         setProject(old => ({ ...old, ...properties }))
     }
+
+    const getUserProjects = async () => {
+        const projects = await authAction<ProjectPreviewResult[]>('project/user-projects', 'GET')
+        if (!isError(projects) && projects) {
+            updateProperties({ projects })
+        }
+    }
+
+    useEffect(() => {
+        getUserProjects()
+    }, [])
+
 
     return <DashboardContext.Provider
         value={{ properties: project, updateProperties }}>
