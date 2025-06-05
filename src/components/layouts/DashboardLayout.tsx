@@ -14,25 +14,17 @@ type Props = {
 
 const DashboardLayout = ({ children }: Props) => {
     const { height, width } = useSize()
+    const sideBarsWidth = width > ScreenWidths.Tablet ? ComponentSizes.sideBar * 2 : 0
 
     return <>
         <TopBar />
         <div style={{ display: 'flex' }}>
             {width > ScreenWidths.Tablet && <Sidebar />}
-            {width > ScreenWidths.Tablet &&
-                <div style={{ height: height - ComponentSizes.topBar, width: width - ComponentSizes.sideBar }}>
-                    <GlassCard marginSize="moderate" paddingSize="moderate" height={(height - ComponentSizes.topBar) - 45}>
-                        {children}
-                    </GlassCard>
-                </div>
-            }
-            {width <= ScreenWidths.Tablet &&
-                <div style={{ minHeight: (height - ComponentSizes.topBar) - 175, width: width }}>
-                    <GlassSurface style={{ padding: CssSizes.small }}>
-                        {children}
-                    </GlassSurface>
-                </div>
-            }
+            <div style={{ minHeight: (height - ComponentSizes.topBar) - 175, width: width - sideBarsWidth }}>
+                <GlassSurface style={{ padding: CssSizes.small }}>
+                    {children}
+                </GlassSurface>
+            </div>
             {width > ScreenWidths.Tablet && <CollaboratorsPanel />}
         </div>
     </>

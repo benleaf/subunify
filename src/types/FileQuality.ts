@@ -1,0 +1,1 @@
+export type FileQuality = 'RAW' | 'HIGH' | 'MEDIUM' | 'LOW' | 'THUMBNAIL'

@@ -8,7 +8,7 @@ import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import FileUploadNebula from "../graphics/FileUploadNebula"
-import { getExtension, getTagsFromFile } from "@/helpers/FileProperties"
+import { getFileExtension, getTagsFromFile } from "@/helpers/FileProperties"
 import { useCallback, useContext, useState } from "react"
 import { useDropzone, FileError } from "react-dropzone"
 import { StateMachineDispatch } from "@/App"
@@ -73,7 +73,7 @@ const AddFile = ({ files, setFiles, done }: Props) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         validator: file => {
-            const ext = getExtension(file)
+            const ext = getFileExtension(file)
             if (BLOCKED_EXTENSIONS.includes(ext)) {
                 const message = `Files of the following types are not allowed: ${BLOCKED_EXTENSIONS.join(', ')}`
                 dispatch({ action: 'popup', data: { colour: 'info', message } })

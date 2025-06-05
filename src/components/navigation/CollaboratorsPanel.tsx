@@ -15,13 +15,13 @@ import AddCollaborator from "../modal/AddCollaborator"
 const CollaboratorsPanel = () => {
     const { height } = useSize()
     const { authAction } = useAuth()
-    const { properties } = useDashboard()
-    const { selectedProject } = properties
+    const { properties, loadProject } = useDashboard()
+    const { selectedProjectId, selectedProject } = properties
 
     const [collaborators, setCollaborators] = useState<User[]>([])
 
     const getCollaborators = async () => {
-        const collaborators = await authAction<Partial<User[]>>(`project/collaborators/${selectedProject!.id}`, 'GET')
+        const collaborators = await authAction<Partial<User[]>>(`project/collaborators/${selectedProjectId}`, 'GET')
         if (!isError(collaborators)) {
             setCollaborators(collaborators.filter(collaborator => collaborator !== undefined))
             console.log(collaborators)
@@ -29,12 +29,13 @@ const CollaboratorsPanel = () => {
     }
 
     useEffect(() => {
-        if (selectedProject?.id) {
+        loadProject(selectedProjectId)
+        if (selectedProjectId) {
             getCollaborators()
         } else {
             setCollaborators([])
         }
-    }, [selectedProject])
+    }, [selectedProjectId])
 
 
     return <div style={{

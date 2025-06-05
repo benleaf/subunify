@@ -7,8 +7,10 @@ import { CssSizes } from "@/constants/CssSizes"
 import { useDashboard } from "@/contexts/DashboardContext"
 
 const Sidebar = () => {
-    const { updateProperties } = useDashboard()
+    const { updateProperties, properties } = useDashboard()
     const { height } = useSize()
+
+    const orderedProjects = properties.projects?.sort((a, b) => b.daysToArchive - a.daysToArchive).slice(0, 5)
 
     return <div style={{
         height: height - ComponentSizes.topBar,
@@ -19,38 +21,16 @@ const Sidebar = () => {
         <Stack margin={CssSizes.moderate}>
             <GlassText size="moderate">Recent Projects</GlassText>
             <List dense>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <Folder color="error" />
-                        </ListItemIcon>
-                        <GlassText size="small">Apple V1</GlassText>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <Folder color="error" />
-                        </ListItemIcon>
-                        <GlassText size="small">Samsung Project Duo</GlassText>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <Folder color="error" />
-                        </ListItemIcon>
-                        <GlassText size="small">Trader Joe's Project #5</GlassText>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <Folder color="error" />
-                        </ListItemIcon>
-                        <GlassText size="small">FedEx Synth Wave Commercial</GlassText>
-                    </ListItemButton>
-                </ListItem>
+                {orderedProjects?.map(project =>
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={() => updateProperties({ page: 'project', selectedProjectId: project.id })}>
+                            <ListItemIcon>
+                                <Folder color="error" />
+                            </ListItemIcon>
+                            <GlassText size="small">{project.name}</GlassText>
+                        </ListItemButton>
+                    </ListItem>
+                )}
             </List>
             <GlassText size="moderate">Projects</GlassText>
             <List dense>
@@ -63,7 +43,7 @@ const Sidebar = () => {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton href='/start-project'>
+                    <ListItemButton onClick={() => updateProperties({ page: 'createProject' })}>
                         <ListItemIcon>
                             <Add />
                         </ListItemIcon>

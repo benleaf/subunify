@@ -1,18 +1,11 @@
 import { User } from "../User"
 
 export type ProjectResult = {
-    clusters: ClusterPreviewResult[]
+    files: StoredFile[]
 } & ProjectPreviewResult
-
-export type ClusterPreviewResult = {
-    previewImages: string[]
-} & BaseCluster
 
 export type ClusterResult = {
     files: StoredFile[]
-} & BaseCluster
-
-type BaseCluster = {
     id: string
     name: string
     fileCount: number
@@ -21,12 +14,13 @@ type BaseCluster = {
 export type StoredFile = {
     id: string,
     name: string,
-    uploaded: Date,
+    created: Date,
     modified: Date,
+    fileLastModified: Date,
     previewUrl: string,
     location: 'INSTANT' | 'SHALLOW' | 'DEEP',
     available?: Date,
-    size: number,
+    bytes: number,
 }
 
 export type ProjectPreviewResult = {
@@ -36,6 +30,9 @@ export type ProjectPreviewResult = {
     totalUploaded: number
     collaborators: number
     daysToArchive: number
+    availableTBs: number
+    inviteAccepted: boolean
+    owner: User
 }
 
 export type Project = {

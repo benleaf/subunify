@@ -13,6 +13,10 @@ export const getFileSize = (bytes: number) => {
     if (size < kb) return `${(size).toFixed(1)} TB`
 }
 
+export const terabytesToBytes = (terabytes: number) => {
+    return terabytes * (2 ** 40)
+}
+
 export const getFileCost = (bytes: number) => {
     return `$${getNumericFileMonthlyCost(bytes).toFixed(2)}`
 }

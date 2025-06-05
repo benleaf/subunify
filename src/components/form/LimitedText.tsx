@@ -19,7 +19,7 @@ const LimitedText = ({ onChange, value = '', limit = 64, label }: Props) => {
         slotProps={{
             input: {
                 endAdornment: <InputAdornment position="end">
-                    {value.length} / {limit}
+                    {value ? value.length : 0} / {limit}
                 </InputAdornment>
             },
         }}

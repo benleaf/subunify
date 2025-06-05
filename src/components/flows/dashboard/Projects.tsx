@@ -1,25 +1,21 @@
-import { isError } from "@/api/isError"
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
-import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
-import { ProjectPreviewResult, ProjectResult } from "@/types/server/ProjectResult"
+import { ProjectPreviewResult } from "@/types/server/ProjectResult"
 import { Stack, TextField, Divider } from "@mui/material"
 
 const Projects = () => {
     const { properties, updateProperties } = useDashboard()
 
-    const { authAction } = useAuth()
     const setSelectedProject = async (projectPreview: ProjectPreviewResult) => {
-        const projectResult = await authAction<ProjectResult>(`project/user-project/${projectPreview.id}`, 'GET')
-        if (!isError(projectResult) && projectResult) {
-            updateProperties({ page: 'project', selectedProject: projectResult })
-        }
+        updateProperties({ page: 'project', selectedProjectId: projectPreview.id })
     }
+
+    const acceptedProjects = properties.projects?.filter(project => project.inviteAccepted)
 
     return <Stack spacing={1}>
         <TextField label='Search Projects' />
-        {properties.projects?.map(project =>
+        {acceptedProjects?.map(project =>
             <ColorGlassCard paddingSize="small" onClick={() => setSelectedProject(project)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
@@ -28,8 +24,8 @@ const Projects = () => {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <GlassText size="large">{project.totalUploaded} TB</GlassText>
-                            <GlassText size="small">Uploaded</GlassText>
+                            <GlassText size="large">{project.availableTBs} TB</GlassText>
+                            <GlassText size="small">Available</GlassText>
                         </div>
                         <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                         <div>

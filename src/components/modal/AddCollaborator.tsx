@@ -18,6 +18,7 @@ const AddCollaborator = ({ project }: Props) => {
 
     const inviteCollaborator = async () => {
         authAction<Partial<void>>(`project/add-collaborator/${project.id}/${email}`, 'POST')
+        setAddCollaborators(false)
     }
 
     return <>

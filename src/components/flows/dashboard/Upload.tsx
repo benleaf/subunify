@@ -1,3 +1,5 @@
+import { isError } from "@/api/isError"
+import { StateMachineDispatch } from "@/App"
 import DynamicStack from "@/components/glassmorphism/DynamicStack"
 import GlassCard from "@/components/glassmorphism/GlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
@@ -5,18 +7,18 @@ import { CssSizes } from "@/constants/CssSizes"
 import { ScreenWidths } from "@/constants/ScreenWidths"
 import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
-import { getTagsFromFile, getExtension } from "@/helpers/FileProperties"
-import { getNumericFileMonthlyCost, getNumericFileUploadCost, getFileSize } from "@/helpers/FileSize"
+import { getTagsFromFile, getFileExtension } from "@/helpers/FileProperties"
+import { getFileSize, terabytesToBytes } from "@/helpers/FileSize"
 import { Time } from "@/helpers/Time"
-import UploadManager from "@/helpers/UploadManager"
+import UploadManager, { FileRecord } from "@/helpers/UploadManager"
 import { useSize } from "@/hooks/useSize"
 import { TaggedFile } from "@/pages/FileUpload"
+import { ProjectResult } from "@/types/server/ProjectResult"
 import { ArrowCircleLeft, Delete } from "@mui/icons-material"
-import { Stack, IconButton, Button, Checkbox, FormControlLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Chip, CircularProgress, LinearProgress } from "@mui/material"
+import { Stack, IconButton, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Chip, CircularProgress, LinearProgress, Divider } from "@mui/material"
 import moment, { Moment } from "moment"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { useDropzone, FileError } from "react-dropzone"
-import { useNavigate } from "react-router"
 
 const BLOCKED_EXTENSIONS = [
     'exe', 'dll', 'com', 'msi', 'bat', 'cmd', 'sh', 'vbs', 'js',
@@ -26,17 +28,21 @@ const BLOCKED_EXTENSIONS = [
 
 const Cluster = () => {
     const [taggedFiles, setTaggedFiles] = useState<TaggedFile[]>([])
-    const { properties, updateProperties } = useDashboard()
+    const { properties, updateProperties, loadProject } = useDashboard()
+    const { dispatch } = useContext(StateMachineDispatch)!
     const { width } = useSize()
 
+    const totalBytesUploaded = properties.selectedProject?.files
+        .filter(file => file.created)
+        .reduce((n, { bytes }) => n + +bytes, 0) ?? 0
+
+    useEffect(() => {
+        loadProject()
+    }, [])
+
     const totalSize = taggedFiles.length ? taggedFiles.map(fileRecord => fileRecord.file.size).reduce((acc, cur) => acc + cur) : 0
-    const absoluteMonthlyCost = getNumericFileMonthlyCost(totalSize)
-    const absoluteMonthlyCostAfterUpload = Math.max(0.6, absoluteMonthlyCost)
 
-    const monthlyCost = absoluteMonthlyCostAfterUpload <= 0.6 ? '(Less then $0.01)' : `$${absoluteMonthlyCost.toFixed(2)}`
-    const uploadFee = (Math.max(0.5, getNumericFileUploadCost(totalSize))).toFixed(2)
-
-    const removeDuplicates = (files: TaggedFile[]) => {
+    const removeDuplicates = (files: TaggedFile[], availableTBs: number) => {
         const duplicatesRemoved = files.reduce((unique: TaggedFile[], o) => {
             if (!unique.some(fileRecord => fileRecord.file.name === o.file.name)) {
                 unique.push(o);
@@ -44,11 +50,22 @@ const Cluster = () => {
             return unique;
         }, [])
 
+        const totalBytes = files.reduce((n, { file }) => n + +file.size, 0) ?? 0
+        console.log(getFileSize(totalBytesUploaded + totalBytes), availableTBs)
+        if (totalBytesUploaded + totalBytes > terabytesToBytes(availableTBs)) {
+            const missing = getFileSize((totalBytesUploaded + totalBytes) - terabytesToBytes(availableTBs))
+            dispatch({
+                action: 'popup',
+                data: { colour: 'info', message: `Please add more storage to this project, missing: ${missing}` }
+            })
+            return []
+        }
+
         if (duplicatesRemoved.length !== files.length) {
-            // dispatch({
-            //     action: 'popup',
-            //     data: { colour: 'info', message: 'Duplicate files detected and removed, file names must be unique' }
-            // })
+            dispatch({
+                action: 'popup',
+                data: { colour: 'info', message: 'Duplicate files detected and removed, file names must be unique' }
+            })
         }
 
         return duplicatesRemoved
@@ -62,15 +79,15 @@ const Cluster = () => {
                     file,
                     tags: getTagsFromFile(file)
                 }))
-            ]))
+            ], properties.selectedProject?.availableTBs ?? 0))
         },
-        []
+        [properties.selectedProject?.availableTBs]
     )
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         validator: file => {
-            const ext = getExtension(file)
+            const ext = getFileExtension(file)
             if (BLOCKED_EXTENSIONS.includes(ext)) {
                 const message = `Files of the following types are not allowed: ${BLOCKED_EXTENSIONS.join(', ')}`
                 // dispatch({ action: 'popup', data: { colour: 'info', message } })
@@ -81,34 +98,23 @@ const Cluster = () => {
 
     })
 
-
     ////////////////////////////////////////////////////////
 
-    const fileRecords = taggedFiles.map(file => ({ ...file, description: file.tags.join() }))
-    const navigate = useNavigate()
+    const fileRecords: FileRecord[] = taggedFiles.map(file => ({
+        description: 'not set',
+        file: file.file,
+        projectId: properties.selectedProjectId!,
+    }))
+
     const { authAction } = useAuth()
 
     const [totalUploaded, setTotalUploaded] = useState(0)
     const [startTime, setStartTime] = useState<Moment>()
     const [eta, setEta] = useState<string>()
-    const [filesInUpload, setFilesInUpload] = useState(new Map<string, { total: number, current: number, percentage: number }>())
     const [mbps, setMbps] = useState<number>()
 
     const totalProgress = (totalUploaded / totalSize) * 100
-
     const uploadManagerRef = useRef<UploadManager>()
-
-    const setProgress = (key: string, bytes: number, total: number) => {
-        setFilesInUpload(old => {
-            const newMap = new Map(old);
-            newMap.set(key, {
-                total,
-                current: bytes,
-                percentage: (bytes / total) * 100
-            });
-            return newMap;
-        });
-    }
 
     useEffect(() => {
         if (totalUploaded === 0 || !startTime) return
@@ -124,7 +130,14 @@ const Cluster = () => {
 
     const onComplete = () => {
         console.log("Upload complete")
-        navigate('/deep-storage')
+    }
+
+    const onFileUploadFinished = (fileName: string) => {
+        setTaggedFiles(old => old.filter(file => file.file.name != fileName))
+        dispatch({
+            action: 'popup',
+            data: { colour: 'info', message: `${fileName} uploaded` }
+        })
     }
 
     useEffect(() => {
@@ -135,13 +148,19 @@ const Cluster = () => {
             console.log("Starting upload manager")
             uploadManagerRef.current = new UploadManager(
                 authAction,
-                setProgress,
                 setTotalUploaded,
-                onComplete
+                onComplete,
+                onFileUploadFinished
             )
             uploadManagerRef.current.start(fileRecords)
         }
     }, [taggedFiles])
+
+    useEffect(() => {
+        if (uploadManagerRef.current?.isRunning) {
+            uploadManagerRef.current?.setConcurrentUploads(mbps ?? 30)
+        }
+    }, [mbps])
 
     useEffect(() => {
         const abortController = new AbortController()
@@ -155,11 +174,26 @@ const Cluster = () => {
 
     return <Stack spacing={1}>
         <Stack spacing={1}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton onClick={() => updateProperties({ page: 'project' })} size="large">
-                    <ArrowCircleLeft fontSize="large" />
-                </IconButton>
-                <GlassText size="large">{properties!.selectedProject?.name}</GlassText>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton onClick={() => updateProperties({ page: 'project' })} size="large">
+                        <ArrowCircleLeft fontSize="large" />
+                    </IconButton>
+                    <GlassText size="large">Upload to {properties.selectedProject?.name}</GlassText>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                    <div>
+                        <GlassText size="large">{properties.selectedProject?.availableTBs} TB</GlassText>
+                        <GlassText size="small">Available</GlassText>
+                    </div>
+                    <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                    <div>
+                        <GlassText size="large">{getFileSize(totalBytesUploaded)}</GlassText>
+                        <GlassText size="small">Uploaded</GlassText>
+                    </div>
+                </div>
             </div>
         </Stack>
         <DynamicStack>

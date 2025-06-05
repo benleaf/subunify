@@ -23,6 +23,8 @@ const ColorGlassCard = ({ color = Colours.primary, children, grow, paddingSize, 
         onClick={onClick}
         style={{
             display: 'flex',
+            position: 'relative',
+            overflow: 'hidden',
             flexDirection: 'column',
             padding: paddingSize ? CssSizes[paddingSize] : undefined,
             margin: marginSize ? CssSizes[marginSize] : undefined,

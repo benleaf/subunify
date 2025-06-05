@@ -1,51 +1,39 @@
-import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard"
-import GlassSpace from "@/components/glassmorphism/GlassSpace"
+import { isError } from "@/api/isError"
 import GlassText from "@/components/glassmorphism/GlassText"
+import FileViewer from "@/components/widgets/FileViewer"
+import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
-import { getFileSize } from "@/helpers/FileSize"
-import { ArrowCircleLeft, Download } from "@mui/icons-material"
-import { Stack, Divider, Button, IconButton } from "@mui/material"
+import { StoredFile } from "@/types/server/ProjectResult"
+import { ArrowCircleLeft } from "@mui/icons-material"
+import { Stack, IconButton } from "@mui/material"
+import moment from "moment"
+import { useEffect, useState } from "react"
 
 const Cluster = () => {
     const { properties, updateProperties } = useDashboard()
+    const { authAction } = useAuth()
+    const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
+
+    const getThumbnails = async (file: StoredFile) => {
+        const response = await authAction<{ url: string }>(`storage-file/download/${file.id}/THUMBNAIL`, 'GET')
+        if (!isError(response)) setThumbnails(old => ({ ...old, [file.id]: response.url }))
+    }
+
+    useEffect(() => {
+        properties.selectedCluster!.files.map(getThumbnails)
+    }, [])
+
+    const sorted = properties.selectedCluster?.files.sort((a, b) => moment(a.fileLastModified).diff(b.fileLastModified))
 
     return <Stack spacing={1}>
-        <Stack spacing={1}>
+        <Stack spacing={1} height='100%'>
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <IconButton onClick={() => updateProperties({ page: 'project' })} size="large">
                     <ArrowCircleLeft fontSize="large" />
                 </IconButton>
                 <GlassText size="large">{properties!.selectedCluster?.name}</GlassText>
             </div>
-            {properties.selectedCluster!.files!.map(file =>
-                <ColorGlassCard width='100%' paddingSize="tiny" flex={1}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <img src={file.previewUrl} width={100} height='100%' style={{ objectFit: 'contain' }} />
-                        <GlassSpace size="tiny" />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
-                            <Stack direction='row' spacing={1} alignItems='center'>
-                                <div style={{ minWidth: 200 }}>
-                                    <GlassText size="large">{file.name}</GlassText>
-                                </div>
-                            </Stack>
-                            <Stack direction='row' spacing={1} alignItems='center'>
-                                <Button startIcon={<Download />} variant="outlined">RAW</Button>
-                                <Button startIcon={<Download />} variant="outlined">High Res</Button>
-                                <Button startIcon={<Download />} variant="outlined">Low Res</Button>
-                            </Stack>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: 200 }}>
-                            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                            <div>
-                                <GlassText size="small">Location</GlassText>
-                                <GlassText size="moderate">{file.location}</GlassText>
-                            </div>
-                            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                            <GlassText size="moderate">{getFileSize(file.size)}</GlassText>
-                        </div>
-                    </div>
-                </ColorGlassCard>
-            )}
+            {sorted?.map(file => <FileViewer file={file} thumbnail={thumbnails[file.id]} />)}
         </Stack>
     </Stack>
 }

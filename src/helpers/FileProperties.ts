@@ -1,6 +1,7 @@
 import moment from "moment";
 
-export const getExtension = (file: File) => file.name.split('.').pop()!
+export const getFileExtension = (file: File) => getExtension(file.name)
+export const getExtension = (name: string) => name.split('.').pop()!
 
 const getTimeOfDay = (timestamp: number) => {
     const time = moment(timestamp)
@@ -22,7 +23,7 @@ export const getTagsFromFile = (file: File) => {
     const pathParts = file.webkitRelativePath.split('/').filter(Boolean);
     const dir = pathParts.slice(0, -1); // everything except the file name
     return [
-        getExtension(file) ?? 'No Extension',
+        getFileExtension(file) ?? 'No Extension',
         getTimeOfDay(file.lastModified),
         moment(file.lastModified).format('MMMM'),
         moment(file.lastModified).format('YYYY'),

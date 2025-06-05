@@ -12,9 +12,11 @@ import { useState } from "react"
 import DoubleExposureGraphic from '@/images/DoubleExposureGraphic.png'
 import { User } from "@/types/User"
 import { isError } from "@/api/isError"
+import { useNavigate } from "react-router"
 
 const Onboarding = () => {
     const { user, authAction, setUserAttributes } = useAuth()
+    const navigate = useNavigate()
     const [step, setStep] = useState(0)
     const { height, width } = useSize()
 
@@ -27,9 +29,8 @@ const Onboarding = () => {
     ]
 
     const nextPanel = () => {
-        if (stepInfoValid[step]) {
-            setStep(old => ++old)
-        }
+        if (step == 2) navigate('/dashboard')
+        if (stepInfoValid[step]) setStep(old => ++old)
 
         authAction<User>('user', 'POST', JSON.stringify(user))
             .then(user => !isError(user) && setUserAttributes(user))
@@ -50,8 +51,6 @@ const Onboarding = () => {
                     {step == 0 && <Name />}
                     {step == 1 && <Account />}
                     {step == 2 && <Attributes />}
-                    {step == 3 && <Collaborators />}
-                    {step == 4 && <NextSteps />}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'row', marginTop: CssSizes.hairpin, justifyContent: 'space-between' }}>
                     {step > 0 && <Button variant="outlined" onClick={() => setStep(old => --old)}>Back</Button>}

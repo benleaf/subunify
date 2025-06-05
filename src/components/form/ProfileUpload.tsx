@@ -1,4 +1,4 @@
-import { getExtension } from '@/helpers/FileProperties'
+import { getFileExtension } from '@/helpers/FileProperties'
 import { Edit } from '@mui/icons-material'
 import { ButtonBase } from '@mui/material'
 import { useCallback, useState } from 'react'
@@ -25,7 +25,7 @@ const ProfileUpload = () => {
         maxFiles: 1,
         multiple: false,
         validator: file => {
-            const ext = getExtension(file)
+            const ext = getFileExtension(file)
             if (!ALLOWED_EXTENSIONS.includes(ext)) {
                 const message = `Only allowed  ${ALLOWED_EXTENSIONS.join(', ')}`
                 return { message, code: 'FileTypeNotAllowed' } as FileError
