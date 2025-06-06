@@ -96,16 +96,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
-        dispatch({ action: 'loading', data: true })
         if (!sessionUser) return { message: 'No Login Session Found', error: 'Unauthorized' } as Partial<ApiError>
 
         try {
             const result = await apiAction<T>({ endpoint, method, body, signal, sessionUser });
-            dispatch({ action: 'loading', data: false })
             return handleAction(result);
         } catch (error: TODO) {
-            dispatch({ action: 'loading', data: false })
-
             if (error.message == "Failed to fetch") {
                 return { message: 'Unable to connect to the SUBUNIFY server', error: 'ConnectionError' } as Partial<ApiError>
             }
