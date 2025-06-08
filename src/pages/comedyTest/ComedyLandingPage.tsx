@@ -25,9 +25,14 @@ const ComedyLandingPage = () => {
                 <GlassText size="big">SUBUNIFY</GlassText>
                 <GlassText size="small">beta</GlassText>
             </ButtonBase>
-            <Button variant="outlined" href="/onboarding" >
-                GET STARTED TODAY
-            </Button>
+            <Stack direction='row' spacing={1} alignItems='center'>
+                <Button variant="outlined" href="/onboarding" >
+                    GET STARTED TODAY
+                </Button>
+                <Button href="/dashboard" >
+                    Login
+                </Button>
+            </Stack>
         </div>
         <OpeningSplash />
         {/* <div style={{ height: '20vh' }} />
