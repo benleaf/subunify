@@ -9,6 +9,7 @@ import AddStorage from "@/components/flows/dashboard/AddStorage";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import CreateProject from "@/components/flows/dashboard/CreateProject";
+import { ThumbnailProvider } from "@/contexts/ThumbnailContext";
 
 const DashboardWithContext = () => {
     const { properties, loadProject } = useDashboard()
@@ -36,7 +37,9 @@ const DashboardWithContext = () => {
 
 const Dashboard = () => {
     return <DashboardProvider>
-        <DashboardWithContext />
+        <ThumbnailProvider>
+            <DashboardWithContext />
+        </ThumbnailProvider>
     </DashboardProvider>
 }
 

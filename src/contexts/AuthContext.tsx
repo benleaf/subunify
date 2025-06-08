@@ -7,6 +7,7 @@ import { ApiError } from "@/types/server/ApiError";
 import { StateMachineDispatch } from "@/App";
 import { CognitoUser, CognitoUserSession } from "amazon-cognito-identity-js";
 import { User } from "@/types/User";
+import { useUpload } from "./UploadContext";
 
 interface AuthContextType {
     user: Partial<User>
@@ -23,7 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const abortController = new AbortController()
     const { signal } = abortController
-
+    const { uploadManager } = useUpload()
     const [subscribed, setSubscribed] = useState<any>(true);
     const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
     const [user, setUser] = useState<Partial<User>>({})
@@ -66,7 +67,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         if (user.email && !user.id) setServerUser()
     }, [user])
-
 
     const setServerUser = async () => {
         const serverUser = await authAction<User>('user', 'GET')
@@ -129,6 +129,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         return result;
     }
+
+    uploadManager.addCallbacks({ authAction })
 
     return <AuthContext.Provider value={{ user, setUserAttributes, login, logout, authAction, rawAuthAction, subscribed }}>{children}</AuthContext.Provider>;
 };

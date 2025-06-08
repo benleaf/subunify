@@ -28,10 +28,10 @@ const WhatWeAreFor = () => {
 
     return <div ref={container} style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }} ref={image}>
-            <GlassSpace size="tiny" style={{ maxWidth: 800 }}>
+            <GlassSpace size="tiny" style={{ maxWidth: 800, backgroundColor: Colours.white }}>
                 <Divider color={Colours.primary} flexItem />
                 <GlassText size="big" style={{ textAlign: 'center' }}>
-                    SUBUNIFY presents the File Nebula, designed for creatives, built for resilience.
+                    Hyper Fast File Storage And Sharing
                 </GlassText>
                 <Divider color={Colours.primary} flexItem />
             </GlassSpace>

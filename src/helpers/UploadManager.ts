@@ -14,30 +14,32 @@ export type FileRecord = { file: File, description: string, projectId: string }
 export type UploadingFileRecord = FileRecord & { chunks: number, uploadedChucks: number, started: boolean, finished: boolean }
 
 class UploadManager {
-    fileRecords: UploadingFileRecord[] = []
-    uploadSessions: UploadSession[] = []
-    stagingQueue: UploadObject[] = []
-    uploadQueue: string[] = []
-    finished: FileUploadResult[] = []
+    public fileRecords: UploadingFileRecord[] = []
+    public isRunning = false
 
-    errorEncountered = false
-    isRunning = false
-    isAddingToStaging = false
-    isAddingToSessions = false
-    maxConcurrentUploads = 30
-    authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
-    addUploaded: (uploaded: number) => void
+    private uploadSessions: UploadSession[] = []
+    private stagingQueue: UploadObject[] = []
+    private uploadQueue: string[] = []
+    private finished: FileUploadResult[] = []
+    private errorEncountered = false
+    private isAddingToStaging = false
+    private isAddingToSessions = false
+    private maxConcurrentUploads = 30
+    private authAction?: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
+    private addUploaded?: (uploaded: number) => void
+    private updateDataStored?: (projectId: string, change: number) => void
 
-    constructor(authAction: any, setTotalUploaded: any) {
-        this.authAction = authAction
-        this.addUploaded = setTotalUploaded
+    public addCallbacks(callbacks: { authAction?: any, addUploaded?: any, updateDataStored?: any }) {
+        if (callbacks.authAction) this.authAction = callbacks.authAction
+        if (callbacks.addUploaded) this.addUploaded = callbacks.addUploaded
+        if (callbacks.updateDataStored) this.updateDataStored = callbacks.updateDataStored
     }
 
-    getFileChunks(file: File) {
+    private getFileChunks(file: File) {
         return Math.ceil(file.size / mb5)
     }
 
-    getFileRecordsForUpload(fileRecords: FileRecord[]) {
+    private getFileRecordsForUpload(fileRecords: FileRecord[]) {
         this.fileRecords = [
             ...this.fileRecords,
             ...fileRecords.map(file => ({
@@ -50,23 +52,26 @@ class UploadManager {
         ]
     }
 
-    async start(fileRecords: FileRecord[]) {
+    public async start(fileRecords: FileRecord[]) {
+        console.log("here!")
         this.getFileRecordsForUpload(fileRecords)
         console.log(fileRecords, this.fileRecords)
         this.isRunning = true
         await this.loop()
     }
 
-    async update(fileRecords: FileRecord[]) {
+    public async update(fileRecords: FileRecord[]) {
+        if (!this.authAction) return
+
         this.getFileRecordsForUpload(fileRecords)
-        this.addUploaded(0)
+        this.addUploaded && this.addUploaded(0)
     }
 
-    async setConcurrentUploads(concurrentUploads: number) {
+    public async setConcurrentUploads(concurrentUploads: number) {
         this.maxConcurrentUploads = concurrentUploads
     }
 
-    async cancel() {
+    public async cancel() {
         this.isRunning = false
         this.uploadSessions = []
         this.stagingQueue = []
@@ -75,8 +80,8 @@ class UploadManager {
         this.fileRecords = []
     }
 
-    async getUploadSession(fileRecord: FileRecord): Promise<UploadSession> {
-        const getSession = await this.authAction<UploadSession>(
+    private async getUploadSession(fileRecord: FileRecord): Promise<UploadSession> {
+        const getSession = await this.authAction!<UploadSession>(
             'storage-file/upload/start',
             "POST",
             JSON.stringify({
@@ -88,7 +93,7 @@ class UploadManager {
             })
         )
 
-        if (isError(getSession)) throw new Error("Failed to start upload session")
+        if (isError(getSession)) throw getSession
         return {
             ...getSession,
             description: fileRecord.description,
@@ -99,7 +104,8 @@ class UploadManager {
     async loop() {
         while (this.isRunning) {
             this.checkQueues()
-            await new Promise(resolve => setTimeout(resolve, 10));
+            console.log('ping')
+            await new Promise(resolve => setTimeout(resolve, 100));
             if (this.errorEncountered) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 this.errorEncountered = false
@@ -107,23 +113,23 @@ class UploadManager {
         }
     }
 
-    async getPresignedUrls(uploadSession: UploadSession): Promise<UploadObject[]> {
-        const response = await this.authAction<{ urls: string[] }>('storage-file/upload/presigned-parts', "POST", JSON.stringify({
+    private async getPresignedUrls(uploadSession: UploadSession): Promise<UploadObject[]> {
+        const response = await this.authAction!<{ urls: string[] }>('storage-file/upload/presigned-parts', "POST", JSON.stringify({
             key: uploadSession.key,
             uploadId: uploadSession.uploadId,
             partCount: this.getFileChunks(uploadSession.file)
         }))
-        if (isError(response)) throw new Error("Failed to get presigned urls")
+        if (isError(response)) throw response
         return response.urls.map((url, index) => ({ url, uploadSession, index }))
     }
 
-    getUploadChunk(file: File, uploadUrl: string, index: number): Chunk {
+    private getUploadChunk(file: File, uploadUrl: string, index: number): Chunk {
         const start = index * mb5
         const end = Math.min(file.size, (index + 1) * mb5)
         return { blob: file.slice(start, end), url: uploadUrl, bytes: end - start }
     }
 
-    checkQueues() {
+    private checkQueues() {
         if (!this.isRunning || this.isAddingToSessions || this.isAddingToStaging) return
         const unUploadedFiles = this.fileRecords.filter(file => !file.started)
 
@@ -186,23 +192,24 @@ class UploadManager {
 
             if (fileRecord && fileRecord?.uploadedChucks == fileRecord?.chunks) {
                 const fileUploadResult = this.finished.shift()!
-                this.authAction<{ success: true }>('storage-file/upload/complete', "POST", JSON.stringify(fileUploadResult)).then((result) => {
+                this.authAction!<{ success: true }>('storage-file/upload/complete', "POST", JSON.stringify(fileUploadResult)).then((result) => {
                     if (isError(result)) {
                         this.finished.unshift(fileUploadResult)
                         console.log(`Recovering file completion for ${this.finished[0].fileName} following error`)
                         console.error(result)
                         this.errorEncountered = true
                     } else {
-                        this.addUploaded(0)
+                        this.updateDataStored && this.updateDataStored(fileRecord.projectId, fileRecord.file.size)
+                        this.addUploaded && this.addUploaded(0)
                     }
                 })
             }
         }
     }
 
-    async handlePartUpload(uploadObj: UploadObject, result: Response) {
+    private async handlePartUpload(uploadObj: UploadObject, result: Response) {
         const fileName = uploadObj.uploadSession.file.name
-        this.addUploaded(uploadObj.uploadSession.file.size / Math.ceil(uploadObj.uploadSession.file.size / mb5))
+        this.addUploaded && this.addUploaded(uploadObj.uploadSession.file.size / Math.ceil(uploadObj.uploadSession.file.size / mb5))
         const ETag = result.headers.get('ETag')!
         const existing = this.finished.find(f => f.fileName === fileName)
 

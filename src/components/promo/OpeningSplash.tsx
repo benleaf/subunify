@@ -1,40 +1,23 @@
 import { ScreenWidths } from "@/constants/ScreenWidths"
-import { Divider, IconButton } from "@mui/material"
+import { Button, ButtonBase } from "@mui/material"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
-import { ArrowDownward } from "@mui/icons-material"
 import { useRef, ElementRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
 import NebulaCanvas from "../graphics/NebulaCanvas"
 import { gsap } from 'gsap';
-
-export function useOnScreen(ref: RefObject<HTMLElement>) {
-    const [isIntersecting, setIntersecting] = useState(false)
-
-    const observer = useMemo(() => new IntersectionObserver(
-        ([entry]) => setIntersecting(entry.isIntersecting)
-    ), [ref])
-
-
-    useEffect(() => {
-        observer.observe(ref.current!)
-        return () => observer.disconnect()
-    }, [])
-
-    return isIntersecting
-}
+import TopBar from "../navigation/TopBar"
+import { useAuth } from "@/contexts/AuthContext"
+import WhatWeAreFor from "./WhatWeAreFor"
 
 const OpeningSplash = () => {
     const { width } = useSize()
-    const myRef = useRef<ElementRef<'div'>>(null)
-    const executeScroll = () => myRef.current!.scrollIntoView({ behavior: 'smooth' })
+    const renderDetailedNebula = useRef<ElementRef<'div'>>(null)
 
     const container = useRef<HTMLDivElement>(null);
     const topText = useRef<HTMLDivElement>(null);
     const middleText = useRef<HTMLDivElement>(null);
     const bottomText = useRef<HTMLDivElement>(null);
-
-    const isIntersecting = useOnScreen(myRef)
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -47,64 +30,53 @@ const OpeningSplash = () => {
                 },
             });
 
-            tl.to(topText.current, { y: -200 }, 0.5);
-            tl.to(middleText.current, { y: -150 }, 0.5);
-            tl.to(bottomText.current, { y: -100 }, 0.5);
+            tl.to(topText.current, { y: -250 }, 0.5);
+            tl.to(middleText.current, { y: -200 }, 0.5);
+            tl.to(bottomText.current, { y: -150 }, 0.5);
         });
 
         return () => ctx.revert();
     }, []);
 
     return <>
-        {width < ScreenWidths.Mobile && <div style={{ height: '25vh' }} />}
-        <div style={{ height: '10vh' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }} ref={container}>
-                <GlassSpace size='moderate' style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }} ref={topText}>
-                        <GlassText
-                            size="large"
-                            style={{ letterSpacing: '0.15em' }}
-                            color="primaryLight"
-                        >THE SUBUNIFY</GlassText>
-                        <Divider style={{ flex: 1 }} />
-                    </div>
-                    <div ref={middleText}>
-                        <GlassText
-                            size="fullscreen"
-                            style={{ lineHeight: '10vw', fontWeight: 'normal' }}
-                            color="primaryLight"
-                        >SLOW STORE</GlassText>
-                    </div>
-                    {width > ScreenWidths.Mobile && <div ref={myRef} />}
-
-                    <div style={{ display: 'flex', alignItems: 'center' }} ref={bottomText}>
-                        <GlassText
-                            size="moderate"
-                            style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}
-                            color="primaryLight"
-                        >FILE AND FORGET ARCHIVING</GlassText>
-                        <Divider style={{ flex: 1 }} />
-                    </div>
-                    {width <= ScreenWidths.Mobile && <div>
-                        <div style={{ padding: '0.5em' }} />
-                        <NebulaCanvas width={Math.min(width * 0.95 - 70, 600)} />
-                    </div>}
-                </GlassSpace>
+        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', height: '100vh', overflow: 'hidden' }} ref={container}>
+            <div style={{
+                width: 'min(80vw, 80vh)',
+                height: 'min(80vw, 80vh)',
+                position: 'absolute',
+                borderRadius: '100%',
+                borderStyle: 'dashed',
+                borderWidth: 2,
+                opacity: 0.2,
+            }} />
+            <div ref={topText}>
+                <GlassText
+                    size="huge"
+                    style={{ lineHeight: '1em', fontWeight: 'lighter' }}
+                    color="lightGrey"
+                >COLLABORATION</GlassText>
             </div>
-            {width > ScreenWidths.Mobile && <>
-                <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
-                    <NebulaCanvas width={width * 0.45} pointMultiplier={isIntersecting ? 5 : 0.1} />
-                </div>
-            </>}
+            <div ref={middleText} >
+                <GlassText
+                    size="fullscreen"
+                    style={{ lineHeight: '1em', fontWeight: 'lighter' }}
+                    color="lightGrey"
+                >UNRESTRAINED</GlassText>
+            </div>
+            <div ref={bottomText} >
+                <Button variant="outlined" href="/onboarding" fullWidth>
+                    GET STARTED TODAY
+                </Button>
+            </div>
+            <div style={{
+                position: 'absolute',
+                bottom: '12vh',
+            }} >
+                <WhatWeAreFor />
+            </div>
         </div>
-        {width < ScreenWidths.Mobile && <div style={{ height: '20vh' }} />}
-        {width <= ScreenWidths.Mobile && <div ref={myRef} />}
-        <div style={{ display: 'flex', padding: '2em', justifyContent: 'center' }} >
-            <IconButton onClick={executeScroll} color="primary">
-                <ArrowDownward />
-            </IconButton>
-        </div>
+        {width < ScreenWidths.Mobile && <div style={{ height: '29vh' }} />}
+        {width <= ScreenWidths.Mobile && <div ref={renderDetailedNebula} />}
         <div style={{ height: '5vh' }} />
     </>
 }

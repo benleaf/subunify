@@ -15,13 +15,15 @@ type Props = {
     width?: CSSProperties['width']
     height?: CSSProperties['height']
     onClick?: () => void
+    style?: CSSProperties
 }
 
-const ColorGlassCard = ({ color = Colours.primary, children, grow, paddingSize, marginSize, flex, width, height, onClick }: Props) => {
+const ColorGlassCard = ({ color = Colours.primary, children, grow, paddingSize, marginSize, flex, width, height, onClick, style }: Props) => {
     return <div
         className={classes(glass.glass, glass.radius, grow ? glass.grow : undefined)}
         onClick={onClick}
         style={{
+            ...style,
             display: 'flex',
             position: 'relative',
             overflow: 'hidden',

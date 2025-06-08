@@ -2,6 +2,7 @@ import { ClusterResult, ProjectPreviewResult, ProjectResult } from "@/types/serv
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { isError } from "@/api/isError";
+import { useUpload } from "./UploadContext";
 
 type Project = {
     projects: ProjectPreviewResult[],
@@ -22,6 +23,7 @@ const DashboardContext = createContext<DashboardType | undefined>(undefined)
 
 export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { authAction } = useAuth()
+    const { setDataStored } = useUpload()
     const [project, setProject] = useState<Partial<Project>>({ page: 'projects' });
 
     const updateProperties = (properties: Partial<Project>) => {
@@ -36,10 +38,19 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
 
     const loadProject = async (projectId?: string) => {
-        if (!projectId || !project.selectedProjectId) return
-        const projectResult = await authAction<ProjectResult>(`project/user-project/${projectId ?? project.selectedProjectId}`, 'GET')
+        const contingentProjectId = projectId ?? project.selectedProjectId
+        if (!contingentProjectId) return
+        const projectResult = await authAction<ProjectResult>(`project/user-project/${contingentProjectId}`, 'GET')
         if (!isError(projectResult) && projectResult) {
-            updateProperties({ selectedProject: projectResult, selectedProjectId: projectResult.id })
+            const bytesUploaded = projectResult.files
+                .filter(file => file.created)
+                .reduce((n, { bytes }) => n + +bytes, 0) ?? 0
+            setDataStored(contingentProjectId, bytesUploaded)
+
+            updateProperties({
+                selectedProject: projectResult,
+                selectedProjectId: projectResult.id
+            })
         }
     }
 

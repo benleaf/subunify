@@ -13,6 +13,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LicenseInfo } from '@mui/x-license';
 import App from './App';
+import { UploadProvider } from './contexts/UploadContext';
 
 LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_KEY);
 
@@ -49,11 +50,13 @@ declare global {
 
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider theme={theme}>
-    <CssBaseline enableColorScheme />
-    <LocalizationProvider dateAdapter={AdapterMoment}>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </LocalizationProvider>
+    <UploadProvider>
+      <CssBaseline enableColorScheme />
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <StrictMode>
+          <App />
+        </StrictMode>
+      </LocalizationProvider>
+    </UploadProvider>
   </ThemeProvider>
 )

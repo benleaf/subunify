@@ -1,19 +1,20 @@
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
 import { useDashboard } from "@/contexts/DashboardContext"
-import { ClusterResult, ProjectResult } from "@/types/server/ProjectResult"
+import { ClusterResult } from "@/types/server/ProjectResult"
 import { Stack, Divider, Button, IconButton } from "@mui/material"
 import Carousel, { ResponsiveType } from "react-multi-carousel"
 import { Add, ArrowCircleLeft, Upload } from "@mui/icons-material"
-import { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/AuthContext"
-import { isError } from "@/api/isError"
+import { useEffect } from "react"
 import { getFileSize, terabytesToBytes } from "@/helpers/FileSize"
+import { ClusterManager } from "@/helpers/ClusterManager"
+import { useThumbnail } from "@/contexts/ThumbnailContext"
+import { useUpload } from "@/contexts/UploadContext"
 
 const Project = () => {
-    const [thumbnails, setThumbnails] = useState<{ [id: string]: string }>({})
+    const { projectDataStored } = useUpload()
+    const { getUrl, retrieveThumbnails } = useThumbnail()
     const { properties, updateProperties, loadProject } = useDashboard()
-    const { authAction } = useAuth()
     const responsive: ResponsiveType = {
         desktop: {
             breakpoint: { max: Infinity, min: 0 },
@@ -21,39 +22,24 @@ const Project = () => {
         }
     };
 
-    const clusters: ClusterResult[] = [{
-        fileCount: properties.selectedProject?.files.length ?? 0,
-        files: properties.selectedProject?.files ?? [],
-        id: "1",
-        name: "Test Cluster",
-    }]
+    const clusters: ClusterResult[] = ClusterManager.getClusters(properties.selectedProject?.files ?? [])
 
     useEffect(() => {
         loadProject()
     }, [])
 
-    const getThumbnail = async (slide: number, cluster: ClusterResult) => {
-        const file = cluster.files[slide % cluster.fileCount]
-        if (!file || thumbnails[file.id]) return
-        const response = await authAction<{ url: string }>(`storage-file/download/${file.id}/THUMBNAIL`, 'GET')
-        if (!isError(response)) setThumbnails(old => ({ ...old, [file.id]: response.url }))
-    }
-
     useEffect(() => {
-        for (const cluster of clusters) getThumbnail(0, cluster)
+        retrieveThumbnails(properties.selectedProject?.files ?? [])
     }, [properties.selectedProject?.id])
 
-    const totalBytesUploaded = properties.selectedProject?.files
-        .filter(file => file.created)
-        .reduce((n, { bytes }) => n + +bytes, 0) ?? 0
-
+    const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
     const canUpload = terabytesToBytes(properties.selectedProject?.availableTBs ?? 0) > totalBytesUploaded
 
     return <Stack spacing={1}>
         <ColorGlassCard paddingSize="small">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <IconButton onClick={() => updateProperties({ page: 'projects', selectedProjectId: undefined })} size="large">
+                    <IconButton onClick={() => updateProperties({ page: 'projects', selectedProjectId: undefined, selectedProject: undefined })} size="large">
                         <ArrowCircleLeft fontSize="large" />
                     </IconButton>
                     <div>
@@ -61,7 +47,7 @@ const Project = () => {
                         <GlassText size="moderate">{properties.selectedProject?.description}</GlassText>
                     </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div>
                         <GlassText size="large">{getFileSize(totalBytesUploaded)}</GlassText>
                         <GlassText size="small">Uploaded</GlassText>
@@ -70,11 +56,6 @@ const Project = () => {
                     <div>
                         <GlassText size="large">{properties.selectedProject?.collaborators}</GlassText>
                         <GlassText size="small">Collaborators</GlassText>
-                    </div>
-                    <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                    <div>
-                        <GlassText size="small">Time until Archive</GlassText>
-                        <GlassText size="small">{properties.selectedProject?.daysToArchive} days</GlassText>
                     </div>
                     <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                     <Button variant="contained" startIcon={<Add />} onClick={() => updateProperties({ page: 'addStorage' })}>Add Storage</Button>
@@ -91,19 +72,18 @@ const Project = () => {
         </ColorGlassCard>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {clusters!.map(cluster =>
-                <ColorGlassCard width={350} paddingSize="small" marginSize="tiny" flex={1}>
+                <ColorGlassCard style={{ minWidth: 'max(30%, 300px)' }} paddingSize="small" marginSize="tiny" flex={1}>
                     <div style={{ borderRadius: 15, overflow: 'hidden', backgroundColor: 'black' }}>
                         <Carousel
                             showDots={cluster.fileCount <= 10}
                             responsive={responsive}
                             infinite={true}
                             removeArrowOnDeviceType={["tablet", "mobile"]}
-                            beforeChange={(slide) => getThumbnail(slide - 1, cluster)}
                         >
                             {cluster.files.map(file =>
-                                thumbnails[file.id] ?
-                                    <img src={thumbnails[file.id]} loading="lazy" height={300} width='100%' style={{ objectFit: 'contain' }} /> :
-                                    <div style={{ display: 'flex', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                getUrl(file) ?
+                                    <img src={getUrl(file)} loading="lazy" height={300} width='100%' style={{ objectFit: 'contain' }} /> :
+                                    <div style={{ display: 'flex', height: 300, justifyContent: 'center', alignItems: 'center' }}>
                                         <GlassText size="large" color="white">{file.name}</GlassText>
                                     </div>
                             )}
@@ -126,7 +106,7 @@ const Project = () => {
                     </div>
                 </ColorGlassCard>
             )}
-            {clusters.length % 2 == 1 && <div style={{ flex: 1, minWidth: 300, display: 'flex', height: 300 }} />}
+            <div style={{ flex: 1, minWidth: 'max(30%, 300px)', display: 'flex', height: 300, margin: 20 }} />
         </div>
     </Stack >
 }

@@ -28,23 +28,14 @@ const App = () => {
     <AuthProvider>
       <UniversalAlert />
       <BrowserRouter>
-        {/* <TopBar /> */}
         <Routes>
-          {/* <Route path="/original" element={<LandingPage />} /> */}
-          <Route path="/old" element={<LandingPageDeepStorage />} />
-          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/" element={<ComedyLandingPage />} />
-          <Route path="/file-upload" element={<FileUpload />} />
+          <Route path="/dashboard" element={<AuthWrapper><Dashboard /></AuthWrapper>} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/deep-storage" element={<DeepStorage />} />
-          <Route path="/dashboard" element={<AuthWrapper><Dashboard /></AuthWrapper>} />
           <Route path="/payment" element={<AuthWrapper><Payment /></AuthWrapper>} />
-          {/* <Route path="/excel-importer" element={<ExcelImportPage />} /> */}
-          {/* <Route path="/table-manager" element={<AuthWrapper><TableManager /></AuthWrapper>} /> */}
-          {/* <Route path="/column-manager" element={<AuthWrapper><ColumnManager /></AuthWrapper>} /> */}
-          {/* <Route path="/data-upload" element={<AuthWrapper><DataUpload /></AuthWrapper>} /> */}
         </Routes>
       </BrowserRouter>
       <Backdrop

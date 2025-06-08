@@ -1,45 +1,48 @@
-import { StateMachineDispatch } from "@/App"
 import FileAdder from "@/components/form/FileAdder"
 import DynamicStack from "@/components/glassmorphism/DynamicStack"
 import GlassCard from "@/components/glassmorphism/GlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
 import { ScreenWidths } from "@/constants/ScreenWidths"
-import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
+import { useUpload } from "@/contexts/UploadContext"
 import { getFileSize } from "@/helpers/FileSize"
 import { Time } from "@/helpers/Time"
-import UploadManager, { FileRecord } from "@/helpers/UploadManager"
+import { FileRecord } from "@/helpers/UploadManager"
 import { useSize } from "@/hooks/useSize"
 import { TaggedFile } from "@/pages/FileUpload"
-import { ArrowCircleLeft, Delete } from "@mui/icons-material"
+import { ArrowCircleLeft } from "@mui/icons-material"
 import { Stack, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Chip, CircularProgress, LinearProgress, Divider } from "@mui/material"
 import moment, { Moment } from "moment"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 
 const Cluster = () => {
+    const { uploadManager, projectDataStored } = useUpload()
     const { properties, updateProperties, loadProject } = useDashboard()
-    const { width } = useSize()
-
-    const totalBytesUploaded = properties.selectedProject?.files
-        .filter(file => file.created)
-        .reduce((n, { bytes }) => n + +bytes, 0) ?? 0
-
-    useEffect(() => {
-        loadProject()
-    }, [])
-
-    const { authAction } = useAuth()
-
     const [totalUploaded, setTotalUploaded] = useState(0)
     const [startTime, setStartTime] = useState<Moment>()
     const [eta, setEta] = useState<string>()
     const [mbps, setMbps] = useState<number>()
+    const { width } = useSize()
 
-    const uploadManagerRef = useRef<UploadManager>()
-    const totalSize = uploadManagerRef.current?.fileRecords
-        .map(fileRecord => fileRecord.file.size)
-        .reduce((acc, cur) => acc + cur) ?? 1
+    useEffect(() => {
+        loadProject()
+        uploadManager.addCallbacks({ addUploaded })
+    }, [uploadManager])
+
+    useEffect(() => {
+        if (uploadManager.isRunning) {
+            uploadManager.setConcurrentUploads(mbps ?? 30)
+        }
+    }, [mbps])
+
+    const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
+
+    const fileRecords = uploadManager.fileRecords
+    const totalSize = !fileRecords?.length ? 1 :
+        fileRecords.map(fileRecord => fileRecord.file.size)
+            .reduce((acc, cur) => acc + cur)
+
     const totalProgress = (totalUploaded / totalSize) * 100
 
     const addUploaded = (uploaded: number) => {
@@ -63,36 +66,17 @@ const Cluster = () => {
             projectId: properties.selectedProjectId!,
         }))
 
-        if (uploadManagerRef.current?.isRunning) {
-            uploadManagerRef.current?.update(fileRecords)
+        if (uploadManager.isRunning) {
+            uploadManager.update(fileRecords)
         } else if (fileRecords.length) {
             setStartTime(moment())
             console.log("Starting upload manager")
-            uploadManagerRef.current = new UploadManager(
-                authAction,
-                addUploaded,
-            )
-            uploadManagerRef.current.start(fileRecords)
+            uploadManager.start(fileRecords)
         }
     }
 
-    useEffect(() => {
-        if (uploadManagerRef.current?.isRunning) {
-            uploadManagerRef.current?.setConcurrentUploads(mbps ?? 30)
-        }
-    }, [mbps])
 
-    useEffect(() => {
-        const abortController = new AbortController()
-
-        return () => {
-            console.log("Cleaning up AuthContext");
-            uploadManagerRef.current?.cancel()
-            abortController.abort()
-        };
-    }, [])
-
-    const displayableFiles = uploadManagerRef.current?.fileRecords.filter(file => !file.finished)
+    const displayableFiles = uploadManager.fileRecords.filter(file => !file.finished)
 
     return <Stack spacing={1}>
         <Stack spacing={1}>
