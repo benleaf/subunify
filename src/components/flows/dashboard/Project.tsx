@@ -74,11 +74,20 @@ const Project = () => {
             {clusters!.map(cluster =>
                 <ColorGlassCard style={{ minWidth: 'max(30%, 300px)' }} paddingSize="small" marginSize="tiny" flex={1}>
                     <div style={{ borderRadius: 15, overflow: 'hidden', backgroundColor: 'black', height: 300 }}>
-                        {getUrl(cluster.files[0]) ?
-                            <img src={getUrl(cluster.files[0])} loading="lazy" height={350} style={{ objectFit: 'cover' }} /> :
-                            <div style={{ display: 'flex', height: 300, justifyContent: 'center', alignItems: 'center' }}>
-                                <GlassText size="large" color="white">{cluster.files[0].name}</GlassText>
-                            </div>}
+                        <Carousel
+                            showDots={cluster.fileCount <= 10}
+                            responsive={responsive}
+                            infinite={true}
+                            removeArrowOnDeviceType={["tablet", "mobile"]}
+                        >
+                            {cluster.files.map(file =>
+                                getUrl(file) ?
+                                    <img src={getUrl(file)} loading="lazy" height={330} width='100%' style={{ objectFit: 'cover' }} /> :
+                                    <div style={{ display: 'flex', height: 300, justifyContent: 'center', alignItems: 'center' }}>
+                                        <GlassText size="large" color="white">{file.name}</GlassText>
+                                    </div>
+                            )}
+                        </Carousel>
                     </div>
                     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
