@@ -80,7 +80,7 @@ const Cluster = () => {
 
     return <Stack spacing={1}>
         <Stack spacing={1}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton onClick={() => updateProperties({ page: 'project' })} size="large">
                         <ArrowCircleLeft fontSize="large" />

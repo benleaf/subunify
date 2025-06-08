@@ -26,9 +26,6 @@ const ComedyLandingPage = () => {
                 <GlassText size="small">beta</GlassText>
             </ButtonBase>
             <Stack direction='row' spacing={1} alignItems='center'>
-                <Button variant="outlined" href="/onboarding" >
-                    GET STARTED TODAY
-                </Button>
                 <Button href="/dashboard" >
                     Login
                 </Button>
