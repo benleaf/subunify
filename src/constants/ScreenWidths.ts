@@ -1,4 +1,4 @@
 export const ScreenWidths = {
-    Tablet: 1500,
+    Tablet: 1550,
     Mobile: 1000,
 } as const

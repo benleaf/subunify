@@ -36,6 +36,7 @@ const App = () => {
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/payment" element={<AuthWrapper><Payment /></AuthWrapper>} />
+          <Route path="/pricing" element={<Pricing />} />
         </Routes>
       </BrowserRouter>
       <Backdrop

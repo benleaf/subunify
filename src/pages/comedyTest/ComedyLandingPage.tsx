@@ -10,17 +10,33 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import OpeningSplash from "@/components/promo/OpeningSplash";
 import WhatWeAreFor from "@/components/promo/WhatWeAreFor";
 import FirstLineMessaging from "@/components/promo/FirstLineMessaging";
-import NextDayDelivery from "@/components/promo/NextDayDelivery";
+import StorageMadeSimple from "@/components/promo/StorageMadeSimple";
 import PricingCarousel from "@/components/promo/PricingCarousel";
 import DownloadCalculator from "@/components/promo/DownloadCalculator";
 import { useAuth } from "@/contexts/AuthContext";
+import HyperSpeedUpload from "@/components/promo/HyperSpeedUpload";
+import Proxify from "@/components/promo/Proxify";
+import { useSize } from "@/hooks/useSize";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ComedyLandingPage = () => {
     const { user } = useAuth()
+    const { width } = useSize()
+
     return <div>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1em', position: 'fixed' }}>
+        <div style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '1em',
+            position: 'fixed',
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            backdropFilter: 'blur(10px)',
+            zIndex: 1000,
+            height: 50
+        }}>
             <ButtonBase href={user?.email_verified ? "/dashboard" : '/'}>
                 <GlassText size="big">SUBUNIFY</GlassText>
                 <GlassText size="small">beta</GlassText>
@@ -31,13 +47,16 @@ const ComedyLandingPage = () => {
                 </Button>
             </Stack>
         </div>
+        <div style={{ height: '10vh' }} />
         <OpeningSplash />
-        {/* <div style={{ height: '20vh' }} />
-        <FirstLineMessaging />
-        <div style={{ height: '5vh' }} />
-        <NextDayDelivery />
-        <div style={{ height: '5vh' }} />
-        <PricingCarousel />
+        <div style={{ height: '20vh' }} />
+        <StorageMadeSimple />
+        {width <= ScreenWidths.Tablet && <div style={{ height: '70vh' }} />}
+        <HyperSpeedUpload />
+        {width <= ScreenWidths.Tablet && <div style={{ height: '70vh' }} />}
+        <Proxify />
+        <div style={{ height: '10vh' }} />
+        {/*<PricingCarousel />
         <div style={{ height: '10vh' }} />
         <CostCalculator />
         <DownloadCalculator />
@@ -162,16 +181,16 @@ const ComedyLandingPage = () => {
                     </TableContainer>
                 </Stack>
             </GlassSpace>
-        </div>
+        </div> */}
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>
                 <GlassText size="large" style={{ letterSpacing: '0.15em' }}>Get started today!</GlassText>
-                <Button fullWidth variant="contained" href="/file-upload">
-                    Archive A File
+                <Button fullWidth variant="contained" href="/onboarding">
+                    Create An Account
                 </Button>
             </GlassSpace>
-        </div> */}
+        </div>
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GlassSpace size='moderate'>

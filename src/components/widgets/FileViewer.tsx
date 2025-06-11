@@ -38,20 +38,20 @@ const DownloadPanel = ({ file }: { file: StoredFile }) => {
         window.open(url, '_self');
     }
 
-    return <Stack direction='row' spacing={1}>
+    return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
         <ButtonBase onClick={() => download(file, 'RAW')}>
             <Chip icon={<Download color="primary" />} label='RAW' />
         </ButtonBase>
         <ButtonBase onClick={() => download(file, 'HIGH')}>
-            <Chip icon={<Download color="primary" />} label='High Res' />
+            <Chip icon={<Download color="primary" />} label='High' />
         </ButtonBase>
         <ButtonBase onClick={() => download(file, 'MEDIUM')}>
-            <Chip icon={<Download color="primary" />} label='Medium Res' />
+            <Chip icon={<Download color="primary" />} label='Medium' />
         </ButtonBase>
         <ButtonBase onClick={() => download(file, 'LOW')}>
-            <Chip icon={<Download color="primary" />} label='Low Res' />
+            <Chip icon={<Download color="primary" />} label='Low' />
         </ButtonBase>
-    </Stack>
+    </div>
 }
 
 const FileViewer = ({ thumbnail, file }: Props) => {
@@ -61,17 +61,19 @@ const FileViewer = ({ thumbnail, file }: Props) => {
     const perviewable = file.created != null && (getExtension(file.name) == 'mp4' || getExtension(file.name) == 'mov')
 
     const showPreview = async (file: StoredFile) => {
+        if (!perviewable) return;
         const response = await authAction<{ url: string }>(`storage-file/download/${file.id}/LOW`, 'GET')
         if (!isError(response)) setPreview(response.url)
     }
+
     return <>
         {width > ScreenWidths.Mobile && <>
             <ColorGlassCard width='100%' paddingSize="tiny" flex={1}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 100 }}>
-                    {perviewable && thumbnail && <ButtonBase onClick={() => showPreview(file)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0 }}>
+                    {thumbnail && <ButtonBase onClick={() => showPreview(file)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0 }}>
                         <div style={{ position: 'relative' }}>
                             <img src={thumbnail} height={120} style={{ objectFit: 'contain' }} />
-                            <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />
+                            {perviewable && <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />}
                         </div>
                     </ButtonBase >}
                     <div style={{ width: 250 }} />
@@ -112,8 +114,8 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                 </video>
             </div>}
             {thumbnail && !preview && <ButtonBase onClick={() => showPreview(file)} style={{ position: 'absolute', left: 0, top: -5, right: 0 }}>
-                <div style={{ position: 'relative' }}>
-                    {!preview && <img src={thumbnail} width='100%' height={200} style={{ objectFit: 'contain' }} />}
+                <div style={{ position: 'relative', width: '100%' }}>
+                    <img src={thumbnail} width='100%' height={200} style={{ objectFit: 'cover' }} />
                     {!preview && <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />}
                 </div>
             </ButtonBase >}
@@ -123,7 +125,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                 <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
                 <GlassText size="moderate">{getFileSize(file.bytes)}</GlassText>
             </div>
-            <GlassSpace size="tiny" style={{ overflow: 'scroll', width: '100%', paddingTop: CssSizes.hairpin }}>
+            <GlassSpace size="tiny" style={{ width: '100%', paddingTop: CssSizes.hairpin, overflow: 'hidden' }}>
                 <DownloadPanel file={file} />
             </GlassSpace>
         </ColorGlassCard>}

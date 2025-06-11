@@ -4,7 +4,9 @@ import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
 import { useRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
 import { gsap } from 'gsap';
-import CenterlessNebulaCanvas from "../graphics/CenterlessNebulaCanvas"
+import FileViewer from "../widgets/FileViewer"
+import { Stack } from "@mui/material"
+import { B, C, D, E, H } from '@/images/stock'
 
 export function useOnScreen(ref: RefObject<HTMLElement>) {
     const [isIntersecting, setIntersecting] = useState(false)
@@ -21,8 +23,22 @@ export function useOnScreen(ref: RefObject<HTMLElement>) {
 
     return isIntersecting
 }
+const gold = 1.61803398875
 
-const NextDayDelivery = () => {
+const Previews = () => <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <img style={{ padding: 10 }} src={H} alt="Preview 1" width={`${100}%`} />
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
+        <img style={{ padding: 10 }} src={H} alt="Preview 1" width={`${100 / gold}%`} />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <img style={{ padding: 10 }} src={H} alt="Preview 1" width={`100%`} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
+                <img style={{ padding: 10 }} src={H} alt="Preview 1" width={`${100 / (gold)}%`} />
+            </div>
+        </div>
+    </div>
+</div>
+
+const Proxify = () => {
     const { width } = useSize()
 
     const container = useRef<HTMLDivElement>(null);
@@ -51,39 +67,34 @@ const NextDayDelivery = () => {
     }, []);
 
     return <>
-        {width < ScreenWidths.Mobile && <div style={{ height: '20vh' }} />}
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {width > ScreenWidths.Mobile && <>
-                <div style={{ display: 'flex', height: '70vh', alignItems: 'center', width: '50%' }}>
-                    <CenterlessNebulaCanvas width={width * 0.45} pointMultiplier={0.1} />
-                </div>
-            </>}
-            <div style={{ display: 'flex', height: width > ScreenWidths.Mobile ? '70vh' : '20vh', alignItems: 'center', width: '80vh' }} ref={container}>
+        <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+            <div style={{ display: 'flex', height: '50vh', alignItems: 'center', maxWidth: 750 }} ref={container}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
                     <div ref={middleText} style={{ position: 'relative' }}>
                         <GlassText
                             size="gigantic"
                             style={{ lineHeight: '1em', fontWeight: 'bold' }}
-                            color="primaryLight"
-                        >Next day delivery</GlassText>
+                            color="primary"
+                        >Proxify</GlassText>
                     </div>
                     <div ref={bottomText}>
                         <GlassText
                             size="big"
                             style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}
-                            color="primaryLight"
-                        >Why pay extra for instant access? 12 hour file retrievals allow our recurring prices to be up to <b>78% less</b>.</GlassText>
+                            color="primary"
+                        >We automatically transcode uploaded .mov files so you dont have to</GlassText>
                     </div>
                     <div style={{ padding: '0.5em' }} />
-                    {width <= ScreenWidths.Mobile && <div>
-                        <div style={{ padding: '0.5em' }} />
-                        <CenterlessNebulaCanvas width={Math.min(width * 0.95 - 70, 600)} pointMultiplier={0.5} />
-                    </div>}
+                    {width <= ScreenWidths.Tablet && <>
+                        <Previews />
+                    </>}
                 </GlassSpace>
             </div>
+            {width > ScreenWidths.Tablet && <div style={{ display: 'flex', height: '70vh', alignItems: 'center', maxWidth: 550 }}>
+                <Previews />
+            </div>}
         </div>
-        {width < ScreenWidths.Mobile && <div style={{ height: '40vh' }} />}
     </>
 }
 
-export default NextDayDelivery
+export default Proxify
