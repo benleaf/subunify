@@ -32,7 +32,7 @@ const HyperSpeedUpload = () => {
 
     const displayableFiles = (progress: number) => {
         const offsets = [70, 65, 60, 50, 45, 35, 30, 20, 15, 10, 0];
-        const pullBack = width > ScreenWidths.Mobile ? 50 : 100;
+        const pullBack = width > ScreenWidths.Tablet ? 20 : 50;
         return offsets.map(offset => ({
             chunks: 100,
             uploadedChucks: Math.min(100, 2 * (progress - pullBack) + offset),
@@ -89,7 +89,7 @@ const HyperSpeedUpload = () => {
                     <div style={{ position: 'relative' }}>
                         <GlassText
                             size="gigantic"
-                            style={{ lineHeight: '1em', fontWeight: 'bold' }}
+                            style={{ lineHeight: '1em', fontWeight: 500 }}
                             color="primary"
                         >Faster.</GlassText>
                     </div>

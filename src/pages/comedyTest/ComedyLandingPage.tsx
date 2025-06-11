@@ -17,6 +17,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import HyperSpeedUpload from "@/components/promo/HyperSpeedUpload";
 import Proxify from "@/components/promo/Proxify";
 import { useSize } from "@/hooks/useSize";
+import FileAndForget from "@/components/promo/FileAndForget";
+import { CssSizes } from "@/constants/CssSizes";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,14 +49,16 @@ const ComedyLandingPage = () => {
                 </Button>
             </Stack>
         </div>
-        <div style={{ height: '10vh' }} />
+        <div style={{ height: '5vh' }} />
         <OpeningSplash />
-        <div style={{ height: '20vh' }} />
+        <div style={{ height: CssSizes.big }} />
         <StorageMadeSimple />
-        {width <= ScreenWidths.Tablet && <div style={{ height: '70vh' }} />}
+        {width <= ScreenWidths.Tablet && <div style={{ height: '50vh' }} />}
         <HyperSpeedUpload />
-        {width <= ScreenWidths.Tablet && <div style={{ height: '70vh' }} />}
+        {width <= ScreenWidths.Tablet && <div style={{ height: '50vh' }} />}
         <Proxify />
+        {width <= ScreenWidths.Tablet && <div style={{ height: '50vh' }} />}
+        <FileAndForget />
         <div style={{ height: '10vh' }} />
         {/*<PricingCarousel />
         <div style={{ height: '10vh' }} />

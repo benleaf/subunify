@@ -5,8 +5,10 @@ import { useSize } from "@/hooks/useSize"
 import { useRef, useLayoutEffect, RefObject, useEffect, useMemo, useState } from "react"
 import { gsap } from 'gsap';
 import FileViewer from "../widgets/FileViewer"
-import { Stack } from "@mui/material"
+import { ButtonBase, Chip, Stack } from "@mui/material"
 import { B, C, D, E, H } from '@/images/stock'
+import { CssSizes } from "@/constants/CssSizes"
+import { Download } from "@mui/icons-material"
 
 export function useOnScreen(ref: RefObject<HTMLElement>) {
     const [isIntersecting, setIntersecting] = useState(false)
@@ -68,12 +70,12 @@ const Proxify = () => {
 
     return <>
         <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-            <div style={{ display: 'flex', height: '50vh', alignItems: 'center', maxWidth: 750 }} ref={container}>
+            <div style={{ display: 'flex', alignItems: 'center', maxWidth: 750 }} ref={container}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
                     <div ref={middleText} style={{ position: 'relative' }}>
                         <GlassText
                             size="gigantic"
-                            style={{ lineHeight: '1em', fontWeight: 'bold' }}
+                            style={{ lineHeight: '1em', fontWeight: 500 }}
                             color="primary"
                         >Proxify</GlassText>
                     </div>
@@ -85,6 +87,20 @@ const Proxify = () => {
                         >We automatically transcode uploaded .mov files so you dont have to</GlassText>
                     </div>
                     <div style={{ padding: '0.5em' }} />
+                    <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
+                        <ButtonBase>
+                            <Chip icon={<Download color="primary" />} label='RAW' />
+                        </ButtonBase>
+                        <ButtonBase>
+                            <Chip icon={<Download color="primary" />} label='High' />
+                        </ButtonBase>
+                        <ButtonBase>
+                            <Chip icon={<Download color="primary" />} label='Medium' />
+                        </ButtonBase>
+                        <ButtonBase>
+                            <Chip icon={<Download color="primary" />} label='Low' />
+                        </ButtonBase>
+                    </div>
                     {width <= ScreenWidths.Tablet && <>
                         <Previews />
                     </>}

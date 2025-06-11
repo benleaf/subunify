@@ -1,6 +1,6 @@
 import { getFileSize } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { Download, PlayArrow } from "@mui/icons-material"
+import { Download, PlayArrow, Refresh } from "@mui/icons-material"
 import { Stack, ButtonBase, Chip, Divider, Badge } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
@@ -16,6 +16,7 @@ import { ScreenWidths } from "@/constants/ScreenWidths"
 import { Time } from "@/helpers/Time"
 import { Colours } from "@/constants/Colours"
 import { getExtension } from "@/helpers/FileProperties"
+import moment from "moment"
 
 type Props = {
     thumbnail?: string,
@@ -38,7 +39,27 @@ const DownloadPanel = ({ file }: { file: StoredFile }) => {
         window.open(url, '_self');
     }
 
-    return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
+    if (file.location === 'DEEP' && file.available && moment(file.available).isBefore(moment()) && moment(file.available).add(48, 'hours').isAfter(moment())) {
+        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
+            <ButtonBase onClick={() => download(file, 'RAW')}>
+                <Chip icon={<Download color="primary" />} label={`AVAILABLE FOR ${moment(file.available).add(48, 'hours').diff(moment(), 'hours')} HOUR(S)`} />
+            </ButtonBase>
+        </div>
+    } else if (file.location === 'DEEP' && moment(file.available).isAfter(moment())) {
+        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
+            <ButtonBase onClick={() => download(file, 'RAW')}>
+                <Chip icon={<Refresh color="primary" />} label={`AVAILABLE IN ${moment(file.available).diff(moment(), 'hours')} HOUR(S)`} />
+            </ButtonBase>
+        </div>
+    } else if (file.location === 'DEEP') {
+        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
+            <ButtonBase onClick={() => download(file, 'RAW')}>
+                <Chip icon={<Refresh color="primary" />} label='RESTORE (12h)' />
+            </ButtonBase>
+        </div>
+    }
+
+    return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
         <ButtonBase onClick={() => download(file, 'RAW')}>
             <Chip icon={<Download color="primary" />} label='RAW' />
         </ButtonBase>
@@ -66,6 +87,10 @@ const FileViewer = ({ thumbnail, file }: Props) => {
         if (!isError(response)) setPreview(response.url)
     }
 
+    const archiveMessage = moment(file.created).add(30, 'days').isAfter(moment()) ?
+        `Archive in ${moment.duration(moment().diff(moment(file.created).add(30, 'days'))).humanize()}` :
+        'Archived'
+
     return <>
         {width > ScreenWidths.Mobile && <>
             <ColorGlassCard width='100%' paddingSize="tiny" flex={1}>
@@ -90,6 +115,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                         <div>
                             <GlassText size="small">File Created</GlassText>
                             <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
+                            <GlassText size="small" color="primary">{archiveMessage}</GlassText>
                         </div>
                         <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                         <div>
@@ -125,6 +151,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                 <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
                 <GlassText size="moderate">{getFileSize(file.bytes)}</GlassText>
             </div>
+            <GlassText size="small" color="primary">{archiveMessage}</GlassText>
             <GlassSpace size="tiny" style={{ width: '100%', paddingTop: CssSizes.hairpin, overflow: 'hidden' }}>
                 <DownloadPanel file={file} />
             </GlassSpace>

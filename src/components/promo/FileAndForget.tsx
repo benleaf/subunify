@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import FileViewer from "../widgets/FileViewer"
 import { Stack } from "@mui/material"
 import { B, C, D, E, H } from '@/images/stock'
+import moment from "moment"
 
 export function useOnScreen(ref: RefObject<HTMLElement>) {
     const [isIntersecting, setIntersecting] = useState(false)
@@ -25,24 +26,24 @@ export function useOnScreen(ref: RefObject<HTMLElement>) {
 }
 
 const Previews = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={H} />
-    <FileViewer file={{ bytes: 9000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C002_000001.mov', previewUrl: '' }} thumbnail={B} />
-    <FileViewer file={{ bytes: 8900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C003_000001.mov', previewUrl: '' }} thumbnail={C} />
-    <FileViewer file={{ bytes: 5900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C004_000001.mov', previewUrl: '' }} thumbnail={D} />
-    <FileViewer file={{ bytes: 7900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C005_000001.mov', previewUrl: '' }} thumbnail={E} />
+    <FileViewer file={{ bytes: 10000000000, created: moment().subtract(4, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'INSTANT', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={H} />
+    <FileViewer file={{ bytes: 5900000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C004_000001.mov', previewUrl: '' }} thumbnail={D} />
+    <FileViewer file={{ bytes: 8900000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C003_000001.mov', previewUrl: '', available: moment().add(6, 'hours').toDate() }} thumbnail={C} />
+    <FileViewer file={{ bytes: 9000000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C002_000001.mov', previewUrl: '', available: moment().subtract(24, 'hours').toDate() }} thumbnail={B} />
+    <FileViewer file={{ bytes: 7900000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C005_000001.mov', previewUrl: '' }} thumbnail={E} />
 </Stack>
 
 const PreviewsMedium = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={H} />
-    <FileViewer file={{ bytes: 9000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C002_000001.mov', previewUrl: '' }} thumbnail={B} />
-    <FileViewer file={{ bytes: 8900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C003_000001.mov', previewUrl: '' }} thumbnail={C} />
+    <FileViewer file={{ bytes: 9000000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C002_000001.mov', previewUrl: '' }} thumbnail={B} />
+    <FileViewer file={{ bytes: 8900000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C003_000001.mov', previewUrl: '', available: moment().add(6, 'hours').toDate() }} thumbnail={C} />
+    <FileViewer file={{ bytes: 9000000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C002_000001.mov', previewUrl: '', available: moment().subtract(24, 'hours').toDate() }} thumbnail={C} />
 </Stack>
 
 const PreviewsSmall = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={H} />
+    <FileViewer file={{ bytes: 10000000000, created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={C} />
 </Stack>
 
-const StorageMadeSimple = () => {
+const FileAndForget = () => {
     const { width } = useSize()
 
     const container = useRef<HTMLDivElement>(null);
@@ -72,6 +73,9 @@ const StorageMadeSimple = () => {
 
     return <>
         <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+            {width > ScreenWidths.Tablet && <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Previews />
+            </div>}
             <div style={{ display: 'flex', alignItems: 'center', maxWidth: 750 }} ref={container}>
                 <GlassSpace size='moderate' style={{ flex: 1 }}>
                     <div ref={middleText} style={{ position: 'relative' }}>
@@ -79,14 +83,14 @@ const StorageMadeSimple = () => {
                             size="gigantic"
                             style={{ lineHeight: '1em', fontWeight: 500 }}
                             color="primary"
-                        >Discover Simplicity</GlassText>
+                        >File And Forget</GlassText>
                     </div>
                     <div ref={bottomText}>
                         <GlassText
                             size="big"
                             style={{ letterSpacing: '0.15em', fontWeight: 'lighter' }}
                             color="primary"
-                        >Say goodbye to cabinets of drives. Say hello to storage made simple</GlassText>
+                        >Save big with automatic file archiving cutting costs by <b>upto 90%</b></GlassText>
                     </div>
                     <div style={{ padding: '0.5em' }} />
                     {width <= ScreenWidths.Tablet && <>
@@ -95,11 +99,8 @@ const StorageMadeSimple = () => {
                     </>}
                 </GlassSpace>
             </div>
-            {width > ScreenWidths.Tablet && <div style={{ display: 'flex', height: '70vh', alignItems: 'center' }}>
-                <Previews />
-            </div>}
         </div>
     </>
 }
 
-export default StorageMadeSimple
+export default FileAndForget
