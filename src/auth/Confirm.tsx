@@ -4,7 +4,6 @@ import GlassText from "@/components/glassmorphism/GlassText";
 import { confirmRegistration } from './AuthService'
 import { Credentials } from "@/types/Credentials";
 import { useAuth } from "../contexts/AuthContext";
-import { StateMachineDispatch } from "@/App";
 
 type Props = {
     credentials?: Credentials
@@ -12,23 +11,22 @@ type Props = {
 }
 
 const Confirm = ({ credentials, onLogin }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
-    const { login } = useAuth()
+    const { login, setLoading, setAlert } = useAuth()
     const [code, setCode] = useState("");
     const [message, setMessage] = useState("");
 
     const handleConformation = async () => {
         if (!credentials) return
         try {
-            dispatch({ action: 'loading', data: true })
+            setLoading(true)
             await confirmRegistration(credentials.email, code);
             await login(credentials.email, credentials.password)
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })
+            setLoading(false)
+            setAlert('Login Successful', 'success')
             onLogin && onLogin()
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Conformation failed' } })
+            setAlert('Conformation failed', 'error')
+            setLoading(false)
             setMessage(err.message || "Login failed.");
         }
     };

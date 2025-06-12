@@ -1,6 +1,4 @@
 import { useContext, useState } from "react";
-import { StateMachineDispatch } from "@/App";
-import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button, Divider, Stack, TextField } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
@@ -11,13 +9,12 @@ import { CssSizes } from "@/constants/CssSizes";
 import { useNavigate } from "react-router";
 
 const UserAccount = () => {
-    const { dispatch } = useContext(StateMachineDispatch)!
     const navigate = useNavigate()
-    const { user, logout, authAction } = useAuth()
+    const { user, logout, authAction, setAlert } = useAuth()
     const [endSubscriptionModal, setEndSubscriptionModal] = useState(false)
     const [conformationMessage, setConformationMessage] = useState('')
     const handleLogout = () => {
-        dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout successful' } })
+        setAlert('Logout successful', 'success')
         logout()
         navigate('/')
     }
@@ -28,11 +25,11 @@ const UserAccount = () => {
             return
         }
         if (isError(sessionResult)) {
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to end subscription, please contact support' } })
+            setAlert('Unable to end subscription, please contact support', 'error')
             setEndSubscriptionModal(false)
             return
         }
-        dispatch({ action: 'popup', data: { colour: 'success', message: 'Subscription ended successful, all files deleted' } })
+        setAlert('Subscription ended successfully, all files deleted', 'success')
         setEndSubscriptionModal(false)
     }
 

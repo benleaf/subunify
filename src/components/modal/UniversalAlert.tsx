@@ -1,24 +1,22 @@
-import { StateMachineDispatch } from "@/App"
-import { Snackbar, Alert } from "@mui/material"
-import { useContext } from "react"
+import { Snackbar, Alert, AlertColor } from "@mui/material"
 
-const UniversalAlert = () => {
-    const { dispatch, state } = useContext(StateMachineDispatch)!
+type Props = {
+    message?: string
+    severity?: AlertColor,
+    close?: () => void
+}
 
-    const close = () => {
-        dispatch({ action: 'popup' })
-    }
-
+const UniversalAlert = ({ message, close, severity }: Props) => {
     return <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={!!state.data.popup}
+        open={!!message}
         autoHideDuration={4000}
         onClose={close}
     >
         <Alert
-            severity={state.data.popup?.colour}
+            severity={severity}
             onClose={close}
-        >{state.data.popup?.message}</Alert>
+        >{message}</Alert>
     </Snackbar>
 }
 

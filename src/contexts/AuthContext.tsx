@@ -4,10 +4,11 @@ import { apiAction, rawApiAction } from "@/api/apiAction";
 import { RequestMethod } from "@/types/server/RequestMethod";
 import { isError } from "@/api/isError";
 import { ApiError } from "@/types/server/ApiError";
-import { StateMachineDispatch } from "@/App";
 import { CognitoUser, CognitoUserSession } from "amazon-cognito-identity-js";
 import { User } from "@/types/User";
 import { useUpload } from "./UploadContext";
+import { AlertColor, Backdrop, CircularProgress } from "@mui/material";
+import UniversalAlert from "@/components/modal/UniversalAlert";
 
 interface AuthContextType {
     user: Partial<User>
@@ -17,6 +18,8 @@ interface AuthContextType {
     logout: () => void
     authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
     rawAuthAction: (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => Promise<Partial<ApiError> | Response>
+    setAlert: (message: string, colour?: AlertColor) => void
+    setLoading: (isLoading: boolean) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -28,7 +31,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [subscribed, setSubscribed] = useState<any>(true);
     const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
     const [user, setUser] = useState<Partial<User>>({})
-    const { dispatch } = useContext(StateMachineDispatch)!
+    const [alertState, setAlertState] = useState<{ message?: string, severity?: AlertColor }>({})
+    const [loading, setLoading] = useState(false);
 
     const updateUser = (currentUser: CognitoUser) => {
         currentUser.getUserAttributes(async (error, result) => {
@@ -92,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         UserPool.getCurrentUser()?.signOut()
         setSessionUser(null);
         setUser({})
-        popup && dispatch({ action: 'popup', data: { colour: 'success', message: 'Logout Successful' } })
+        setAlert('Logout Successful', 'success')
     };
 
     const authAction = async <T,>(endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => {
@@ -119,10 +123,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleAction = <T,>(result: T) => {
         if (isError(result) && result.error == 'Unauthorized') {
             logout(false);
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please login to use this page' } })
+            setAlert('lease login to use this page', 'info')
         } else if (isError(result) && result.error == 'UserNotSubscribed') {
             setSubscribed(false)
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'Subscription needed' } })
+            setAlert('Subscription needed', 'info')
         }
 
         setSubscribed(true)
@@ -130,9 +134,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return result;
     }
 
+    const setAlert = (message: string, colour: AlertColor = 'info') => {
+        setAlertState({ message, severity: colour })
+        new Promise(resolve => setTimeout(resolve, 1000)).then(() => {
+            setAlertState({ message: '', severity: undefined })
+        })
+    };
+
     uploadManager.addCallbacks({ authAction })
 
-    return <AuthContext.Provider value={{ user, setUserAttributes, login, logout, authAction, rawAuthAction, subscribed }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, setUserAttributes, login, logout, authAction, rawAuthAction, subscribed, setAlert, setLoading }}>
+        {children}
+
+        <Backdrop
+            sx={{ color: '#fff', zIndex: Number.MAX_SAFE_INTEGER }}
+            open={loading}
+        >
+            <CircularProgress color="inherit" />
+        </Backdrop>
+        <UniversalAlert
+            severity={alertState.severity}
+            message={alertState.message}
+            close={() => setAlertState({ message: '', severity: undefined })}
+        />
+    </AuthContext.Provider>;
 };
 
 export const useAuth = () => {

@@ -4,14 +4,14 @@ import { VisibilityOff, Visibility } from "@mui/icons-material";
 import React from "react";
 import { cognitoSignUp } from "./AuthService";
 import { Credentials } from "@/types/Credentials";
-import { StateMachineDispatch } from "@/App";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Props = {
     goToConformation: (credentials: Credentials) => void
 }
 
 const Signup = ({ goToConformation }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
+    const { setAlert, setLoading } = useAuth()
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -28,14 +28,14 @@ const Signup = ({ goToConformation }: Props) => {
 
     const handleSignup = async () => {
         try {
-            dispatch({ action: 'loading', data: true })
+            setLoading(true)
             await cognitoSignUp(email, password);
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'Account conformation required' } })
+            setLoading(false)
+            setAlert('Account conformation required', 'info')
             goToConformation({ email, password })
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to create account' } })
+            setLoading(false)
+            setAlert('Unable to create account', 'error')
             setMessage(err.message)
         }
     };

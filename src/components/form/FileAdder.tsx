@@ -1,9 +1,9 @@
-import { StateMachineDispatch } from "@/App";
+import { useAuth } from "@/contexts/AuthContext";
 import { getTagsFromFile, getFileExtension } from "@/helpers/FileProperties";
 import { getFileSize, terabytesToBytes } from "@/helpers/FileSize";
 import { TaggedFile } from "@/pages/FileUpload";
 import { Button } from "@mui/material";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { useDropzone, FileError } from "react-dropzone";
 
 type Props = {
@@ -19,7 +19,7 @@ const BLOCKED_EXTENSIONS = [
 ]
 
 const FileAdder = ({ totalBytesUploaded, availableTBs, setTaggedFiles }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
+    const { setAlert } = useAuth()
 
     const removeDuplicates = (files: TaggedFile[], availableTBs: number) => {
         const duplicatesRemoved = files.reduce((unique: TaggedFile[], o) => {
@@ -33,18 +33,12 @@ const FileAdder = ({ totalBytesUploaded, availableTBs, setTaggedFiles }: Props) 
         console.log(getFileSize(totalBytesUploaded + totalBytes), availableTBs)
         if (totalBytesUploaded + totalBytes > terabytesToBytes(availableTBs)) {
             const missing = getFileSize((totalBytesUploaded + totalBytes) - terabytesToBytes(availableTBs))
-            dispatch({
-                action: 'popup',
-                data: { colour: 'info', message: `Please add more storage to this project, missing: ${missing}` }
-            })
+            setAlert(`Please add more storage to this project, missing: ${missing}`, 'info')
             return []
         }
 
         if (duplicatesRemoved.length !== files.length) {
-            dispatch({
-                action: 'popup',
-                data: { colour: 'info', message: 'Duplicate files detected and removed, file names must be unique' }
-            })
+            setAlert('Duplicate files detected and removed, file names must be unique', 'info')
         }
 
         return duplicatesRemoved
@@ -68,7 +62,7 @@ const FileAdder = ({ totalBytesUploaded, availableTBs, setTaggedFiles }: Props) 
             const ext = getFileExtension(file)
             if (BLOCKED_EXTENSIONS.includes(ext)) {
                 const message = `Files of the following types are not allowed: ${BLOCKED_EXTENSIONS.join(', ')}`
-                dispatch({ action: 'popup', data: { colour: 'info', message } })
+                setAlert(message, 'info')
                 return { message, code: 'FileTypeNotAllowed' } as FileError
             }
             return null

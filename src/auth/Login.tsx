@@ -1,12 +1,10 @@
-import { useContext, useState } from "react";
-import { Button, Typography, FormControl, IconButton, Input, InputAdornment, InputLabel, TextField } from "@mui/material";
+import { useState } from "react";
+import { Button, Typography, FormControl, IconButton, InputAdornment, TextField } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import React from "react";
-import GlassText from "@/components/glassmorphism/GlassText";
 import { Credentials } from "@/types/Credentials";
 import { cognitoResendConfirm } from "./AuthService";
-import { StateMachineDispatch } from "@/App";
 
 
 type Props = {
@@ -15,7 +13,7 @@ type Props = {
 }
 
 const Login = ({ goToConformation, onLogin }: Props) => {
-    const { dispatch } = useContext(StateMachineDispatch)!
+    const { setAlert, setLoading } = useAuth()
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -26,33 +24,33 @@ const Login = ({ goToConformation, onLogin }: Props) => {
 
     const handleAccountConfirmation = async () => {
         try {
-            dispatch({ action: 'loading', data: true })
+            setLoading(true)
             await cognitoResendConfirm(email)
-            dispatch({ action: 'loading', data: false })
+            setLoading(false)
             goToConformation({ email, password })
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Conformation Successful' } })
+            setAlert('Conformation Successful', 'success')
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to confirm account' } })
+            setLoading(false)
+            setAlert('Unable to confirm account', 'error')
             setMessage(err.message || "Login failed.");
         }
     };
 
     const handleLogin = async () => {
         try {
-            dispatch({ action: 'loading', data: true })
+            setLoading(true)
             await login(email, password);
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })
+            setLoading(false)
+            setAlert('Login Successful', 'success')
             onLogin && onLogin()
         } catch (err: any) {
             if (err.code == "UserNotConfirmedException") {
                 handleAccountConfirmation()
-                dispatch({ action: 'popup', data: { colour: 'info', message: 'Account confirmation required' } })
+                setAlert('Account confirmation required', 'info')
             } else {
                 console.error(err)
-                dispatch({ action: 'loading', data: false })
-                dispatch({ action: 'popup', data: { colour: 'error', message: 'Unable to login' } })
+                setLoading(false)
+                setAlert('Unable to login', 'error')
                 setMessage(err.message || "Login failed.");
             }
         }

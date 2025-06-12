@@ -2,9 +2,9 @@ import { useContext, useState } from "react";
 import { Button, Typography, FormControl, Input, InputLabel, IconButton, InputAdornment } from "@mui/material";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { cognitoConfirmSignUp, cognitoForgotPassword } from './AuthService'
-import { StateMachineDispatch } from "@/App";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { useAuth } from "../contexts/AuthContext";
+import { set } from "lodash";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState<string>();
@@ -15,56 +15,55 @@ const ForgotPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const { dispatch } = useContext(StateMachineDispatch)!
     const [message, setMessage] = useState("");
 
-    const { login } = useAuth();
+    const { login, setAlert, setLoading } = useAuth();
 
     const resetPassword = async () => {
         if (!email) {
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide an email' } })
+            setAlert('Please provide an email', 'info')
             return
         }
         try {
-            dispatch({ action: 'loading', data: true })
+            setLoading(true)
             await cognitoForgotPassword(email);
             setPasswordReset(true)
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Sending email' } })
+            setLoading(false)
+            setAlert('Sending email', 'success')
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Conformation failed' } })
+            setLoading(false)
+            setAlert('Conformation failed', 'error')
             setMessage(err.message || "Login failed.");
         }
     }
 
     const confirmSignUp = async () => {
         if (!password) {
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide an email' } })
+            setAlert('Please provide a password', 'info')
             return
         }
         if (!code) {
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide the verification code' } })
+            setAlert('Please provide the verification code', 'info')
             return
         }
         if (!email) {
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'Please provide an email' } })
+            setAlert('Please provide an email', 'info')
             return
         }
         if (password != confirmPassword) {
-            dispatch({ action: 'popup', data: { colour: 'info', message: 'The passwords entered do not match' } })
+            setAlert('The passwords entered do not match', 'error')
             return
         }
 
         try {
-            dispatch({ action: 'loading', data: true })
+            setLoading(true)
             await cognitoConfirmSignUp(email, password, code);
             await login(email, password);
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'success', message: 'Login Successful' } })
+            setLoading(false)
+            setAlert('Login Successful', 'success')
         } catch (err: any) {
-            dispatch({ action: 'loading', data: false })
-            dispatch({ action: 'popup', data: { colour: 'error', message: 'Conformation failed' } })
+            setLoading(false)
+            setAlert('Conformation failed', 'error')
             setMessage(err.message || "Login failed.");
         }
     }
