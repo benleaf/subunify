@@ -37,7 +37,6 @@ export type ProjectPreviewResult = {
 
 export type Project = {
     name: string,
-    codeName: string,
     description: string,
     id: string,
     projectType: 'large' | 'pro' | 'enterprise'

@@ -1,0 +1,1 @@
+export const TranscodedFiles = ['mov', 'mp4']

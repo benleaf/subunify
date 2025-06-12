@@ -8,11 +8,9 @@ type Props = {
 }
 
 const AuthWrapper = ({ children }: Props) => {
-    const { user, subscribed } = useAuth()
+    const { user } = useAuth()
     if (!user.email_verified) {
         return <AuthModal overrideState={true} hideButton />
-    } else if (!subscribed) {
-        return <PaymentModal state={'open'} />
     } else {
         return <div>{children}</div>
     }

@@ -44,7 +44,6 @@ const Cluster = () => {
             .reduce((acc, cur) => acc + cur)
 
     const totalProgress = (totalUploaded / totalSize) * 100
-    const duration = moment.duration(moment().diff(startTime))
 
     const addUploaded = (uploaded: number) => {
         if (startTime === undefined) setStartTime(moment())
@@ -52,6 +51,7 @@ const Cluster = () => {
         setTotalUploaded(old => old + uploaded)
         const newUploaded = totalUploaded + uploaded
 
+        const duration = moment.duration(moment().diff(startTime))
         const secondsElapsed = duration.asSeconds()
         const bitsPerSecond = newUploaded / secondsElapsed
         setMbps((bitsPerSecond) / 1024 / 1024)

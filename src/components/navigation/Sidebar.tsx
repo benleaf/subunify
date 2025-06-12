@@ -5,8 +5,10 @@ import GlassText from "../glassmorphism/GlassText"
 import { ComponentSizes } from "@/constants/ComponentSizes"
 import { CssSizes } from "@/constants/CssSizes"
 import { useDashboard } from "@/contexts/DashboardContext"
+import { useAuth } from "@/contexts/AuthContext"
 
 const Sidebar = () => {
+    const { setAlert } = useAuth()
     const { updateProperties, properties } = useDashboard()
     const { height } = useSize()
 
@@ -54,7 +56,7 @@ const Sidebar = () => {
             <GlassText size="moderate">Overview</GlassText>
             <List dense>
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => setAlert('This area is coming soon! Contact us at product@subunify.com', 'info')}>
                         <ListItemIcon>
                             <BarChart />
                         </ListItemIcon>
@@ -62,7 +64,7 @@ const Sidebar = () => {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => setAlert('This area is coming soon! Contact us at product@subunify.com', 'info')}>
                         <ListItemIcon>
                             <Payment />
                         </ListItemIcon>
@@ -70,7 +72,7 @@ const Sidebar = () => {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => setAlert('This area is coming soon! Contact us at product@subunify.com', 'info')}>
                         <ListItemIcon>
                             <Settings />
                         </ListItemIcon>

@@ -9,13 +9,17 @@ import GlassText from "@/components/glassmorphism/GlassText";
 import { CssSizes } from "@/constants/CssSizes";
 import { useAuth } from "../contexts/AuthContext";
 
-const AuthArea = () => {
+type Props = {
+    defaultPage?: 'login' | 'signup' | 'confirm' | 'forgotPassword' | 'alreadyLoggedIn';
+}
+
+const AuthArea = ({ defaultPage = 'signup' }: Props) => {
     const { user, logout } = useAuth()
     const [credentials, setCredentials] = useState<Credentials>()
-    const [authPage, setAuthPage] = useState<'login' | 'signup' | 'confirm' | 'forgotPassword' | 'alreadyLoggedIn'>('signup')
+    const [authPage, setAuthPage] = useState<'login' | 'signup' | 'confirm' | 'forgotPassword' | 'alreadyLoggedIn'>(defaultPage)
 
     useEffect(() => {
-        setAuthPage(user.email_verified ? 'alreadyLoggedIn' : 'signup')
+        setAuthPage(user.email_verified ? 'alreadyLoggedIn' : defaultPage)
     }, [user])
 
 

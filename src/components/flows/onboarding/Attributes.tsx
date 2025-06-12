@@ -47,7 +47,7 @@ const Attributes = () => {
                 /> */}
                 <GlassCard marginSize="moderate" paddingSize="moderate" flex={1}>
                     <Stack direction="row" spacing={2}>
-                        <ProfileUpload />
+                        {/* <ProfileUpload /> */}
                         <div>
                             <GlassText size="big">{user.firstName} {user.lastName}</GlassText>
                             <GlassText size="moderate">{user.tagLine}</GlassText>

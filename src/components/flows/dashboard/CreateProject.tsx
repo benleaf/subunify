@@ -6,7 +6,7 @@ import { CssSizes } from "@/constants/CssSizes"
 import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { Project } from "@/types/server/ProjectResult"
-import { Alert, Button, Stack } from "@mui/material"
+import { Button, Stack } from "@mui/material"
 import { useState } from "react"
 
 const CreateProject = () => {
@@ -39,13 +39,6 @@ const CreateProject = () => {
                     onChange={(name) => setProject(old => ({ ...old, name }))}
                 />
                 <LimitedText
-                    limit={64}
-                    label="Public Code Name"
-                    value={project.codeName}
-                    onChange={(codeName) => setProject(old => ({ ...old, codeName }))}
-                />
-                <Alert>Help collaborators find the project using a public code name</Alert>
-                <LimitedText
                     limit={256}
                     label="Description"
                     value={project.description}
@@ -54,7 +47,7 @@ const CreateProject = () => {
             </Stack>
         </Stack>
         <div style={{ display: 'flex', flexDirection: 'row', marginTop: CssSizes.hairpin, justifyContent: 'end' }}>
-            {project.name && project.codeName && <Button variant="outlined" onClick={createProject}>Create</Button>}
+            {project.name && <Button variant="outlined" onClick={createProject}>Create</Button>}
         </div>
     </div>
 }

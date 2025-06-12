@@ -1,0 +1,1 @@
+export const AudioFiles = ['mp3', 'wav']
