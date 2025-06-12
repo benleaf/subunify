@@ -50,10 +50,11 @@ const CollaboratorsPanel = () => {
                 {selectedProject && <AddCollaborator project={selectedProject} />}
             </div>
             <Stack spacing={1}>
+                {!collaborators.length && <GlassText size="moderate" color="primary">No Project Selected</GlassText>}
                 {collaborators.map(user =>
-                    <ColorGlassCard flex={1} paddingSize="hairpin" onClick={console.log}>
+                    <ColorGlassCard flex={1} paddingSize="hairpin" onClick={console.log} key={user.id}>
                         <Stack direction='row' spacing={2} alignItems='center'>
-                            <Profile size="massive" textSize="moderate" user={user} />
+                            <Profile size="huge" textSize="moderate" user={user} />
                             <GlassText size="moderate">{user.firstName} {user.lastName}</GlassText>
                         </Stack>
                     </ColorGlassCard>

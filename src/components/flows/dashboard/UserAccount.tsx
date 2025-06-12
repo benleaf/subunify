@@ -47,7 +47,7 @@ const UserAccount = () => {
                 <Divider />
                 <div>
                     <Button onClick={handleLogout}>Logout</Button>
-                    <Button color="error" onClick={() => setEndSubscriptionModal(true)}>End Subscription</Button>
+                    {/* <Button color="error" onClick={() => setEndSubscriptionModal(true)}>End Subscription</Button> */}
                 </div>
             </Stack>
         </GlassSpace>

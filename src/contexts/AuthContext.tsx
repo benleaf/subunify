@@ -136,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const setAlert = (message: string, colour: AlertColor = 'info') => {
         setAlertState({ message, severity: colour })
-        new Promise(resolve => setTimeout(resolve, 1000)).then(() => {
+        new Promise(resolve => setTimeout(resolve, 4000)).then(() => {
             setAlertState({ message: '', severity: undefined })
         })
     };

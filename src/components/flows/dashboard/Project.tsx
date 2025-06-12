@@ -4,12 +4,13 @@ import { useDashboard } from "@/contexts/DashboardContext"
 import { ClusterResult } from "@/types/server/ProjectResult"
 import { Stack, Divider, Button, IconButton } from "@mui/material"
 import Carousel, { ResponsiveType } from "react-multi-carousel"
-import { Add, ArrowCircleLeft, Upload } from "@mui/icons-material"
+import { Add, ArrowCircleLeft, DataSaverOn, TransferWithinAStation, Upload } from "@mui/icons-material"
 import { useEffect } from "react"
 import { getFileSize, terabytesToBytes } from "@/helpers/FileSize"
 import { ClusterManager } from "@/helpers/ClusterManager"
 import { useThumbnail } from "@/contexts/ThumbnailContext"
 import { useUpload } from "@/contexts/UploadContext"
+import GlassIconText from "@/components/glassmorphism/GlassIconText"
 
 const Project = () => {
     const { projectDataStored } = useUpload()
@@ -71,6 +72,34 @@ const Project = () => {
             </div>
         </ColorGlassCard>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {!properties.selectedProject?.availableTBs &&
+                <ColorGlassCard paddingSize="small" onClick={() => updateProperties({ page: 'addStorage' })} width='100%'>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div>
+                            <GlassIconText size="large" icon={<DataSaverOn />}>Add Storage</GlassIconText>
+                            <GlassText size="small">Add storage to allow high speed uploads to this project</GlassText>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                            <GlassText size="small">$117/TB</GlassText>
+                        </div>
+                    </div>
+                </ColorGlassCard>
+            }
+            {(properties.selectedProject?.availableTBs ?? 0) > 0 && !clusters?.length &&
+                <ColorGlassCard paddingSize="small" onClick={() => updateProperties({ page: 'upload' })} width='100%'>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div>
+                            <GlassIconText size="large" icon={<Upload />}>Upload Files To Project</GlassIconText>
+                            <GlassText size="small">Upload files for you and your collaborators.</GlassText>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                            <GlassText size="small">Included</GlassText>
+                        </div>
+                    </div>
+                </ColorGlassCard>
+            }
             {clusters!.map(cluster =>
                 <ColorGlassCard style={{ minWidth: 'max(30%, 300px)' }} paddingSize="small" marginSize="tiny" flex={1}>
                     <div style={{ borderRadius: 15, overflow: 'hidden', backgroundColor: 'black', height: 300 }}>
@@ -106,7 +135,7 @@ const Project = () => {
                     </div>
                 </ColorGlassCard>
             )}
-            <div style={{ flex: 1, minWidth: 'max(30%, 300px)', display: 'flex', height: 300, margin: 20 }} />
+            {clusters?.length > 0 && <div style={{ flex: 1, minWidth: 'max(30%, 300px)', display: 'flex', height: 300, margin: 20 }} />}
         </div>
     </Stack >
 }
