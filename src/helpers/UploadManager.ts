@@ -104,7 +104,6 @@ class UploadManager {
     async loop() {
         while (this.isRunning) {
             this.checkQueues()
-            console.log('ping')
             await new Promise(resolve => setTimeout(resolve, 100));
             if (this.errorEncountered) {
                 await new Promise(resolve => setTimeout(resolve, 1000));

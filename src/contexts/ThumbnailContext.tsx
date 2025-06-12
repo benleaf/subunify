@@ -6,7 +6,7 @@ import { getExtension } from "@/helpers/FileProperties";
 
 interface ThumbnailType {
     retrieveThumbnails: (files: StoredFile[]) => Promise<void>
-    getUrl: (file: StoredFile) => string
+    getUrl: (file: StoredFile) => string | undefined
 }
 
 const PREVIEW_EXTENSIONS = ['mp4', 'mov']
@@ -32,6 +32,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
 
     const getUrl = (file: StoredFile) => {
+        if (!file.created) return
         return thumbnails[file.id]
     }
 

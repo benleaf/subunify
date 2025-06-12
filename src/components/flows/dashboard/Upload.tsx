@@ -20,7 +20,7 @@ const Cluster = () => {
     const { uploadManager, projectDataStored } = useUpload()
     const { properties, updateProperties, loadProject } = useDashboard()
     const [totalUploaded, setTotalUploaded] = useState(0)
-    const [startTime, setStartTime] = useState<Moment>()
+    const [startTime, setStartTime] = useState<Moment>(moment())
     const [eta, setEta] = useState<string>()
     const [mbps, setMbps] = useState<number>()
     const { width } = useSize()
@@ -46,17 +46,21 @@ const Cluster = () => {
     const totalProgress = (totalUploaded / totalSize) * 100
 
     const addUploaded = (uploaded: number) => {
+        console.log("Adding uploaded bytes:", uploaded)
         setTotalUploaded(old => old + uploaded)
         const newUploaded = totalUploaded + uploaded
-        if (newUploaded === 0 || !startTime) return
+
         const now = moment()
         const duration = moment.duration(now.diff(startTime))
         const secondsElapsed = duration.asSeconds()
-        const uploadSpeed = newUploaded / secondsElapsed
+        const uploadSpeed = uploaded / secondsElapsed
+        console.log(newUploaded, secondsElapsed, uploadSpeed, duration)
         setMbps((uploadSpeed * 8) / 1024 / 1024)
+
         const remainingBytes = totalSize - newUploaded
-        const estimatedSecondsLeft = remainingBytes / uploadSpeed
+        const estimatedSecondsLeft = (remainingBytes * 8) / uploadSpeed
         setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
+        setStartTime(moment())
     }
 
     const setTaggedFiles = (taggedFiles: TaggedFile[]) => {
@@ -69,7 +73,6 @@ const Cluster = () => {
         if (uploadManager.isRunning) {
             uploadManager.update(fileRecords)
         } else if (fileRecords.length) {
-            setStartTime(moment())
             console.log("Starting upload manager")
             uploadManager.start(fileRecords)
         }
@@ -122,8 +125,10 @@ const Cluster = () => {
                                         {totalProgress.toFixed(1)}%
                                     </GlassText>
                                 </Stack>
-                                {mbps && <Chip label={`${mbps.toFixed(1)} Mbps`} style={{ marginTop: '1em' }} />}
-                                {eta && <Chip label={`Approximately ${eta} remaining`} style={{ marginTop: '1em' }} />}
+                                {mbps != undefined && <>
+                                    <Chip label={`${mbps.toFixed(1)} Mbps`} style={{ marginTop: '1em' }} />
+                                    <Chip label={`Approximately ${eta} remaining`} style={{ marginTop: '1em' }} />
+                                </>}
                                 {displayableFiles && <Alert severity='info'>
                                     Upload in progress, please do not close the tab or refresh.
                                 </Alert>}
