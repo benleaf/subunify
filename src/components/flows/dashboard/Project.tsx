@@ -11,8 +11,10 @@ import { ClusterManager } from "@/helpers/ClusterManager"
 import { useThumbnail } from "@/contexts/ThumbnailContext"
 import { useUpload } from "@/contexts/UploadContext"
 import GlassIconText from "@/components/glassmorphism/GlassIconText"
+import { useAuth } from "@/contexts/AuthContext"
 
 const Project = () => {
+    const { user } = useAuth()
     const { projectDataStored } = useUpload()
     const { getUrl, retrieveThumbnails } = useThumbnail()
     const { properties, updateProperties, loadProject } = useDashboard()
@@ -22,6 +24,8 @@ const Project = () => {
             items: 1,
         }
     };
+
+    const amOwner = properties.selectedProject?.owner.email === user?.email
 
     const clusters: ClusterResult[] = ClusterManager.getClusters(properties.selectedProject?.files ?? [])
 
@@ -59,8 +63,10 @@ const Project = () => {
                         <GlassText size="small">Collaborators</GlassText>
                     </div>
                     <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                    <Button variant="contained" startIcon={<Add />} onClick={() => updateProperties({ page: 'addStorage' })}>Add Storage</Button>
-                    <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                    {amOwner && <>
+                        <Button variant="contained" startIcon={<Add />} onClick={() => updateProperties({ page: 'addStorage' })}>Add Storage</Button>
+                        <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                    </>}
                     {canUpload && <Button
                         variant="contained"
                         startIcon={<Upload />}
