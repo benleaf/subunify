@@ -20,7 +20,7 @@ const Cluster = () => {
     const { uploadManager, projectDataStored } = useUpload()
     const { properties, updateProperties, loadProject } = useDashboard()
     const [totalUploaded, setTotalUploaded] = useState(0)
-    const [startTime, setStartTime] = useState<Moment>(moment())
+    const [startTime, setStartTime] = useState<Moment>()
     const [eta, setEta] = useState<string>()
     const [mbps, setMbps] = useState<number>()
     const { width } = useSize()
@@ -44,23 +44,21 @@ const Cluster = () => {
             .reduce((acc, cur) => acc + cur)
 
     const totalProgress = (totalUploaded / totalSize) * 100
+    const duration = moment.duration(moment().diff(startTime))
 
     const addUploaded = (uploaded: number) => {
-        console.log("Adding uploaded bytes:", uploaded)
+        if (startTime === undefined) setStartTime(moment())
+
         setTotalUploaded(old => old + uploaded)
         const newUploaded = totalUploaded + uploaded
 
-        const now = moment()
-        const duration = moment.duration(now.diff(startTime))
         const secondsElapsed = duration.asSeconds()
-        const uploadSpeed = uploaded / secondsElapsed
-        console.log(newUploaded, secondsElapsed, uploadSpeed, duration)
-        setMbps((uploadSpeed * 8) / 1024 / 1024)
+        const bitsPerSecond = newUploaded / secondsElapsed
+        setMbps((bitsPerSecond) / 1024 / 1024)
 
-        const remainingBytes = totalSize - newUploaded
-        const estimatedSecondsLeft = (remainingBytes * 8) / uploadSpeed
+        const remainingBits = totalSize - newUploaded
+        const estimatedSecondsLeft = remainingBits / bitsPerSecond
         setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
-        setStartTime(moment())
     }
 
     const setTaggedFiles = (taggedFiles: TaggedFile[]) => {
