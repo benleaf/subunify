@@ -63,7 +63,7 @@ const Cluster = () => {
 
     const setTaggedFiles = (taggedFiles: TaggedFile[]) => {
         const fileRecords: FileRecord[] = taggedFiles.map(file => ({
-            description: 'not set',
+            description: '',
             file: file.file,
             projectId: properties.selectedProjectId!,
         }))

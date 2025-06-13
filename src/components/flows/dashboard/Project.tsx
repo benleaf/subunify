@@ -12,6 +12,9 @@ import { useThumbnail } from "@/contexts/ThumbnailContext"
 import { useUpload } from "@/contexts/UploadContext"
 import GlassIconText from "@/components/glassmorphism/GlassIconText"
 import { useAuth } from "@/contexts/AuthContext"
+import { CssSizes } from "@/constants/CssSizes"
+
+const CAROUSEL_HEIGHT = 300
 
 const Project = () => {
     const { user } = useAuth()
@@ -59,8 +62,8 @@ const Project = () => {
                     </div>
                     <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                     <div>
-                        <GlassText size="large">{properties.selectedProject?.collaborators}</GlassText>
-                        <GlassText size="small">Collaborators</GlassText>
+                        <GlassText size="large">{properties.selectedProject?.availableTBs} TB</GlassText>
+                        <GlassText size="small">Available</GlassText>
                     </div>
                     <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                     {amOwner && <>
@@ -108,22 +111,38 @@ const Project = () => {
             }
             {clusters!.map(cluster =>
                 <ColorGlassCard style={{ minWidth: 'max(30%, 300px)' }} paddingSize="small" marginSize="tiny" flex={1}>
-                    <div style={{ borderRadius: 15, overflow: 'hidden', backgroundColor: 'black', height: 300 }}>
-                        <Carousel
-                            showDots={cluster.fileCount <= 10}
-                            responsive={responsive}
-                            infinite={true}
-                            removeArrowOnDeviceType={["tablet", "mobile"]}
-                        >
-                            {cluster.files.map(file =>
-                                getUrl(file) ?
-                                    <img src={getUrl(file)} loading="lazy" height={330} width='100%' style={{ objectFit: 'cover' }} /> :
-                                    <div style={{ display: 'flex', height: 300, justifyContent: 'center', alignItems: 'center' }}>
-                                        <GlassText size="large" color="white">{file.name}</GlassText>
+                    <div style={{ position: 'absolute', left: 0, top: -5, right: 0, height: CAROUSEL_HEIGHT }}>
+                        <div style={{ overflow: 'hidden', backgroundColor: 'black', height: CAROUSEL_HEIGHT, objectFit: 'contain' }}>
+                            <Carousel
+                                showDots={cluster.fileCount <= 10}
+                                responsive={responsive}
+                                infinite={true}
+                                removeArrowOnDeviceType={["tablet", "mobile"]}
+                            >
+                                {cluster.files.map(file =>
+                                    <div style={{ height: CAROUSEL_HEIGHT, width: '100%' }} key={file.id}>
+                                        <GlassText
+                                            size="moderate"
+                                            color="white"
+                                            style={{ position: 'absolute', top: CssSizes.tiny, left: CssSizes.hairpin, backgroundColor: 'rgba(0, 0, 0, 0.5)', paddingInline: CssSizes.tiny, borderRadius: CssSizes.tiny }}
+                                        >{file.name}</GlassText>
+                                        {getUrl(file) && <img src={getUrl(file)} loading="lazy" height={CAROUSEL_HEIGHT} width='100%' style={{ objectFit: 'cover' }} />}
                                     </div>
-                            )}
-                        </Carousel>
+                                )}
+                                <Stack style={{ height: CAROUSEL_HEIGHT, width: '100%', padding: CssSizes.tiny }} key='preview'>
+                                    {cluster.files.map(file =>
+                                        <GlassText
+                                            size="moderate"
+                                            color="white"
+                                            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', paddingInline: CssSizes.tiny, borderRadius: CssSizes.tiny }}
+                                        >{file.name}</GlassText>
+                                    )}
+                                </Stack>
+                            </Carousel>
+                        </div>
                     </div>
+
+                    <div style={{ height: CAROUSEL_HEIGHT }} />
                     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>

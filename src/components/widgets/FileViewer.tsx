@@ -152,10 +152,10 @@ const FileViewer = ({ thumbnail, file }: Props) => {
             </div>}
             {(isAudio || (transcoded && thumbnail)) && !preview && <ButtonBase
                 onClick={() => showPreview(file)}
-                style={{ position: 'absolute', left: 0, top: -5, right: 0, backgroundColor: Colours.black }}
+                style={{ position: 'absolute', left: 0, top: -5, right: 0, backgroundColor: Colours.black, height: 190 }}
             >
                 <div style={{ position: 'relative', width: '100%' }}>
-                    <img src={thumbnail} width='100%' height={200} style={{ objectFit: 'cover' }} />
+                    <img src={thumbnail} width='100%' height={230} style={{ objectFit: 'cover' }} />
                     {!preview && <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />}
                 </div>
             </ButtonBase >}
