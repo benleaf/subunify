@@ -4,6 +4,7 @@ import GlassCard from "@/components/glassmorphism/GlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
 import { ScreenWidths } from "@/constants/ScreenWidths"
+import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { useUpload } from "@/contexts/UploadContext"
 import { getFileSize } from "@/helpers/FileSize"
@@ -17,9 +18,10 @@ import moment, { Moment } from "moment"
 import { Fragment, useEffect, useState } from "react"
 
 const Cluster = () => {
+    const { setLoading, setAlert } = useAuth()
     const { uploadManager, projectDataStored } = useUpload()
     const { properties, updateProperties, loadProject } = useDashboard()
-    const [totalUploaded, setTotalUploaded] = useState(0)
+    const [totalUploaded, setTotalUploaded] = useState<number>()
     const [startTime, setStartTime] = useState<Moment>()
     const [eta, setEta] = useState<string>()
     const [mbps, setMbps] = useState<number>()
@@ -31,10 +33,22 @@ const Cluster = () => {
     }, [uploadManager])
 
     useEffect(() => {
-        if (uploadManager.isRunning) {
-            uploadManager.setConcurrentUploads(mbps ?? 30)
+        if (uploadManager.isRunning && !totalUploaded) {
+            setLoading(true)
+        } else if (totalUploaded && uploadManager.isRunning) {
+            setLoading(false)
+
+            const secondsElapsed = moment.duration(moment().diff(startTime)).asSeconds()
+            const bitsPerSecond = totalUploaded / Math.max(1, secondsElapsed)
+            const newMbps = ((bitsPerSecond) / 1024) / 1024
+            setMbps(newMbps)
+            uploadManager.setConcurrentUploads(newMbps ?? 1)
+
+            const remainingBits = totalSize - totalUploaded
+            const estimatedSecondsLeft = remainingBits / bitsPerSecond
+            setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
         }
-    }, [mbps])
+    }, [totalUploaded])
 
     const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
 
@@ -43,25 +57,16 @@ const Cluster = () => {
         fileRecords.map(fileRecord => fileRecord.file.size)
             .reduce((acc, cur) => acc + cur)
 
-    const totalProgress = (totalUploaded / totalSize) * 100
+    const totalProgress = ((totalUploaded ?? 0) / totalSize) * 100
 
     const addUploaded = (uploaded: number) => {
-        if (startTime === undefined) setStartTime(moment())
-
-        setTotalUploaded(old => old + uploaded)
-        const newUploaded = totalUploaded + uploaded
-
-        const duration = moment.duration(moment().diff(startTime))
-        const secondsElapsed = duration.asSeconds()
-        const bitsPerSecond = newUploaded / secondsElapsed
-        setMbps((bitsPerSecond) / 1024 / 1024)
-
-        const remainingBits = totalSize - newUploaded
-        const estimatedSecondsLeft = remainingBits / bitsPerSecond
-        setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
+        setTotalUploaded(old => (old ?? 0) + uploaded)
     }
 
     const setTaggedFiles = (taggedFiles: TaggedFile[]) => {
+        if (!startTime) setStartTime(moment())
+        setAlert(`${taggedFiles.length} file${taggedFiles.length == 1 ? '' : 's'} added to upload queue`, 'success')
+
         const fileRecords: FileRecord[] = taggedFiles.map(file => ({
             description: '',
             file: file.file,
@@ -71,7 +76,6 @@ const Cluster = () => {
         if (uploadManager.isRunning) {
             uploadManager.update(fileRecords)
         } else if (fileRecords.length) {
-            console.log("Starting upload manager")
             uploadManager.start(fileRecords)
         }
     }
