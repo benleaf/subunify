@@ -14,13 +14,14 @@ export type ClusterResult = {
 export type StoredFile = {
     id: string,
     name: string,
+    description?: string,
     created: Date,
     modified: Date,
     fileLastModified: Date,
-    previewUrl: string,
     location: 'INSTANT' | 'SHALLOW' | 'DEEP',
     available?: Date,
     bytes: number,
+    proxyState: "NA" | "PROCESSING" | "COMPLETE" | "ARCHIVED"
 }
 
 export type ProjectPreviewResult = {

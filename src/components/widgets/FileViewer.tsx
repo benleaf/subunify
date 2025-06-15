@@ -26,7 +26,6 @@ type Props = {
 }
 
 const DownloadPanel = ({ file }: { file: StoredFile }) => {
-    const transcoded = TranscodedFiles.includes(getExtension(file.name))
     if (file.created == null) return <GlassText size="moderate">Not Uploaded</GlassText>
 
     const { authAction } = useAuth()
@@ -60,11 +59,15 @@ const DownloadPanel = ({ file }: { file: StoredFile }) => {
                 <Chip icon={<Refresh color="primary" />} label='RESTORE (12h)' />
             </ButtonBase>
         </div>
-    } else if (!transcoded) {
+    } else if (file.proxyState == 'NA') {
         return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
             <ButtonBase onClick={() => download(file, 'RAW')}>
                 <Chip icon={<Download color="primary" />} label='Download' />
             </ButtonBase>
+        </div>
+    } else if (file.proxyState != 'COMPLETE') {
+        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
+            <Chip icon={<Download color="primary" />} label='Processing File, Refresh To Update...' />
         </div>
     }
 
@@ -103,6 +106,8 @@ const FileViewer = ({ thumbnail, file }: Props) => {
         `Archive in ${moment.duration(moment().diff(moment(file.created).add(30, 'days'))).humanize()}` :
         'Archived'
 
+    const transcodedMessage = file.proxyState == 'PROCESSING' ? 'LOADING PREVIEW' : ''
+
     return <>
         {width > ScreenWidths.Mobile && <>
             <ColorGlassCard width='100%' paddingSize="tiny" flex={1}>
@@ -132,7 +137,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                         <div>
                             <GlassText size="small">File Created</GlassText>
                             <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
-                            <GlassText size="small" color="primary">{archiveMessage}</GlassText>
+                            <GlassText size="small" color="primary">{archiveMessage}{transcodedMessage}</GlassText>
                         </div>
                         <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                         <div style={{ minWidth: 80 }}>

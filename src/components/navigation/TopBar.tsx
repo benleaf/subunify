@@ -13,6 +13,7 @@ import { MenuTwoTone, Settings } from "@mui/icons-material"
 import { useLocation } from "react-router"
 import { CssSizes } from "@/constants/CssSizes"
 import DashboardTopBarOptions from "./DashboardTopBarOptions"
+import { useDashboard } from "@/contexts/DashboardContext"
 
 type Props = {
     hideDashboardOptions?: boolean
@@ -22,6 +23,7 @@ const TopBar = ({ hideDashboardOptions = false }: Props) => {
     const { pathname } = useLocation()
     const { width } = useSize()
     const { user } = useAuth()
+    const { updateProperties } = useDashboard()
     const [open, setOpen] = useState(false)
 
     const toggleDrawer = (newOpen: boolean) => () => {
@@ -54,7 +56,7 @@ const TopBar = ({ hideDashboardOptions = false }: Props) => {
                         </Drawer>
                     </>
                     }
-                    <ButtonBase href={user?.email_verified ? "/dashboard" : '/'}>
+                    <ButtonBase onClick={() => updateProperties({ page: 'projects' })}>
                         <GlassText size="big">SUBUNIFY</GlassText>
                     </ButtonBase>
                 </Stack>

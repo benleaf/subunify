@@ -25,21 +25,21 @@ export function useOnScreen(ref: RefObject<HTMLElement>) {
 }
 
 const Previews = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={H} />
-    <FileViewer file={{ bytes: 9000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C002_000001.mov', previewUrl: '' }} thumbnail={B} />
-    <FileViewer file={{ bytes: 8900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C003_000001.mov', previewUrl: '' }} thumbnail={C} />
-    <FileViewer file={{ bytes: 5900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C004_000001.mov', previewUrl: '' }} thumbnail={D} />
-    <FileViewer file={{ bytes: 7900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C005_000001.mov', previewUrl: '' }} thumbnail={E} />
+    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', proxyState: 'COMPLETE' }} thumbnail={H} />
+    <FileViewer file={{ bytes: 9000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C002_000001.mov', proxyState: 'COMPLETE' }} thumbnail={B} />
+    <FileViewer file={{ bytes: 8900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C003_000001.mov', proxyState: 'COMPLETE' }} thumbnail={C} />
+    <FileViewer file={{ bytes: 5900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C004_000001.mov', proxyState: 'COMPLETE' }} thumbnail={D} />
+    <FileViewer file={{ bytes: 7900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C005_000001.mov', proxyState: 'COMPLETE' }} thumbnail={E} />
 </Stack>
 
 const PreviewsMedium = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={H} />
-    <FileViewer file={{ bytes: 9000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C002_000001.mov', previewUrl: '' }} thumbnail={B} />
-    <FileViewer file={{ bytes: 8900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C003_000001.mov', previewUrl: '' }} thumbnail={C} />
+    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', proxyState: 'COMPLETE' }} thumbnail={H} />
+    <FileViewer file={{ bytes: 9000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C002_000001.mov', proxyState: 'COMPLETE' }} thumbnail={B} />
+    <FileViewer file={{ bytes: 8900000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C003_000001.mov', proxyState: 'COMPLETE' }} thumbnail={C} />
 </Stack>
 
 const PreviewsSmall = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', previewUrl: '' }} thumbnail={H} />
+    <FileViewer file={{ bytes: 10000000000, created: new Date(), fileLastModified: new Date(), id: 'test', location: 'SHALLOW', modified: new Date(), name: 'A001C001_000001.mov', proxyState: 'COMPLETE' }} thumbnail={H} />
 </Stack>
 
 const StorageMadeSimple = () => {
