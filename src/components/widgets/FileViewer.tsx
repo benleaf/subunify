@@ -99,6 +99,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
     const videoFiles = file.created != null && VideoFiles.includes(extension)
     const transcoded = file.proxyState == 'COMPLETE'
     const isAudio = file.created != null && AudioFiles.includes(extension)
+    const archiveIn = moment.duration(moment(file.created).add(30, 'days').diff(moment())).days()
 
     const showPreview = async (file: StoredFile) => {
         let response
@@ -107,11 +108,15 @@ const FileViewer = ({ thumbnail, file }: Props) => {
         if (response && !isError(response)) setPreview(response.url)
     }
 
-    const archiveMessage = moment(file.created).add(30, 'days').isAfter(moment()) ?
-        `Archive in ${moment.duration(moment().diff(moment(file.created).add(30, 'days'))).humanize()}` :
-        'Archived'
-
-    const transcodedMessage = file.proxyState == 'PROCESSING' ? 'LOADING PREVIEW' : ''
+    const getArchiveMessage = () => {
+        if (!file.created) {
+            return ''
+        } else if (moment(file.created).add(30, 'days').isAfter(moment())) {
+            return `Archive in ${archiveIn} day${archiveIn != 1 ? 's' : ''}`
+        } else {
+            return 'Archived'
+        }
+    }
 
     return <>
         {width > ScreenWidths.Mobile && <>
@@ -142,7 +147,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                         <div>
                             <GlassText size="small">File Created</GlassText>
                             <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
-                            <GlassText size="small" color="primary">{archiveMessage}{transcodedMessage}</GlassText>
+                            <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
                         </div>
                         <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                         <div style={{ minWidth: 80 }}>
@@ -175,7 +180,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                 <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
                 <GlassText size="moderate">{getFileSize(file.bytes)}</GlassText>
             </div>
-            <GlassText size="small" color="primary">{archiveMessage}</GlassText>
+            <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
             <GlassSpace size="tiny" style={{ width: '100%', paddingTop: CssSizes.hairpin, overflow: 'hidden' }}>
                 <DownloadPanel file={file} />
             </GlassSpace>

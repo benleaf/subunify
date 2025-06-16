@@ -1,7 +1,7 @@
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
 import { useDashboard } from "@/contexts/DashboardContext"
-import { ClusterResult } from "@/types/server/ProjectResult"
+import { ClusterResult, StoredFile } from "@/types/server/ProjectResult"
 import { Stack, Divider, Button, IconButton } from "@mui/material"
 import Carousel, { ResponsiveType } from "react-multi-carousel"
 import { Add, ArrowCircleLeft, DataSaverOn, TransferWithinAStation, Upload } from "@mui/icons-material"
@@ -39,6 +39,10 @@ const Project = () => {
     useEffect(() => {
         retrieveThumbnails(properties.selectedProject?.files ?? [])
     }, [properties.selectedProject?.id])
+
+    const getCarosellFiles = (files: StoredFile[]) => {
+        return files.filter(file => file.proxyState == 'COMPLETE')
+    }
 
     const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
     const canUpload = terabytesToBytes(properties.selectedProject?.availableTBs ?? 0) > totalBytesUploaded
@@ -119,7 +123,7 @@ const Project = () => {
                                 infinite={true}
                                 removeArrowOnDeviceType={["tablet", "mobile"]}
                             >
-                                {cluster.files.map(file =>
+                                {getCarosellFiles(cluster.files).map(file =>
                                     <div style={{ height: CAROUSEL_HEIGHT, width: '100%' }} key={file.id}>
                                         <GlassText
                                             size="moderate"
