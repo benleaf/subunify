@@ -60,8 +60,11 @@ class UploadManager {
 
     public async update(fileRecords: FileRecord[]) {
         if (!this.authAction) return
-
-        this.getFileRecordsForUpload(fileRecords)
+        if (this.isRunning) {
+            this.getFileRecordsForUpload(fileRecords)
+        } else {
+            this.start(fileRecords)
+        }
     }
 
     public async setConcurrentUploads(concurrentUploads: number) {
@@ -142,6 +145,19 @@ class UploadManager {
 
     }
 
+    private tryEndUpload() {
+        console.log('end', this.uploadSessions.length, this.stagingQueue.length, this.uploadQueue.length, this.finished.length)
+        const isEverythingEmpty = !this.uploadSessions.length &&
+            !this.stagingQueue.length &&
+            !this.uploadQueue.length &&
+            !this.finished.length
+
+        if (isEverythingEmpty) {
+            this.cancel()
+            this.addUploaded && this.addUploaded(1)
+        }
+    }
+
     private async uploadComplete(fileUploadResult: FileUploadResult, fileRecord: UploadingFileRecord) {
         this.authAction!<{ success: true }>('storage-file/upload/complete', "POST", JSON.stringify(fileUploadResult)).then((result) => {
             if (isError(result)) {
@@ -149,8 +165,9 @@ class UploadManager {
                 console.error(result)
                 this.errorEncountered = true
             } else {
+                console.log('finished', fileRecord.file.name)
                 this.updateDataStored && this.updateDataStored(fileRecord.projectId, fileRecord.file.size)
-                this.addUploaded && this.addUploaded(0)
+                this.tryEndUpload()
             }
         })
     }
@@ -161,7 +178,7 @@ class UploadManager {
             this.uploadQueue = this.uploadQueue.filter(p => p !== uploadObj.url)
             if (fileRecord) {
                 fileRecord.uploadedChucks++
-                if (fileRecord.uploadedChucks == fileRecord.chunks) fileRecord.finished = true
+                if (fileRecord.uploadedChucks >= fileRecord.chunks) fileRecord.finished = true
             }
 
         }).catch(async () => {
@@ -201,7 +218,7 @@ class UploadManager {
             this.uploadChunk(chunk, uploadObj, fileRecord)
         }
 
-        if (this.finished.length > 0 && this.finished[0].parts.length == this.finished[0].totalParts) {
+        if (this.finished.length > 0 && this.finished[0].parts.length >= this.finished[0].totalParts) {
             const fileRecord = this.fileRecords.find(({ file }) => file.name == this.finished[0].fileName)
 
             if (fileRecord && fileRecord?.uploadedChucks == fileRecord?.chunks) {
@@ -211,11 +228,12 @@ class UploadManager {
         }
     }
 
-    private async handlePartUpload(uploadObj: UploadObject, result: Response) {
+    private handlePartUpload(uploadObj: UploadObject, result: Response) {
         const fileName = uploadObj.uploadSession.file.name
         this.addUploaded && this.addUploaded(uploadObj.size)
         const ETag = result.headers.get('ETag')!
         const existing = this.finished.find(f => f.fileName === fileName)
+        console.log(existing, this.stagingQueue.length, this.uploadQueue.length, this.finished.length)
 
         if (existing) {
             existing.parts.push({ ETag, PartNumber: uploadObj.index + 1 })

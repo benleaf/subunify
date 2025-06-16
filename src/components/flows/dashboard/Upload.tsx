@@ -18,7 +18,7 @@ import moment, { Moment } from "moment"
 import { Fragment, useEffect, useState } from "react"
 
 const Cluster = () => {
-    const { setLoading, setAlert } = useAuth()
+    const { setAlert } = useAuth()
     const { uploadManager, projectDataStored } = useUpload()
     const { properties, updateProperties, loadProject } = useDashboard()
     const [totalUploaded, setTotalUploaded] = useState<number>()
@@ -33,11 +33,7 @@ const Cluster = () => {
     }, [uploadManager])
 
     useEffect(() => {
-        if (uploadManager.isRunning && !totalUploaded) {
-            setLoading(true)
-        } else if (totalUploaded && uploadManager.isRunning) {
-            setLoading(false)
-
+        if (totalUploaded && uploadManager.isRunning) {
             const secondsElapsed = moment.duration(moment().diff(startTime)).asSeconds()
             const bitsPerSecond = totalUploaded / Math.max(1, secondsElapsed)
             const newMbps = ((bitsPerSecond) / 1024) / 1024
@@ -47,6 +43,10 @@ const Cluster = () => {
             const remainingBits = totalSize - totalUploaded
             const estimatedSecondsLeft = remainingBits / bitsPerSecond
             setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
+        } else {
+            setTotalUploaded(undefined)
+            setEta(undefined)
+            setMbps(undefined)
         }
     }, [totalUploaded])
 
