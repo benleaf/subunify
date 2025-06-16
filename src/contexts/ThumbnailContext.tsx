@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { isError } from "@/api/isError";
 import { getExtension } from "@/helpers/FileProperties";
-import { TranscodedFiles } from "@/constants/TranscodedFiles";
+import { VideoFiles as VideoFiles } from "@/constants/VideoFiles";
 
 interface ThumbnailType {
     retrieveThumbnails: (files: StoredFile[]) => Promise<void>
@@ -18,7 +18,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const retrieveThumbnails = async (files: StoredFile[]) => {
         const validFiles = files.filter(
-            file => TranscodedFiles.includes(getExtension(file.name).toLocaleLowerCase())
+            file => VideoFiles.includes(getExtension(file.name).toLocaleLowerCase())
         )
 
         validFiles.map(file =>

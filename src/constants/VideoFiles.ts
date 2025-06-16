@@ -1,0 +1,1 @@
+export const VideoFiles = ['mov', 'mp4']

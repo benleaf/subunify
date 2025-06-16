@@ -1,6 +1,6 @@
 import { getFileSize } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { Download, FilePresent, Folder, PlayArrow, Refresh } from "@mui/icons-material"
+import { Download, FilePresent, Folder, Info, PlayArrow, Refresh } from "@mui/icons-material"
 import { Stack, ButtonBase, Chip, Divider, Badge } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
@@ -17,7 +17,7 @@ import { Time } from "@/helpers/Time"
 import { Colours } from "@/constants/Colours"
 import { getExtension } from "@/helpers/FileProperties"
 import moment from "moment"
-import { TranscodedFiles } from "@/constants/TranscodedFiles"
+import { VideoFiles } from "@/constants/VideoFiles"
 import { AudioFiles } from "@/constants/AudioFiles"
 
 type Props = {
@@ -27,6 +27,9 @@ type Props = {
 
 const DownloadPanel = ({ file }: { file: StoredFile }) => {
     if (file.created == null) return <GlassText size="moderate">Not Uploaded</GlassText>
+
+    const extension = getExtension(file.name).toLocaleLowerCase()
+    const videoFile = file.created != null && VideoFiles.includes(extension)
 
     const { authAction } = useAuth()
     const download = async (file: StoredFile, quality: FileQuality) => {
@@ -64,6 +67,7 @@ const DownloadPanel = ({ file }: { file: StoredFile }) => {
             <ButtonBase onClick={() => download(file, 'RAW')}>
                 <Chip icon={<Download color="primary" />} label='Download' />
             </ButtonBase>
+            {videoFile && <Chip icon={<Info color="info" />} label='Quality too low to process' />}
         </div>
     } else if (file.proxyState != 'COMPLETE') {
         return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -92,12 +96,13 @@ const FileViewer = ({ thumbnail, file }: Props) => {
     const { width } = useSize()
     const [preview, setPreview] = useState<string | null>(null)
     const extension = getExtension(file.name).toLocaleLowerCase()
-    const transcoded = file.created != null && TranscodedFiles.includes(extension)
+    const videoFiles = file.created != null && VideoFiles.includes(extension)
+    const transcoded = file.proxyState == 'COMPLETE'
     const isAudio = file.created != null && AudioFiles.includes(extension)
 
     const showPreview = async (file: StoredFile) => {
         let response
-        if (isAudio) response = await authAction<{ url: string }>(`storage-file/download/${file.id}/RAW`, 'GET')
+        if (isAudio || (!transcoded && videoFiles)) response = await authAction<{ url: string }>(`storage-file/download/${file.id}/RAW`, 'GET')
         if (transcoded) response = await authAction<{ url: string }>(`storage-file/download/${file.id}/LOW`, 'GET')
         if (response && !isError(response)) setPreview(response.url)
     }
@@ -112,13 +117,13 @@ const FileViewer = ({ thumbnail, file }: Props) => {
         {width > ScreenWidths.Mobile && <>
             <ColorGlassCard width='100%' paddingSize="tiny" flex={1}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 100 }}>
-                    {(isAudio || (transcoded && thumbnail)) && <>
+                    {(isAudio || (videoFiles && thumbnail)) && <>
                         <ButtonBase
                             onClick={() => showPreview(file)}
                             style={{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: Colours.black }}
                         >
                             <div style={{ position: 'relative', width: 213 }}>
-                                {transcoded && <img src={thumbnail} height={120} style={{ objectFit: 'contain' }} />}
+                                {videoFiles && <img src={thumbnail} height={120} style={{ objectFit: 'contain' }} />}
                             </div>
                             <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />
                         </ButtonBase >
@@ -149,13 +154,13 @@ const FileViewer = ({ thumbnail, file }: Props) => {
             </ColorGlassCard>
         </>}
         {width <= ScreenWidths.Mobile && <ColorGlassCard width='100%' paddingSize="tiny">
-            {transcoded && preview && <div style={{ position: 'absolute', left: 0, top: -5, right: 0 }}>
+            {videoFiles && preview && <div style={{ position: 'absolute', left: 0, top: -5, right: 0 }}>
                 <video controls autoPlay width='100%' height={200} style={{ objectFit: 'contain' }} >
                     <source src={preview} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
             </div>}
-            {(isAudio || (transcoded && thumbnail)) && !preview && <ButtonBase
+            {(isAudio || (videoFiles && thumbnail)) && !preview && <ButtonBase
                 onClick={() => showPreview(file)}
                 style={{ position: 'absolute', left: 0, top: -5, right: 0, backgroundColor: Colours.black, height: 190 }}
             >
@@ -164,7 +169,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                     {!preview && <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />}
                 </div>
             </ButtonBase >}
-            {(isAudio || transcoded) && <div style={{ height: 200 }} />}
+            {(isAudio || videoFiles) && <div style={{ height: 200 }} />}
             <GlassText size="large">{file.name}</GlassText>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: 200 }}>
                 <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
@@ -176,10 +181,13 @@ const FileViewer = ({ thumbnail, file }: Props) => {
             </GlassSpace>
         </ColorGlassCard>}
         {(isAudio || width > ScreenWidths.Mobile) && <BaseModal state={preview ? "open" : 'closed'} close={() => setPreview(null)}>
-            {preview && transcoded && <video controls autoPlay>
-                <source src={preview} type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>}
+            {preview && videoFiles && <>
+                {!transcoded && <GlassText size="small" color="primary" style={{ alignSelf: 'center' }}>Warning, unprocessed video may not play properly.</GlassText>}
+                <video controls autoPlay>
+                    <source src={preview} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </>}
             {preview && isAudio && <>
                 <GlassText size="small" color="primary" style={{ alignSelf: 'center' }}>Some audio clips may not be possible to preview</GlassText>
                 <audio controls autoPlay style={{ width: '90%' }}>
