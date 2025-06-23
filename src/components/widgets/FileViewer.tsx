@@ -149,7 +149,7 @@ const FileViewer = ({ thumbnail, file, height = 60, containerWidth }: Props) => 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: height * 2 }}>
                         <Divider orientation="vertical" style={{ height: height / 2, marginInline: 10 }} />
                         <div>
-                            <GlassText size="small">File Created</GlassText>
+                            <GlassText size="small">Last Modified</GlassText>
                             <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
                             <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
                         </div>
