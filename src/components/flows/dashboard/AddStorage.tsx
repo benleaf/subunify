@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Stripe from "stripe";
 import BaseModal from "@/components/modal/BaseModal";
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard";
+import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
 
 const priceBreakdown = [
     { message: '1 Month express upload', value: 40 * 1.5 },
@@ -60,17 +61,9 @@ const AddStorage = () => {
     const total = priceBreakdown.reduce((n, { value }) => n + value, 0) + upfrontTax
 
     return <>
+        <ProjectSummarySubpage name='Add Storage' />
         <GlassSpace size="small">
             <Stack spacing={1}>
-                <Stack direction='row' spacing={1} alignItems='center'>
-                    <IconButton onClick={() => updateProperties({ page: 'project' })} size="large">
-                        <ArrowCircleLeft fontSize="large" />
-                    </IconButton>
-                    <GlassText size="large">
-                        <b>Add Storage:</b> {project?.name}
-                    </GlassText>
-                </Stack>
-                <Divider />
                 <DynamicStack>
                     <GlassSpace size="tiny" style={{ flex: 1 }}>
                         <GlassText size="moderate">

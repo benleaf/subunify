@@ -23,6 +23,8 @@
     "@mui/x-date-pickers": "^7.27.3",
     "@stripe/react-stripe-js": "^3.1.1",
     "@stripe/stripe-js": "^5.7.0",
+    "@tanstack/react-virtual": "^3.13.11",
+    "@types/streamsaver": "^2.0.5",
     "@types/stripe": "^8.0.416",
     "@uiw/react-color": "^2.5.5",
     "amazon-cognito-identity-js": "^6.3.12",
@@ -40,7 +42,8 @@
     "react-multi-carousel": "^2.8.6",
     "react-router": "^7.1.5",
     "react-virtuoso": "^4.12.5",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "streamsaver": "^2.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

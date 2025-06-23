@@ -22,7 +22,9 @@ import { AudioFiles } from "@/constants/AudioFiles"
 
 type Props = {
     thumbnail?: string,
-    file: StoredFile
+    file: StoredFile,
+    height?: number,
+    containerWidth?: number
 }
 
 const DownloadPanel = ({ file }: { file: StoredFile }) => {
@@ -33,7 +35,7 @@ const DownloadPanel = ({ file }: { file: StoredFile }) => {
 
     const { authAction } = useAuth()
     const download = async (file: StoredFile, quality: FileQuality) => {
-        const response = await authAction<{ url: string }>(`storage-file/download/${file.id}/${quality}`, 'GET')
+        const response = await authAction<{ url: string }>(`file-download/${file.id}/${quality}`, 'GET')
 
         if (isError(response)) {
             console.error(response)
@@ -91,9 +93,11 @@ const DownloadPanel = ({ file }: { file: StoredFile }) => {
     </div>
 }
 
-const FileViewer = ({ thumbnail, file }: Props) => {
+const FileViewer = ({ thumbnail, file, height = 60, containerWidth }: Props) => {
     const { authAction } = useAuth()
     const { width } = useSize()
+    let displayWidth = containerWidth ?? width
+
     const [preview, setPreview] = useState<string | null>(null)
     const extension = getExtension(file.name).toLocaleLowerCase()
     const videoFiles = file.created != null && VideoFiles.includes(extension)
@@ -103,8 +107,8 @@ const FileViewer = ({ thumbnail, file }: Props) => {
 
     const showPreview = async (file: StoredFile) => {
         let response
-        if (isAudio || (!transcoded && videoFiles)) response = await authAction<{ url: string }>(`storage-file/download/${file.id}/RAW`, 'GET')
-        if (transcoded) response = await authAction<{ url: string }>(`storage-file/download/${file.id}/LOW`, 'GET')
+        if (isAudio || (!transcoded && videoFiles)) response = await authAction<{ url: string }>(`file-download/${file.id}/RAW`, 'GET')
+        if (transcoded) response = await authAction<{ url: string }>(`file-download/${file.id}/LOW`, 'GET')
         if (response && !isError(response)) setPreview(response.url)
     }
 
@@ -119,38 +123,38 @@ const FileViewer = ({ thumbnail, file }: Props) => {
     }
 
     return <>
-        {width > ScreenWidths.Mobile && <>
+        {displayWidth > ScreenWidths.Mobile && <>
             <ColorGlassCard width='100%' paddingSize="tiny" flex={1}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 100 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height }}>
                     {(isAudio || (videoFiles && thumbnail)) && <>
                         <ButtonBase
                             onClick={() => showPreview(file)}
                             style={{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: Colours.black }}
                         >
-                            <div style={{ position: 'relative', width: 213 }}>
-                                {videoFiles && <img src={thumbnail} height={120} style={{ objectFit: 'contain' }} />}
+                            <div style={{ position: 'relative', width: height * 2 + 21 }}>
+                                {videoFiles && <img src={thumbnail} height={height + 20} style={{ objectFit: 'contain' }} />}
                             </div>
                             <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />
                         </ButtonBase >
-                        <div style={{ width: 220 }} />
+                        <div style={{ width: height * 2 + 30 }} />
                     </>}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
                         <Stack spacing={1}>
-                            <div style={{ minWidth: 200 }}>
+                            <div style={{ minWidth: height * 2 }}>
                                 <GlassText size="moderate">{file.name}</GlassText>
                             </div>
                             <DownloadPanel file={file} />
                         </Stack>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: 200 }}>
-                        <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: height * 2 }}>
+                        <Divider orientation="vertical" style={{ height: height / 2, marginInline: 10 }} />
                         <div>
                             <GlassText size="small">File Created</GlassText>
                             <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
                             <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
                         </div>
-                        <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                        <div style={{ minWidth: 80 }}>
+                        <Divider orientation="vertical" style={{ height: height / 2, marginInline: 10 }} />
+                        <div style={{ minWidth: height - 20 }}>
                             <GlassText size="small">RAW Size</GlassText>
                             <GlassText size="moderate">{getFileSize(file.bytes)}</GlassText>
                         </div>
@@ -158,19 +162,19 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                 </div>
             </ColorGlassCard>
         </>}
-        {width <= ScreenWidths.Mobile && <ColorGlassCard width='100%' paddingSize="tiny">
+        {displayWidth <= ScreenWidths.Mobile && <ColorGlassCard width='100%' paddingSize="tiny">
             {videoFiles && preview && <div style={{ position: 'absolute', left: 0, top: -5, right: 0 }}>
-                <video controls autoPlay width='100%' height={200} style={{ objectFit: 'contain' }} >
+                <video controls autoPlay width='100%' height={210} style={{ objectFit: 'contain' }} >
                     <source src={preview} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
             </div>}
             {(isAudio || (videoFiles && thumbnail)) && !preview && <ButtonBase
                 onClick={() => showPreview(file)}
-                style={{ position: 'absolute', left: 0, top: -5, right: 0, backgroundColor: Colours.black, height: 190 }}
+                style={{ position: 'absolute', left: 0, top: -5, right: 0, backgroundColor: Colours.black, height: 205 }}
             >
                 <div style={{ position: 'relative', width: '100%' }}>
-                    <img src={thumbnail} width='100%' height={230} style={{ objectFit: 'cover' }} />
+                    <img src={thumbnail} width='100%' height={210} style={{ objectFit: 'cover' }} />
                     {!preview && <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />}
                 </div>
             </ButtonBase >}
@@ -185,7 +189,7 @@ const FileViewer = ({ thumbnail, file }: Props) => {
                 <DownloadPanel file={file} />
             </GlassSpace>
         </ColorGlassCard>}
-        {(isAudio || width > ScreenWidths.Mobile) && <BaseModal state={preview ? "open" : 'closed'} close={() => setPreview(null)}>
+        {(isAudio || displayWidth > ScreenWidths.Mobile) && <BaseModal state={preview ? "open" : 'closed'} close={() => setPreview(null)}>
             {preview && videoFiles && <>
                 {!transcoded && <GlassText size="small" color="primary" style={{ alignSelf: 'center' }}>Warning, unprocessed video may not play properly.</GlassText>}
                 <video controls autoPlay>

@@ -2,6 +2,7 @@ import FileAdder from "@/components/form/FileAdder"
 import DynamicStack from "@/components/glassmorphism/DynamicStack"
 import GlassCard from "@/components/glassmorphism/GlassCard"
 import GlassText from "@/components/glassmorphism/GlassText"
+import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage"
 import { CssSizes } from "@/constants/CssSizes"
 import { ScreenWidths } from "@/constants/ScreenWidths"
 import { useAuth } from "@/contexts/AuthContext"
@@ -35,7 +36,7 @@ const Cluster = () => {
     useEffect(() => {
         if (totalUploaded && uploadManager.isRunning) {
             const secondsElapsed = moment.duration(moment().diff(startTime)).asSeconds()
-            const bitsPerSecond = totalUploaded / Math.max(1, secondsElapsed)
+            const bitsPerSecond = 8 * totalUploaded / Math.max(1, secondsElapsed)
             const newMbps = ((bitsPerSecond) / 1024) / 1024
             setMbps(newMbps)
             uploadManager.setConcurrentUploads(newMbps ?? 1)
@@ -84,29 +85,7 @@ const Cluster = () => {
     const displayableFiles = uploadManager.fileRecords.filter(file => !file.finished)
 
     return <Stack spacing={1}>
-        <Stack spacing={1}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <IconButton onClick={() => updateProperties({ page: 'project' })} size="large">
-                        <ArrowCircleLeft fontSize="large" />
-                    </IconButton>
-                    <GlassText size="large">Upload to {properties.selectedProject?.name}</GlassText>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                    <div>
-                        <GlassText size="large">{properties.selectedProject?.availableTBs} TB</GlassText>
-                        <GlassText size="small">Available</GlassText>
-                    </div>
-                    <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                    <div>
-                        <GlassText size="large">{getFileSize(totalBytesUploaded)}</GlassText>
-                        <GlassText size="small">Uploaded</GlassText>
-                    </div>
-                </div>
-            </div>
-        </Stack>
+        <ProjectSummarySubpage name="Upload" />
         <DynamicStack>
             <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, flex: 1 }}>
                 <FileAdder

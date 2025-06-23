@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { cognitoLogin, SessionUser, UserPool } from "../auth/AuthService";
-import { apiAction, rawApiAction } from "@/api/apiAction";
+import { apiAction, download, rawApiAction } from "@/api/apiAction";
 import { RequestMethod } from "@/types/server/RequestMethod";
 import { isError } from "@/api/isError";
 import { ApiError } from "@/types/server/ApiError";
@@ -18,6 +18,7 @@ interface AuthContextType {
     logout: () => void
     authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
     rawAuthAction: (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => Promise<Partial<ApiError> | Response>
+    downloadAction: (endpoint: string, bytes: number) => Promise<void>
     setAlert: (message: string, colour?: AlertColor) => void
     setLoading: (isLoading: boolean) => void
 }
@@ -120,6 +121,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return handleAction(result);
     };
 
+    const downloadAction = async (endpoint: string, bytes: number) => {
+        if (!sessionUser) return
+        await download({ endpoint, sessionUser, bytes });
+    };
+
     const handleAction = <T,>(result: T) => {
         if (isError(result) && result.error == 'Unauthorized') {
             logout(false);
@@ -143,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     uploadManager.addCallbacks({ authAction })
 
-    return <AuthContext.Provider value={{ user, setUserAttributes, login, logout, authAction, rawAuthAction, subscribed, setAlert, setLoading }}>
+    return <AuthContext.Provider value={{ user, setUserAttributes, login, logout, authAction, rawAuthAction, subscribed, setAlert, setLoading, downloadAction }}>
         {children}
 
         <Backdrop

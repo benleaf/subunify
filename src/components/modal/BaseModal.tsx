@@ -13,7 +13,6 @@ type Props = {
 
 const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
     const style: CSSProperties = {
-        position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',

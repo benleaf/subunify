@@ -9,7 +9,7 @@ type Project = {
     selectedProjectId: string,
     selectedProject?: ProjectResult,
     selectedCluster: ClusterResult,
-    page: 'projects' | 'project' | 'cluster' | 'statistics' | 'billing' | 'settings' | 'upload' | 'account' | 'addStorage' | 'createProject'
+    page: 'projects' | 'project' | 'cluster' | 'statistics' | 'billing' | 'settings' | 'upload' | 'account' | 'addStorage' | 'createProject' | 'download'
 }
 
 interface DashboardType {

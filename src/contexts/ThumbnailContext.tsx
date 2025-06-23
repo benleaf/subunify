@@ -22,7 +22,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         )
 
         validFiles.map(file =>
-            authAction<{ url: string }>(`storage-file/download/${file.id}/THUMBNAIL`, 'GET')
+            authAction<{ url: string }>(`file-download/${file.id}/THUMBNAIL`, 'GET')
                 .then(result => isError(result) ? console.error(result) : addThumbnail(file.id, result.url))
         )
     }

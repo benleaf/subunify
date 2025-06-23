@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import CreateProject from "@/components/flows/dashboard/CreateProject";
 import { ThumbnailProvider } from "@/contexts/ThumbnailContext";
+import Download from "@/components/flows/dashboard/Download";
 
 const DashboardWithContext = () => {
     const { properties, loadProject } = useDashboard()
@@ -27,6 +28,7 @@ const DashboardWithContext = () => {
     return <DashboardLayout>
         {properties.page == 'projects' && <Projects />}
         {properties.page == 'project' && <Project />}
+        {properties.page == 'download' && <Download />}
         {properties.page == 'cluster' && <Cluster />}
         {properties.page == 'upload' && <Upload />}
         {properties.page == 'account' && <UserAccount />}

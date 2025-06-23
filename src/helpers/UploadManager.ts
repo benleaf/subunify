@@ -68,13 +68,13 @@ class UploadManager {
     }
 
     public async setConcurrentUploads(concurrentUploads: number) {
-        this.maxConcurrentUploads = Math.max(1, concurrentUploads ?? 1)
+        this.maxConcurrentUploads = (concurrentUploads ** 1.5) + 1
     }
 
     async loop() {
         while (this.isRunning) {
             this.checkQueues()
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 10));
             if (this.errorEncountered) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 this.errorEncountered = false
