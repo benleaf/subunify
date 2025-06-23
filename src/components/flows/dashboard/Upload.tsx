@@ -41,7 +41,7 @@ const Cluster = () => {
             setMbps(newMbps)
             uploadManager.setConcurrentUploads(newMbps ?? 1)
 
-            const remainingBits = totalSize - totalUploaded
+            const remainingBits = (totalSize - totalUploaded) * 8
             const estimatedSecondsLeft = remainingBits / bitsPerSecond
             setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
         } else {

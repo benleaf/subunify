@@ -68,7 +68,7 @@ class UploadManager {
     }
 
     public async setConcurrentUploads(concurrentUploads: number) {
-        this.maxConcurrentUploads = (concurrentUploads ** 1.5) + 1
+        this.maxConcurrentUploads = concurrentUploads + 1
     }
 
     async loop() {
@@ -128,7 +128,7 @@ class UploadManager {
         }))
 
         if (isError(response)) {
-            this.uploadSessions.unshift()
+            this.uploadSessions.unshift(uploadSession)
             console.error(response)
             this.isAddingToStaging = false
             this.errorEncountered = true
