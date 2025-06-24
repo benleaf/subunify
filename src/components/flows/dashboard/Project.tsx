@@ -51,13 +51,13 @@ const Project = () => {
                 >
                     <Dashboard />
                 </Fab>
-                {/* <Fab
+                <Fab
                     onClick={_ => setLayout('grid')}
                     color={layout == 'grid' ? 'primary' : 'inherit'}
                     size='small'
                 >
                     <GridOn />
-                </Fab> */}
+                </Fab>
             </Stack>
         </div>}
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>

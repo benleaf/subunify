@@ -4,17 +4,13 @@ import { useThumbnail } from "@/contexts/ThumbnailContext"
 import { StoredFile } from "@/types/server/ProjectResult"
 import { Stack } from "@mui/material"
 import moment from "moment"
-import { useSize } from '@/hooks/useSize';
-import { ScreenWidths } from '@/constants/ScreenWidths';
-import { useRef } from 'react';
 
 type Props = {
     files: StoredFile[]
 }
 
 const ListLayout = ({ files }: Props) => {
-    const { width } = useSize()
-    const itemHeight = width > ScreenWidths.Mobile ? 60 : 300
+    const itemHeight = 60
     const rowHeight = itemHeight * 1.3
     const { getUrl } = useThumbnail()
     const sorted = files.sort((a, b) => moment(a.fileLastModified).diff(b.fileLastModified))

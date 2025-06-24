@@ -8,6 +8,7 @@ import { FileQuality } from "@/types/FileQuality"
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage"
 import GlassSpace from "@/components/glassmorphism/GlassSpace"
 import { isError } from "@/api/isError"
+import { getFileSize } from "@/helpers/FileSize"
 
 const Download = () => {
     const { downloadAction, authAction } = useAuth()
@@ -50,6 +51,9 @@ const Download = () => {
                             <MenuItem value='LOW'>Low</MenuItem>
                         </Select>
                     </FormControl>
+                    <GlassText size="moderate">
+                        {getFileSize(bytes)}
+                    </GlassText>
                     <Button
                         fullWidth
                         variant="contained"
