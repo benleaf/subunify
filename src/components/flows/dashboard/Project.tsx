@@ -17,7 +17,7 @@ const Project = () => {
     const { retrieveThumbnails } = useThumbnail()
     const { properties, updateProperties, loadProject } = useDashboard()
     const oldLayoutType = localStorage.getItem('fileLayoutType') as Layouts
-    const [layout, setLayout] = useState<Layouts>(oldLayoutType ?? 'grid')
+    const [layout, setLayout] = useState<Layouts>(oldLayoutType ?? 'list')
 
     useEffect(() => {
         localStorage.setItem('fileLayoutType', layout)
