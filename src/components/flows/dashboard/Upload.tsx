@@ -13,15 +13,14 @@ import { Time } from "@/helpers/Time"
 import { FileRecord } from "@/helpers/UploadManager"
 import { useSize } from "@/hooks/useSize"
 import { TaggedFile } from "@/pages/FileUpload"
-import { ArrowCircleLeft } from "@mui/icons-material"
-import { Stack, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Chip, CircularProgress, LinearProgress, Divider } from "@mui/material"
+import { Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Chip, CircularProgress, LinearProgress } from "@mui/material"
 import moment, { Moment } from "moment"
 import { Fragment, useEffect, useState } from "react"
 
 const Cluster = () => {
     const { setAlert } = useAuth()
     const { uploadManager, projectDataStored } = useUpload()
-    const { properties, updateProperties, loadProject } = useDashboard()
+    const { properties, loadProject } = useDashboard()
     const [totalUploaded, setTotalUploaded] = useState<number>()
     const [startTime, setStartTime] = useState<Moment>()
     const [eta, setEta] = useState<string>()

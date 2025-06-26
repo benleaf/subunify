@@ -68,7 +68,7 @@ class UploadManager {
     }
 
     public async setConcurrentUploads(concurrentUploads: number) {
-        this.maxConcurrentUploads = concurrentUploads + 1
+        this.maxConcurrentUploads = Math.min(concurrentUploads + 1, 100)
     }
 
     async loop() {

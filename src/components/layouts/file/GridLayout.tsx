@@ -24,6 +24,7 @@ const GridLayout = ({ files }: Props) => {
     const [containerWidth, setContainerWidth] = useState(0)
     const [preview, setPreview] = useState<StoredFile>()
     const targetWidth = 115
+    const imageWidth = 113
 
     useEffect(() => {
         const el = containerRef.current
@@ -69,10 +70,10 @@ const GridLayout = ({ files }: Props) => {
                         position: 'absolute',
                         top: vr.start,
                         left: vc.start,
-                        margin: 0,
+                        margin: 5,
                         backgroundColor: Colours.lightGrey
                     }} onClick={_ => setPreview(files[idx])}>
-                        <img src={getUrl(files[idx])} height={targetWidth} width={targetWidth} style={{ objectFit: 'cover' }} />
+                        <img src={getUrl(files[idx])} height={imageWidth} width={imageWidth} style={{ objectFit: 'cover' }} />
                     </ButtonBase >
                 })
             )}

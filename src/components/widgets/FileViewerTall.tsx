@@ -1,13 +1,13 @@
 import { getFileSize } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { Download, Info, PlayArrow, Refresh, Rotate90DegreesCw } from "@mui/icons-material"
-import { ButtonBase, Chip, Fab, Modal } from "@mui/material"
+import { Download, Info, InfoRounded, PlayArrow, Refresh, Rotate90DegreesCw } from "@mui/icons-material"
+import { ButtonBase, Chip, Fab, IconButton, Modal, Tooltip } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useAuth } from "@/contexts/AuthContext"
 import { FileQuality } from "@/types/FileQuality"
-import { useEffect, useState } from "react"
+import { CSSProperties, useEffect, useState } from "react"
 import { isError } from "@/api/isError"
 import { CssSizes } from "@/constants/CssSizes"
 import { Time } from "@/helpers/Time"
@@ -16,6 +16,7 @@ import { getExtension } from "@/helpers/FileProperties"
 import moment from "moment"
 import { VideoFiles } from "@/constants/VideoFiles"
 import { AudioFiles } from "@/constants/AudioFiles"
+import { useSize } from "@/hooks/useSize"
 
 type Props = {
     thumbnail?: string,
@@ -79,29 +80,45 @@ const DownloadPanel = ({ file }: { file: StoredFile }) => {
             <Chip icon={<Download color="primary" />} label='RAW' />
         </ButtonBase>
         <ButtonBase onClick={() => download(file, 'HIGH')}>
-            <Chip icon={<Download color="primary" />} label='High' />
+            <Chip icon={<Download color="primary" />} label='4k' />
         </ButtonBase>
         <ButtonBase onClick={() => download(file, 'MEDIUM')}>
-            <Chip icon={<Download color="primary" />} label='Medium' />
+            <Chip icon={<Download color="primary" />} label='2k' />
         </ButtonBase>
         <ButtonBase onClick={() => download(file, 'LOW')}>
-            <Chip icon={<Download color="primary" />} label='Low' />
+            <Chip icon={<Download color="primary" />} label='1080p' />
         </ButtonBase>
+        <Tooltip title={<>
+            <b>PROXIES</b>
+            <p>4K: Apple ProRes 422 PROXY (3840x2160)</p>
+            <p>2K: Apple ProRes 422 PROXY (2560x1440)</p>
+            <p>1080p: AVC H.264 (1920x1080)</p>
+        </>}>
+            <IconButton>
+                <InfoRounded />
+            </IconButton>
+        </Tooltip>
+        <GlassText size="moderate"></GlassText>
     </div>
 }
 
 const FileViewerTall = ({ thumbnail, file }: Props) => {
+    const { width } = useSize()
     const { authAction } = useAuth()
     const [fullscreen, setFullscreen] = useState(false)
     const oldRotate = +(localStorage.getItem('rotateMediaDegrees') ?? 0)
     const [rotation, setRotation] = useState(oldRotate)
     const landscape = rotation == 0 || rotation == 180
-    const mediaSize = fullscreen ? '80vh' : 300
+    const mediaSize = fullscreen ? '80vh' : 'min(280px, 100%)'
+    const offsets = width > 500 ? '38%' : (
+        width > 400 ? 'calc(17% + 10px)' : 'calc(8% + 10px)'
+    )
     const rotateCss = {
-        transform: `${landscape || fullscreen ? '' : 'translate(90px, 60px)'} rotate(${rotation}deg)`,
-        width: !landscape ? mediaSize : undefined,
-        height: landscape ? mediaSize : undefined
-    }
+        transform: `${landscape || fullscreen ? '' : `translate(${offsets}, 60px)`} rotate(${rotation}deg)`,
+        width: !landscape ? mediaSize : '100%',
+        height: landscape ? mediaSize : '100%',
+        objectFit: !fullscreen ? 'cover' : undefined
+    } as CSSProperties
 
     useEffect(() => {
         localStorage.setItem('rotateMediaDegrees', `${rotation}`)
@@ -137,8 +154,8 @@ const FileViewerTall = ({ thumbnail, file }: Props) => {
     }
 
     const Media = () => <>
-        {videoFiles && preview && <div style={{ position: 'absolute', left: 0, top: -10 }} onClick={_ => setFullscreen(true)}>
-            <video autoPlay width='100%' style={{ objectFit: 'contain', ...rotateCss }}>
+        {videoFiles && preview && <div style={{ position: 'absolute', left: 0, top: -1, width: '100%' }} onClick={_ => setFullscreen(true)}>
+            <video autoPlay style={{ ...rotateCss }}>
                 <source src={preview} type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
@@ -164,14 +181,14 @@ const FileViewerTall = ({ thumbnail, file }: Props) => {
     return <>
         <ColorGlassCard width='100%' paddingSize="tiny">
             {!fullscreen && <Media />}
-            {(isAudio || videoFiles) && <div style={{ height: 280 }} />}
+            {(isAudio || videoFiles) && <div style={{ height: 230 }} />}
+            <div style={{ display: 'flex', justifyContent: 'end' }}>
+                <Fab onClick={_ => setRotation(old => (old + 90) % 360)} size='small' >
+                    <Rotate90DegreesCw fontSize="small" />
+                </Fab>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <GlassText size="large">{file.name}</GlassText>
-                <div>
-                    <Fab onClick={_ => setRotation(old => (old + 90) % 360)} size='small' color={rotation ? 'primary' : 'inherit'} >
-                        <Rotate90DegreesCw fontSize="small" />
-                    </Fab>
-                </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: 300 }}>
                 <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
@@ -182,7 +199,7 @@ const FileViewerTall = ({ thumbnail, file }: Props) => {
                 <DownloadPanel file={file} />
             </GlassSpace>
         </ColorGlassCard>
-        <Modal
+        {preview && <Modal
             open={fullscreen}
             onClose={_ => setFullscreen(false)}
             style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
@@ -191,7 +208,7 @@ const FileViewerTall = ({ thumbnail, file }: Props) => {
                 <source src={preview} type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
-        </Modal>
+        </Modal>}
     </>
 }
 
