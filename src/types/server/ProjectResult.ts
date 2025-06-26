@@ -1,7 +1,9 @@
+import { VideoCodecs } from "@/contexts/VideoCodecs"
 import { User } from "../User"
 
 export type ProjectResult = {
     files: StoredFile[]
+    projectSettings: ProjectSettings
 } & ProjectPreviewResult
 
 export type ClusterResult = {
@@ -42,5 +44,9 @@ export type Project = {
     id: string,
     projectType: 'large' | 'pro' | 'enterprise'
     collaborators: Partial<User>[],
+}
+
+export type ProjectSettings = {
+    videoCodec?: keyof typeof VideoCodecs
 }
 

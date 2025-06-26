@@ -11,7 +11,7 @@ type Props = {
     grow?: boolean
     paddingSize?: Sizes
     marginSize?: Sizes
-    flex?: number
+    flex?: CSSProperties['flex']
     width?: CSSProperties['width']
     height?: CSSProperties['height']
     onClick?: () => void

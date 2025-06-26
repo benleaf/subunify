@@ -1,9 +1,8 @@
 import { getFileSize } from "@/helpers/FileSize"
-import { ArrowCircleLeft } from "@mui/icons-material"
-import { IconButton, Divider } from "@mui/material"
+import { ArrowCircleLeft, Layers } from "@mui/icons-material"
+import { IconButton, Divider, Button } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassText from "../glassmorphism/GlassText"
-import ProjectActions from "./ProjectActions"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { useUpload } from "@/contexts/UploadContext"
 
@@ -24,6 +23,14 @@ const ProjectSummary = () => {
                 </div>
             </div>
             <div style={{ flex: 1 }} />
+            <Button
+                variant="outlined"
+                startIcon={<Layers />}
+                onClick={() => updateProperties({ page: 'manageProject' })}
+            >
+                Manage Project
+            </Button>
+            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div>
                     <GlassText size="large">{getFileSize(totalBytesUploaded)}</GlassText>
@@ -34,9 +41,7 @@ const ProjectSummary = () => {
                     <GlassText size="large">{properties.selectedProject?.availableTBs} TB</GlassText>
                     <GlassText size="small">Available</GlassText>
                 </div>
-                <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
             </div>
-            {properties.selectedProjectId && <ProjectActions />}
         </div>
     </ColorGlassCard>
 }

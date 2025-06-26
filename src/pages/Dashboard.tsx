@@ -11,6 +11,8 @@ import { useNavigate, useSearchParams } from "react-router";
 import CreateProject from "@/components/flows/dashboard/CreateProject";
 import { ThumbnailProvider } from "@/contexts/ThumbnailContext";
 import Download from "@/components/flows/dashboard/Download";
+import ManageProject from "@/components/flows/dashboard/ManageProject";
+import AdvancedFileSettings from "@/components/flows/dashboard/AdvancedFileSettings";
 
 const DashboardWithContext = () => {
     const { properties, loadProject } = useDashboard()
@@ -34,6 +36,8 @@ const DashboardWithContext = () => {
         {properties.page == 'account' && <UserAccount />}
         {properties.page == 'addStorage' && <AddStorage />}
         {properties.page == 'createProject' && <CreateProject />}
+        {properties.page == 'manageProject' && <ManageProject />}
+        {properties.page == 'advancedFileSettings' && <AdvancedFileSettings />}
     </DashboardLayout>
 }
 

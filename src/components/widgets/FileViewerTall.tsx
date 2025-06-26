@@ -17,6 +17,9 @@ import moment from "moment"
 import { VideoFiles } from "@/constants/VideoFiles"
 import { AudioFiles } from "@/constants/AudioFiles"
 import { useSize } from "@/hooks/useSize"
+import { useDashboard } from "@/contexts/DashboardContext"
+import { VideoCodecs } from "@/contexts/VideoCodecs"
+import { DownloadPanel } from "../form/DownloadPanel"
 
 type Props = {
     thumbnail?: string,
@@ -25,84 +28,9 @@ type Props = {
     containerWidth?: number
 }
 
-const DownloadPanel = ({ file }: { file: StoredFile }) => {
-    if (file.created == null) return <GlassText size="moderate">Not Uploaded</GlassText>
-
-    const extension = getExtension(file.name).toLocaleLowerCase()
-    const videoFile = file.created != null && VideoFiles.includes(extension)
-
-    const { authAction } = useAuth()
-    const download = async (file: StoredFile, quality: FileQuality) => {
-        const response = await authAction<{ url: string }>(`file-download/${file.id}/${quality}`, 'GET')
-
-        if (isError(response)) {
-            console.error(response)
-            return
-        }
-
-        const { url } = response
-        window.open(url, '_self');
-    }
-
-    if (file.location === 'DEEP' && file.available && moment(file.available).isBefore(moment()) && moment(file.available).add(48, 'hours').isAfter(moment())) {
-        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
-            <ButtonBase onClick={() => download(file, 'RAW')}>
-                <Chip icon={<Download color="primary" />} label={`AVAILABLE FOR ${moment(file.available).add(48, 'hours').diff(moment(), 'hours')} HOUR(S)`} />
-            </ButtonBase>
-        </div>
-    } else if (file.location === 'DEEP' && moment(file.available).isAfter(moment())) {
-        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
-            <ButtonBase onClick={() => download(file, 'RAW')}>
-                <Chip icon={<Refresh color="primary" />} label={`AVAILABLE IN ${moment(file.available).diff(moment(), 'hours')} HOUR(S)`} />
-            </ButtonBase>
-        </div>
-    } else if (file.location === 'DEEP') {
-        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap' }}>
-            <ButtonBase onClick={() => download(file, 'RAW')}>
-                <Chip icon={<Refresh color="primary" />} label='RESTORE (12h)' />
-            </ButtonBase>
-        </div>
-    } else if (file.proxyState == 'NA') {
-        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
-            <ButtonBase onClick={() => download(file, 'RAW')}>
-                <Chip icon={<Download color="primary" />} label='Download' />
-            </ButtonBase>
-            {videoFile && <Chip icon={<Info color="info" />} label='Quality too low to process' />}
-        </div>
-    } else if (file.proxyState != 'COMPLETE') {
-        return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
-            <Chip icon={<Download color="primary" />} label='Processing File, Refresh To Update...' />
-        </div>
-    }
-
-    return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
-        <ButtonBase onClick={() => download(file, 'RAW')}>
-            <Chip icon={<Download color="primary" />} label='RAW' />
-        </ButtonBase>
-        <ButtonBase onClick={() => download(file, 'HIGH')}>
-            <Chip icon={<Download color="primary" />} label='4k' />
-        </ButtonBase>
-        <ButtonBase onClick={() => download(file, 'MEDIUM')}>
-            <Chip icon={<Download color="primary" />} label='2k' />
-        </ButtonBase>
-        <ButtonBase onClick={() => download(file, 'LOW')}>
-            <Chip icon={<Download color="primary" />} label='1080p' />
-        </ButtonBase>
-        <Tooltip title={<>
-            <b>PROXIES</b>
-            <p>4K: Apple ProRes 422 PROXY (3840x2160)</p>
-            <p>2K: Apple ProRes 422 PROXY (2560x1440)</p>
-            <p>1080p: AVC H.264 (1920x1080)</p>
-        </>}>
-            <IconButton>
-                <InfoRounded />
-            </IconButton>
-        </Tooltip>
-        <GlassText size="moderate"></GlassText>
-    </div>
-}
-
 const FileViewerTall = ({ thumbnail, file }: Props) => {
+    const { properties } = useDashboard()
+
     const { width } = useSize()
     const { authAction } = useAuth()
     const [fullscreen, setFullscreen] = useState(false)
@@ -196,7 +124,7 @@ const FileViewerTall = ({ thumbnail, file }: Props) => {
             </div>
             <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
             <GlassSpace size="tiny" style={{ width: '100%', paddingTop: CssSizes.hairpin, overflow: 'hidden' }}>
-                <DownloadPanel file={file} />
+                <DownloadPanel file={file} codec={properties.selectedProject?.projectSettings.videoCodec} />
             </GlassSpace>
         </ColorGlassCard>
         {preview && <Modal
