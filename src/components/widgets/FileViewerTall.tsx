@@ -125,7 +125,7 @@ const FileViewerTall = ({ thumbnail, file }: Props) => {
             </div>
             <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
             <GlassSpace size="tiny" style={{ width: '100%', paddingTop: CssSizes.hairpin, overflow: 'hidden' }}>
-                <DownloadPanel file={file} codec={properties.selectedProject?.projectSettings.videoCodec} />
+                <DownloadPanel file={file} codec={properties.selectedProject?.projectSettings?.videoCodec} />
             </GlassSpace>
         </ColorGlassCard>
         {preview && <Modal
