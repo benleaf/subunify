@@ -92,7 +92,7 @@ const ManageCollaborators = () => {
             </ColorGlassCard>
         )}
         {selectedCollaborator && canManage(selectedCollaborator.role) && canAdd(properties.projectRole) && <>
-            <BaseModal state={selectedCollaborator ? "open" : 'closed'} close={_ => setSelectedCollaborator(undefined)}>
+            <BaseModal state={selectedCollaborator !== undefined} close={_ => setSelectedCollaborator(undefined)}>
                 <GlassSpace size="moderate">
                     <Stack spacing={1}>
                         <GlassText size="big">Change Access</GlassText>

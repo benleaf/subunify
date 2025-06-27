@@ -47,7 +47,7 @@ const ProjectActions = () => {
                 <Button startIcon={<CallToAction />} variant="contained" onClick={_ => setOpen(true)} fullWidth>
                     Actions
                 </Button>
-                <BaseModal state={open ? 'open' : 'closed'} close={_ => setOpen(false)}>
+                <BaseModal state={open} close={_ => setOpen(false)}>
                     <GlassSpace size="small">
                         <Stack direction='column' spacing={1}>
                             {options}

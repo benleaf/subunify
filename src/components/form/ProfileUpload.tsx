@@ -120,7 +120,7 @@ const ProfileUpload = () => {
                 </div>
             </div>
         </div>
-        <BaseModal state={profile ? "open" : 'closed'} close={() => setProfile(undefined)}>
+        <BaseModal state={profile !== undefined} close={() => setProfile(undefined)}>
             <div style={{ height: '50vh' }}>
                 {profile && <Cropper
                     image={URL.createObjectURL(profile)}

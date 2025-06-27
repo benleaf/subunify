@@ -8,7 +8,7 @@ import Stripe from "stripe";
 import { isError } from "@/api/isError";
 
 type Props = {
-  state: 'open' | 'closed',
+  state: boolean,
   onClose?: () => void,
   volume?: number
   projectId: string
@@ -21,7 +21,7 @@ const PaymentModal = ({ state, onClose, projectId, volume = 1 }: Props) => {
 
   useEffect(() => {
     const getSession = async () => {
-      if (state == 'closed') return
+      if (!state) return
       const result = await authAction<Stripe.Checkout.Session>(
         `stripe/start-storage-session/${projectId}/${volume}`,
         'GET',

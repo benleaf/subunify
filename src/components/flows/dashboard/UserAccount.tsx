@@ -51,7 +51,7 @@ const UserAccount = () => {
                 </div>
             </Stack>
         </GlassSpace>
-        <BaseModal state={endSubscriptionModal ? 'open' : 'closed'} close={() => setEndSubscriptionModal(false)} maxWidth={600}>
+        <BaseModal state={endSubscriptionModal} close={() => setEndSubscriptionModal(false)} maxWidth={600}>
             <GlassSpace size='moderate'>
                 <GlassText size='large'>End Subscription</GlassText>
                 <div style={{ display: "flex", flexWrap: 'wrap', paddingBottom: CssSizes.small }}>

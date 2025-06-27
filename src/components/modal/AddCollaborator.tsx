@@ -43,7 +43,7 @@ const AddCollaborator = ({ project, role = 'MANAGER', buttonType = 'ICON' }: Pro
     return <>
         {buttonType == 'ICON' && <IconButton onClick={() => setAddCollaborators(true)}><Add /></IconButton>}
         {buttonType == 'TEXT' && <Button variant="outlined" startIcon={<PersonAdd />} onClick={() => setAddCollaborators(true)}>Add Collaborator</Button>}
-        <BaseModal state={addCollaborators ? "open" : 'closed'} close={() => setAddCollaborators(false)}>
+        <BaseModal state={addCollaborators} close={() => setAddCollaborators(false)}>
             <GlassSpace size="moderate">
                 <Stack spacing={2}>
                     <GlassIconText size='large' icon={<Send />}>Send invite...</GlassIconText>

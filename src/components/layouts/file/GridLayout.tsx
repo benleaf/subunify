@@ -77,7 +77,7 @@ const GridLayout = ({ files }: Props) => {
                     </ButtonBase >
                 })
             )}
-            <BaseModal state={preview ? 'open' : 'closed'} close={_ => setPreview(undefined)}>
+            <BaseModal state={preview !== undefined} close={_ => setPreview(undefined)}>
                 {preview && <FileViewerTall file={preview} containerWidth={200} thumbnail={getUrl(preview)} />}
             </BaseModal>
         </div>

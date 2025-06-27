@@ -79,7 +79,7 @@ const FileViewer = ({ thumbnail, file, height = 60, containerWidth }: Props) => 
                 </div>}
             </div>
         </ColorGlassCard>
-        <BaseModal state={preview ? "open" : 'closed'} close={() => setPreview(false)}>
+        <BaseModal state={preview} close={() => setPreview(false)}>
             <FileViewerTall file={file} />
         </BaseModal>
     </>

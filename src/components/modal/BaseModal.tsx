@@ -6,7 +6,7 @@ import GlassCard from '../glassmorphism/GlassCard'
 
 type Props = {
     children: React.ReactNode,
-    state: "open" | "closed"
+    state: boolean
     close?: (e: {}, reason?: string) => void
     maxWidth?: CSSProperties['maxWidth']
 }
@@ -21,7 +21,7 @@ const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
     }
 
     return <Modal
-        open={state === "open"}
+        open={state}
         onClose={close}
     >
         <div style={{ ...style, position: "relative" }}>

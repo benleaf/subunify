@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, Divider, IconButton, Stack, TextField } from "@mui/material";
+import { Button, Divider, Stack, TextField } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { useDashboard } from "@/contexts/DashboardContext";
 import GlassCard from "@/components/glassmorphism/GlassCard";
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import PaymentModal from "@/components/modal/PaymentModal";
-import { ArrowCircleLeft } from "@mui/icons-material";
 import { ProjectResult } from "@/types/server/ProjectResult";
 import { isError } from "@/api/isError";
 import { useAuth } from "@/contexts/AuthContext";
@@ -133,13 +132,13 @@ const AddStorage = () => {
             </Stack>
         </GlassSpace>
         {!user.stripeSubscriptionId && properties?.selectedProjectId && <PaymentModal
-            state={paymentModalState ? 'open' : 'closed'}
+            state={paymentModalState}
             onClose={() => setPaymentModalState(false)}
             volume={tbsToAdd}
             projectId={properties?.selectedProjectId}
         />}
         {user.stripeSubscriptionId && <BaseModal
-            state={paymentModalState ? 'open' : 'closed'}
+            state={paymentModalState}
             close={() => setPaymentModalState(false)}
         >
             <ColorGlassCard paddingSize="large">
