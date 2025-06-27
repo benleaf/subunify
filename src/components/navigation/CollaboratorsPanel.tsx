@@ -9,15 +9,12 @@ import { useDashboard } from "@/contexts/DashboardContext"
 import AddCollaborator from "../modal/AddCollaborator"
 import { Collaborator } from "@/types/Collaborator"
 import { CollaboratorRoles, CollaboratorRolesThatCanAdd } from "@/constants/CollaboratorRoles"
+import { canAdd } from "@/helpers/Collaborator"
 
 const CollaboratorsPanel = () => {
     const { height } = useSize()
     const { properties } = useDashboard()
     const { selectedProject, projectCollaborators } = properties
-
-    const canAdd = (role?: Collaborator['role']): role is keyof typeof CollaboratorRolesThatCanAdd => {
-        return Object.keys(CollaboratorRolesThatCanAdd).includes(role ?? 'VIEWER')
-    }
 
     return <div style={{
         height: height - ComponentSizes.topBar,

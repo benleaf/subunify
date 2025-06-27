@@ -13,6 +13,7 @@ import { ThumbnailProvider } from "@/contexts/ThumbnailContext";
 import Download from "@/components/flows/dashboard/Download";
 import ManageProject from "@/components/flows/dashboard/ManageProject";
 import AdvancedFileSettings from "@/components/flows/dashboard/AdvancedFileSettings";
+import ManageCollaborators from "@/components/flows/dashboard/ManageCollaborators";
 
 const DashboardWithContext = () => {
     const { properties, loadProject } = useDashboard()
@@ -38,6 +39,7 @@ const DashboardWithContext = () => {
         {properties.page == 'createProject' && <CreateProject />}
         {properties.page == 'manageProject' && <ManageProject />}
         {properties.page == 'advancedFileSettings' && <AdvancedFileSettings />}
+        {properties.page == 'manageCollaborators' && <ManageCollaborators />}
     </DashboardLayout>
 }
 

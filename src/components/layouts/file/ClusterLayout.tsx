@@ -84,6 +84,8 @@ const ClusterLayout = ({ files }: Props) => {
                 </ColorGlassCard>
             )}
             {clusters?.length > 0 && <div style={{ flex: 1, minWidth: 'max(30%, 300px)', display: 'flex', height: 300, margin: 20 }} />}
+            {clusters?.length > 0 && <div style={{ flex: 1, minWidth: 'max(30%, 300px)', display: 'flex', height: 300, margin: 20 }} />}
+            {clusters?.length > 0 && <div style={{ flex: 1, minWidth: 'max(30%, 300px)', display: 'flex', height: 300, margin: 20 }} />}
         </>
     )
 }

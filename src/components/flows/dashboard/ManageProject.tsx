@@ -4,7 +4,7 @@ import GlassText from "@/components/glassmorphism/GlassText";
 import { useDashboard } from "@/contexts/DashboardContext";
 import { useUpload } from "@/contexts/UploadContext";
 import { terabytesToBytes } from "@/helpers/FileSize";
-import { Add, Upload, Download, VideoSettings } from "@mui/icons-material";
+import { Add, Upload, Download, VideoSettings, ManageAccounts } from "@mui/icons-material";
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard";
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
 import { CssSizes } from "@/constants/CssSizes";
@@ -63,6 +63,17 @@ const ManageProject = () => {
                         onClick={() => updateProperties({ page: 'advancedFileSettings' })}
                     >
                         File Settings
+                    </Button>
+                </ColorGlassCard>}
+                {canManage && <ColorGlassCard flex={1} paddingSize="moderate" style={{ minWidth: 350, flexBasis: 0 }}>
+                    <GlassText size="large">Manage Collaborators</GlassText>
+                    <GlassText size="moderate" style={{ height: '4em' }}>Add, remove and edit the access of collaborators on this project</GlassText>
+                    <Button
+                        variant="contained"
+                        startIcon={<ManageAccounts />}
+                        onClick={() => updateProperties({ page: 'manageCollaborators' })}
+                    >
+                        Manage
                     </Button>
                 </ColorGlassCard>}
 

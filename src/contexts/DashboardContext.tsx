@@ -24,7 +24,8 @@ type Project = {
     'createProject' |
     'download' |
     'manageProject' |
-    'advancedFileSettings'
+    'advancedFileSettings' |
+    'manageCollaborators'
 }
 
 interface DashboardType {

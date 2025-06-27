@@ -3,15 +3,17 @@ import { Stack, TextField, Button, IconButton, MenuItem, Select } from "@mui/mat
 import { useState } from "react"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import BaseModal from "./BaseModal"
-import { Add, Send, Settings } from "@mui/icons-material"
+import { Add, PersonAdd, Send, Settings } from "@mui/icons-material"
 import { useAuth } from "@/contexts/AuthContext"
 import { isError } from "@/api/isError"
 import GlassIconText from "../glassmorphism/GlassIconText"
 import { CollaboratorRoles, CollaboratorRolesManager, CollaboratorRolesOwner, CollaboratorRolesThatCanAdd } from "@/constants/CollaboratorRoles"
+import { getEditableRoles } from "@/helpers/Collaborator"
 
 type Props = {
     project: ProjectResult,
     role?: keyof typeof CollaboratorRolesThatCanAdd
+    buttonType?: 'ICON' | 'TEXT'
 }
 
 type Settings = {
@@ -20,7 +22,7 @@ type Settings = {
     role?: keyof typeof CollaboratorRoles
 }
 
-const AddCollaborator = ({ project, role = 'MANAGER' }: Props) => {
+const AddCollaborator = ({ project, role = 'MANAGER', buttonType = 'ICON' }: Props) => {
     const { authAction, setAlert } = useAuth()
     const [addCollaborators, setAddCollaborators] = useState<boolean>(false)
     const [settings, setSettings] = useState<Settings>({ projectId: project.id, role: 'VIEWER' })
@@ -38,15 +40,9 @@ const AddCollaborator = ({ project, role = 'MANAGER' }: Props) => {
         setAddCollaborators(false)
     }
 
-    const options = {
-        OWNER: CollaboratorRolesOwner,
-        MANAGER: CollaboratorRolesManager,
-    }
-
-    const roles = Object.keys(options[role]) as (keyof typeof CollaboratorRoles)[]
-
     return <>
-        <IconButton onClick={() => setAddCollaborators(true)}><Add /></IconButton>
+        {buttonType == 'ICON' && <IconButton onClick={() => setAddCollaborators(true)}><Add /></IconButton>}
+        {buttonType == 'TEXT' && <Button variant="outlined" startIcon={<PersonAdd />} onClick={() => setAddCollaborators(true)}>Add Collaborator</Button>}
         <BaseModal state={addCollaborators ? "open" : 'closed'} close={() => setAddCollaborators(false)}>
             <GlassSpace size="moderate">
                 <Stack spacing={2}>
@@ -56,7 +52,7 @@ const AddCollaborator = ({ project, role = 'MANAGER' }: Props) => {
                         value={settings.role}
                         onChange={e => setSettings(old => ({ ...old, role: e.target.value as keyof typeof CollaboratorRoles }))}
                     >
-                        {roles.map(role => <MenuItem value={role}>{CollaboratorRoles[role]}</MenuItem>)}
+                        {getEditableRoles(role).map(role => <MenuItem value={role}>{CollaboratorRoles[role]}</MenuItem>)}
                     </Select>
                     <GlassIconText icon={<Add />} size="small">
                         {settings.role == 'VIEWER' && 'View & Download'}
