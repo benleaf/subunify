@@ -10,13 +10,14 @@ import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
 import { CssSizes } from "@/constants/CssSizes";
 
 const ManageProject = () => {
-    const { user } = useAuth()
     const { projectDataStored } = useUpload()
     const { properties, updateProperties } = useDashboard()
-    const amOwner = properties.selectedProject?.owner.email === user?.email
 
+    const amOwner = properties?.projectRole == 'OWNER'
+    const canManage = amOwner || properties?.projectRole == 'MANAGER'
     const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
-    const canUpload = terabytesToBytes(properties.selectedProject?.availableTBs ?? 0) > totalBytesUploaded
+    const spaceToUpload = terabytesToBytes(properties.selectedProject?.availableTBs ?? 0) > totalBytesUploaded
+    const canUpload = spaceToUpload && properties?.projectRole && ['OWNER', 'COLLABORATOR', 'MANAGER'].includes(properties.projectRole)
 
     return <div>
         <Stack spacing={1} direction='column'>
@@ -53,7 +54,7 @@ const ManageProject = () => {
                         Download
                     </Button>
                 </ColorGlassCard>
-                <ColorGlassCard flex={1} paddingSize="moderate" style={{ minWidth: 350, flexBasis: 0 }}>
+                {canManage && <ColorGlassCard flex={1} paddingSize="moderate" style={{ minWidth: 350, flexBasis: 0 }}>
                     <GlassText size="large">Advanced File Settings</GlassText>
                     <GlassText size="moderate" style={{ height: '4em' }}>Advanced file settings. Specify video codec for proxies</GlassText>
                     <Button
@@ -63,7 +64,7 @@ const ManageProject = () => {
                     >
                         File Settings
                     </Button>
-                </ColorGlassCard>
+                </ColorGlassCard>}
 
                 {/* Not ideal: This makes sure that any stray cards on their own row have the same width as the others */}
                 <div style={{ flex: 1, minWidth: 350, padding: CssSizes.moderate }} />

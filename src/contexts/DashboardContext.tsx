@@ -3,12 +3,14 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { isError } from "@/api/isError";
 import { useUpload } from "./UploadContext";
+import { Collaborator } from "@/types/Collaborator";
 
 type Project = {
     projects: ProjectPreviewResult[],
     selectedProjectId: string,
     selectedProject?: ProjectResult,
     selectedCluster: ClusterResult,
+    projectRole?: Collaborator['role'],
     page: 'projects' |
     'project' |
     'cluster' |

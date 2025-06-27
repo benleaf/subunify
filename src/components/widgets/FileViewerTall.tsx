@@ -1,12 +1,11 @@
 import { getFileSize } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { Download, Info, InfoRounded, PlayArrow, Refresh, Rotate90DegreesCw } from "@mui/icons-material"
-import { ButtonBase, Chip, Fab, IconButton, Modal, Tooltip } from "@mui/material"
+import { PlayArrow, Rotate90DegreesCw, Share } from "@mui/icons-material"
+import { ButtonBase, Fab, Modal } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useAuth } from "@/contexts/AuthContext"
-import { FileQuality } from "@/types/FileQuality"
 import { CSSProperties, useEffect, useState } from "react"
 import { isError } from "@/api/isError"
 import { CssSizes } from "@/constants/CssSizes"
@@ -18,7 +17,6 @@ import { VideoFiles } from "@/constants/VideoFiles"
 import { AudioFiles } from "@/constants/AudioFiles"
 import { useSize } from "@/hooks/useSize"
 import { useDashboard } from "@/contexts/DashboardContext"
-import { VideoCodecs } from "@/contexts/VideoCodecs"
 import { DownloadPanel } from "../form/DownloadPanel"
 
 type Props = {
@@ -110,9 +108,12 @@ const FileViewerTall = ({ thumbnail, file }: Props) => {
         <ColorGlassCard width='100%' paddingSize="tiny">
             {!fullscreen && <Media />}
             {(isAudio || videoFiles) && <div style={{ height: 230 }} />}
-            <div style={{ display: 'flex', justifyContent: 'end' }}>
+            <div style={{ display: 'flex', justifyContent: 'end', gap: CssSizes.tiny }}>
                 <Fab onClick={_ => setRotation(old => (old + 90) % 360)} size='small' >
                     <Rotate90DegreesCw fontSize="small" />
+                </Fab>
+                <Fab size='small' >
+                    <Share fontSize="small" />
                 </Fab>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>

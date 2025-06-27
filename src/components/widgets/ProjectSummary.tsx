@@ -28,7 +28,7 @@ const ProjectSummary = () => {
                 startIcon={<Layers />}
                 onClick={() => updateProperties({ page: 'manageProject' })}
             >
-                Manage Project
+                Project Actions
             </Button>
             <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
