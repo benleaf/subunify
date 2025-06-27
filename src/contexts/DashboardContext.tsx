@@ -11,6 +11,7 @@ type Project = {
     selectedProject?: ProjectResult,
     selectedCluster: ClusterResult,
     projectRole?: Collaborator['role'],
+    projectCollaborators?: Collaborator[],
     page: 'projects' |
     'project' |
     'cluster' |
@@ -36,7 +37,7 @@ interface DashboardType {
 const DashboardContext = createContext<DashboardType | undefined>(undefined)
 
 export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { authAction } = useAuth()
+    const { authAction, user } = useAuth()
     const { setDataStored } = useUpload()
     const [project, setProject] = useState<Partial<Project>>({ page: 'projects' });
 
@@ -48,6 +49,16 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         const projects = await authAction<ProjectPreviewResult[]>('project/user-projects', 'GET')
         if (!isError(projects) && projects) {
             updateProperties({ projects })
+        }
+    }
+
+
+    const getCollaborators = async (projectId: string) => {
+        const collaborators = await authAction<Partial<Collaborator[]>>(`project/collaborators/${projectId}`, 'GET')
+        if (!isError(collaborators)) {
+            const projectCollaborators = collaborators.filter(collaborator => collaborator !== undefined)
+            const userRole = collaborators.find(collaborator => collaborator?.email == user.email)?.role
+            updateProperties({ projectRole: userRole, projectCollaborators })
         }
     }
 
@@ -65,6 +76,8 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 selectedProject: projectResult,
                 selectedProjectId: projectResult.id
             })
+
+            await getCollaborators(projectResult.id)
         }
     }
 
