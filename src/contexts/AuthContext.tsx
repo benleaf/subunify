@@ -9,6 +9,7 @@ import { User } from "@/types/User";
 import { useUpload } from "./UploadContext";
 import { AlertColor, Backdrop, CircularProgress } from "@mui/material";
 import UniversalAlert from "@/components/modal/UniversalAlert";
+import { AuthAction } from "@/types/actions/AuthAction";
 
 interface AuthContextType {
     user: Partial<User>
@@ -16,7 +17,7 @@ interface AuthContextType {
     subscribed: boolean
     login: (email: string, password: string) => Promise<void>
     logout: () => void
-    authAction: <T>(endpoint: string, method: RequestMethod, body?: string | FormData) => Promise<T | Partial<ApiError>>
+    authAction: AuthAction
     rawAuthAction: (endpoint: string, method: RequestMethod, body?: string | FormData | Blob) => Promise<Partial<ApiError> | Response>
     downloadAction: (endpoint: string, bytes: number) => Promise<void>
     setAlert: (message: string, colour?: AlertColor) => void

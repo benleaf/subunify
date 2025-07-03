@@ -4,35 +4,15 @@ import { useAuth } from "./AuthContext";
 import { isError } from "@/api/isError";
 import { useUpload } from "./UploadContext";
 import { Collaborator } from "@/types/Collaborator";
-
-type Project = {
-    projects: ProjectPreviewResult[],
-    selectedProjectId: string,
-    selectedProject?: ProjectResult,
-    selectedCluster: ClusterResult,
-    projectRole?: Collaborator['role'],
-    projectCollaborators?: Collaborator[],
-    page: 'projects' |
-    'project' |
-    'cluster' |
-    'statistics' |
-    'billing' |
-    'settings' |
-    'upload' |
-    'account' |
-    'addStorage' |
-    'createProject' |
-    'download' |
-    'manageProject' |
-    'advancedFileSettings' |
-    'manageCollaborators'
-}
+import { Bundle } from "@/types/Bundle";
+import { UpdateProperties } from "@/types/actions/UpdateProperties";
+import { DashboardProperties } from "@/types/actions/DashboardProperties";
 
 interface DashboardType {
     loadProject: (projectId?: string) => Promise<void>
     loadProjects: () => Promise<void>
-    updateProperties: (properties: Partial<Project>) => void,
-    properties: Partial<Project>
+    updateProperties: UpdateProperties,
+    properties: Partial<DashboardProperties>
 }
 
 const DashboardContext = createContext<DashboardType | undefined>(undefined)
@@ -40,10 +20,17 @@ const DashboardContext = createContext<DashboardType | undefined>(undefined)
 export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { authAction, user } = useAuth()
     const { setDataStored } = useUpload()
-    const [project, setProject] = useState<Partial<Project>>({ page: 'projects' });
+    const [project, setProject] = useState<Partial<DashboardProperties>>({ page: 'projects' });
 
-    const updateProperties = (properties: Partial<Project>) => {
+    const updateProperties = (properties: Partial<DashboardProperties>) => {
         setProject(old => ({ ...old, ...properties }))
+    }
+
+    const loadBundles = async () => {
+        const bundles = await authAction<Bundle[]>('bundle', 'GET')
+        if (!isError(bundles) && bundles) {
+            updateProperties({ bundles })
+        }
     }
 
     const loadProjects = async () => {
@@ -53,13 +40,12 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
     }
 
-
     const getCollaborators = async (projectId: string) => {
         const collaborators = await authAction<Partial<Collaborator[]>>(`project/collaborators/${projectId}`, 'GET')
         if (!isError(collaborators)) {
             const projectCollaborators = collaborators.filter(collaborator => collaborator !== undefined)
             const userRole = collaborators.find(collaborator => collaborator?.email == user.email)?.role
-            updateProperties({ projectRole: userRole, projectCollaborators })
+            updateProperties({ projectRole: userRole, collaborators: projectCollaborators })
         }
     }
 
@@ -84,6 +70,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     useEffect(() => {
         loadProjects()
+        loadBundles()
     }, [])
 
 

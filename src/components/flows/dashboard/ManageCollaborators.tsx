@@ -39,7 +39,7 @@ const ManageCollaborators = () => {
             setAlert('Unable to remove collaborator from project', 'error')
         } else {
             setAlert('Collaborator successfully removed from project', 'success')
-            updateProperties({ projectCollaborators: result })
+            updateProperties({ collaborators: result })
             setSelectedCollaborator(undefined)
         }
     }
@@ -57,7 +57,7 @@ const ManageCollaborators = () => {
             setAlert('Unable to update collaborator role', 'error')
         } else {
             setAlert('Collaborator role was successfully updated', 'success')
-            updateProperties({ projectCollaborators: result })
+            updateProperties({ collaborators: result })
             setSelectedCollaborator(undefined)
         }
     }
@@ -70,7 +70,7 @@ const ManageCollaborators = () => {
                 <AddCollaborator project={properties.selectedProject} role={properties.projectRole} buttonType="TEXT" />
             }
         </div>
-        {properties.projectCollaborators?.map(collaborator =>
+        {properties.collaborators?.map(collaborator =>
             <ColorGlassCard paddingSize="small">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div>

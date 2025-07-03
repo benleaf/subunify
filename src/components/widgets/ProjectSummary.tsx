@@ -14,7 +14,7 @@ const ProjectSummary = () => {
                     page: 'projects',
                     selectedProjectId: undefined,
                     selectedProject: undefined,
-                    projectCollaborators: undefined,
+                    collaborators: undefined,
                     projectRole: undefined
                 })} size="large">
                     <ArrowCircleLeft fontSize="large" />

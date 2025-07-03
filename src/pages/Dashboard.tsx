@@ -14,19 +14,37 @@ import Download from "@/components/flows/dashboard/Download";
 import ManageProject from "@/components/flows/dashboard/ManageProject";
 import AdvancedFileSettings from "@/components/flows/dashboard/AdvancedFileSettings";
 import ManageCollaborators from "@/components/flows/dashboard/ManageCollaborators";
+import Bundle from "@/components/flows/dashboard/Bundle";
+import { ActionProvider } from "@/contexts/actions/infrastructure/ActionContext";
 
 const DashboardWithContext = () => {
-    const { properties, loadProject } = useDashboard()
+    const { properties, loadProject, updateProperties } = useDashboard()
     const navigate = useNavigate()
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
         const projectId = searchParams.get('projectId')
+        const bundleId = searchParams.get('bundleId')
         if (projectId) {
             loadProject(projectId)
             navigate('/dashboard')
         }
+        if (bundleId) {
+            updateProperties({ page: 'bundle', selectedBundleId: bundleId })
+        }
     }, [searchParams])
+
+    // useEffect(() => {
+    //     const handleBeforeUnload = (event: Event) => {
+    //         event.preventDefault()
+    //     };
+
+    //     window.addEventListener('beforeunload', handleBeforeUnload);
+
+    //     return () => {
+    //         window.removeEventListener('beforeunload', handleBeforeUnload);
+    //     };
+    // }, []);
 
     return <DashboardLayout>
         {properties.page == 'projects' && <Projects />}
@@ -36,6 +54,7 @@ const DashboardWithContext = () => {
         {properties.page == 'upload' && <Upload />}
         {properties.page == 'account' && <UserAccount />}
         {properties.page == 'addStorage' && <AddStorage />}
+        {properties.page == 'bundle' && <Bundle />}
         {properties.page == 'createProject' && <CreateProject />}
         {properties.page == 'manageProject' && <ManageProject />}
         {properties.page == 'advancedFileSettings' && <AdvancedFileSettings />}
@@ -45,9 +64,11 @@ const DashboardWithContext = () => {
 
 const Dashboard = () => {
     return <DashboardProvider>
-        <ThumbnailProvider>
-            <DashboardWithContext />
-        </ThumbnailProvider>
+        <ActionProvider>
+            <ThumbnailProvider>
+                <DashboardWithContext />
+            </ThumbnailProvider>
+        </ActionProvider>
     </DashboardProvider>
 }
 

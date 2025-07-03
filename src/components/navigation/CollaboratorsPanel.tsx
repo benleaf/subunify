@@ -7,14 +7,13 @@ import Profile from "../form/Profile"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import { useDashboard } from "@/contexts/DashboardContext"
 import AddCollaborator from "../modal/AddCollaborator"
-import { Collaborator } from "@/types/Collaborator"
-import { CollaboratorRoles, CollaboratorRolesThatCanAdd } from "@/constants/CollaboratorRoles"
+import { CollaboratorRoles } from "@/constants/CollaboratorRoles"
 import { canAdd } from "@/helpers/Collaborator"
 
 const CollaboratorsPanel = () => {
     const { height } = useSize()
     const { properties } = useDashboard()
-    const { selectedProject, projectCollaborators } = properties
+    const { selectedProject, collaborators: projectCollaborators } = properties
 
     return <div style={{
         height: height - ComponentSizes.topBar,

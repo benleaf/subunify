@@ -1,4 +1,4 @@
-import { useAuth } from "@/contexts/AuthContext"
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { Check, Close, Notifications, Settings } from "@mui/icons-material"
 import { IconButton, Badge, Menu } from "@mui/material"
@@ -6,11 +6,10 @@ import { useState } from "react"
 import GlassCard from "../glassmorphism/GlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
-import { isError } from "@/api/isError"
 
 const DashboardTopBarOptions = () => {
-    const { updateProperties, properties } = useDashboard()
-    const { authAction } = useAuth()
+    const { properties, updateProperties } = useDashboard()
+    const { respondToProjectInvite } = useAction()
 
     const unacceptedProjects = properties.projects?.filter(project => !project.inviteAccepted)
 
@@ -22,21 +21,6 @@ const DashboardTopBarOptions = () => {
     }
     const handleClose = () => {
         setAnchorEl(null)
-    }
-
-    const respondToProjectInvite = async (projectId: string, response: boolean) => {
-        const projectResult = await authAction<void>(`user/respond-to-project-invite`, 'POST', JSON.stringify({ projectId, response }))
-        if (!isError(projectResult)) {
-            if (response) {
-                updateProperties({
-                    projects: properties.projects?.map(
-                        project => project.id == projectId ? { ...project, inviteAccepted: response } : project
-                    )
-                })
-            } else {
-                updateProperties({ projects: properties.projects?.filter(project => project.id != projectId) })
-            }
-        }
     }
 
     return <>

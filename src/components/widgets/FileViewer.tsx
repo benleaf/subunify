@@ -82,6 +82,9 @@ const FileViewer = ({ thumbnail, file, height = 60, containerWidth }: Props) => 
         <BaseModal state={preview} close={() => setPreview(false)}>
             <FileViewerTall file={file} />
         </BaseModal>
+        <BaseModal state={preview} close={() => setPreview(false)}>
+            <FileViewerTall file={file} />
+        </BaseModal>
     </>
 }
 

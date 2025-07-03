@@ -8,6 +8,7 @@ import { VideoFiles as VideoFiles } from "@/constants/VideoFiles";
 interface ThumbnailType {
     retrieveThumbnails: (files: StoredFile[]) => Promise<void>
     getUrl: (file: StoredFile) => string | undefined
+    thumbnails: { [fileName: string]: string; }
 }
 
 const ThumbnailContext = createContext<ThumbnailType | undefined>(undefined)
@@ -36,7 +37,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return thumbnails[file.id]
     }
 
-    return <ThumbnailContext.Provider value={{ retrieveThumbnails, getUrl }}>
+    return <ThumbnailContext.Provider value={{ retrieveThumbnails, getUrl, thumbnails }}>
         {children}
     </ThumbnailContext.Provider>;
 };

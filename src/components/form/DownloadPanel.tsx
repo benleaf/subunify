@@ -76,7 +76,7 @@ export const DownloadPanel = ({ file, codec }: Props) => {
         <ButtonBase onClick={() => download(file, 'LOW')}>
             <Chip icon={<Download color="primary" />} label='1080p' />
         </ButtonBase>
-        <Tooltip title={<>
+        <Tooltip enterTouchDelay={0} title={<>
             <b>PROXIES</b>
             <p>4K: {codec ? VideoCodecs[codec] : 'Apple ProRes 422 PROXY'} (3840x2160)</p>
             <p>2K: {codec ? VideoCodecs[codec] : 'Apple ProRes 422 PROXY'} (2560x1440)</p>

@@ -1,26 +1,50 @@
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard"
 import GlassIconText from "@/components/glassmorphism/GlassIconText"
 import GlassText from "@/components/glassmorphism/GlassText"
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { useDashboard } from "@/contexts/DashboardContext"
-import { useUpload } from "@/contexts/UploadContext"
-import { getFileSize } from "@/helpers/FileSize"
+import { Bundle } from "@/types/Bundle"
 import { ProjectPreviewResult } from "@/types/server/ProjectResult"
-import { Edit } from "@mui/icons-material"
-import { Stack, TextField, Divider } from "@mui/material"
+import { Check, Close, Collections, Edit, Info, People } from "@mui/icons-material"
+import { Stack, Divider, Chip, IconButton } from "@mui/material"
+import moment from "moment"
+import { useNavigate } from "react-router"
+
+const isBundle = (item: ProjectPreviewResult | (Bundle & { isOwner: boolean })): item is (Bundle & { isOwner: boolean }) => {
+    return 'bundleFiles' in item
+}
+
+const isProject = (item: ProjectPreviewResult | (Bundle & { isOwner: boolean })): item is ProjectPreviewResult => {
+    return 'availableTBs' in item
+}
 
 const Projects = () => {
+    const { user } = useAuth()
+    const { respondToProjectInvite } = useAction()
     const { properties, updateProperties } = useDashboard()
-    const { projectDataStored } = useUpload()
+    const navigate = useNavigate()
 
-    const setSelectedProject = async (projectPreview: ProjectPreviewResult) => {
-        updateProperties({ page: 'project', selectedProjectId: projectPreview.id })
+    const bundles = properties.bundles?.map(
+        bundle => ({
+            ...bundle,
+            isOwner: bundle.bundleUsers?.find(bundleUser => bundleUser.user.id == user.id)?.isOwner ?? false
+        })
+    ) ?? []
+
+    const items = [...properties.projects ?? [], ...bundles]
+        .sort((a, b) => moment(b.modified).diff(a.modified))
+
+    const onSelectItem = (item: typeof items[number]) => {
+        if (isProject(item) && item.inviteAccepted) updateProperties({ page: 'project', selectedProjectId: item.id })
+        if (isBundle(item)) {
+            navigate(`/dashboard?bundleId=${item.id}`)
+            updateProperties({ page: 'bundle' })
+        }
     }
 
-    const acceptedProjects = properties.projects?.filter(project => project.inviteAccepted)
-
     return <Stack spacing={1}>
-        <TextField label='Search Projects' />
-        {!acceptedProjects?.length && <ColorGlassCard paddingSize="small" onClick={() => updateProperties({ page: 'createProject' })}>
+        {!properties.projects?.length && <ColorGlassCard paddingSize="small" onClick={() => updateProperties({ page: 'createProject' })}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div>
                     <GlassIconText size="large" icon={<Edit />}>Create New Project</GlassIconText>
@@ -32,28 +56,51 @@ const Projects = () => {
                 </div>
             </div>
         </ColorGlassCard>}
-        {acceptedProjects?.map(project =>
-            <ColorGlassCard paddingSize="small" onClick={() => setSelectedProject(project)}>
+        {items?.map(item =>
+            <ColorGlassCard paddingSize="small" onClick={() => onSelectItem(item)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div>
-                        <GlassText size="large">{project.name}</GlassText>
-                        <GlassText size="moderate">{project.description}</GlassText>
+                        <GlassText size="large">{item.name}</GlassText>
+                        <GlassText size="moderate">{item.description}</GlassText>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <div>
-                            <GlassText size="large">{getFileSize(projectDataStored[project.id])}</GlassText>
-                            <GlassText size="small">Uploaded</GlassText>
-                        </div>
-                        <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                        <div>
-                            <GlassText size="large">{project.availableTBs} TB</GlassText>
-                            <GlassText size="small">Available</GlassText>
-                        </div>
-                        <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                        <div>
-                            <GlassText size="large">{project.collaborators}</GlassText>
-                            <GlassText size="small">Collaborators</GlassText>
-                        </div>
+                        {isBundle(item) && <Stack direction='row' spacing={2} alignItems='center'>
+                            {item.isOwner && <Chip icon={<Info />} label='Owner' />}
+                            <Chip icon={<People />} label='Share Bundle' />
+                            <Divider orientation="vertical" style={{ height: 50 }} />
+                            <div>
+                                <GlassText size="large">{item.bundleFiles?.length}</GlassText>
+                                <GlassText size="small">Files</GlassText>
+                            </div>
+                            <Divider orientation="vertical" style={{ height: 50 }} />
+                            <div>
+                                <GlassText size="large">{item.bundleUsers?.length}</GlassText>
+                                <GlassText size="small">Recipients</GlassText>
+                            </div>
+                        </Stack>}
+                        {isProject(item) && item.inviteAccepted && <>
+                            <Chip icon={<Collections />} label='Project' />
+                            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                            <div>
+                                <GlassText size="large">{item.availableTBs} TB</GlassText>
+                                <GlassText size="small">Available</GlassText>
+                            </div>
+                            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                            <div>
+                                <GlassText size="large">{item.collaborators}</GlassText>
+                                <GlassText size="small">Collaborators</GlassText>
+                            </div>
+                        </>}
+                        {isProject(item) && !item.inviteAccepted && <>
+                            <Chip icon={<Info />} label='Invitation Pending' />
+                            <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                            <IconButton onClick={() => respondToProjectInvite(item.id, true)} color="primary">
+                                < Check />
+                            </IconButton>
+                            <IconButton onClick={() => respondToProjectInvite(item.id, false)} color="primary">
+                                < Close />
+                            </IconButton>
+                        </>}
                     </div>
                 </div>
             </ColorGlassCard>

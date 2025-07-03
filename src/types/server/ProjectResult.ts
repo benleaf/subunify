@@ -32,7 +32,8 @@ export type ProjectPreviewResult = {
     description: string
     totalUploaded: number
     collaborators: number
-    daysToArchive: number
+    created: Date
+    modified: Date
     availableTBs: number
     inviteAccepted: boolean
     owner: User
