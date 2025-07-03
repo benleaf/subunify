@@ -1,19 +1,23 @@
 import { isError } from '@/api/isError'
 import { useAuth } from '@/contexts/AuthContext'
 import { StoredFile } from '@/types/server/ProjectResult'
-import { Forward10, Pause, PlayArrow, Replay10, Rotate90DegreesCw } from '@mui/icons-material'
-import { IconButton } from '@mui/material'
+import { Forward10, Fullscreen, FullscreenExit, Pause, PlayArrow, Replay10, Rotate90DegreesCw } from '@mui/icons-material'
+import { IconButton, Modal } from '@mui/material'
 import { CSSProperties, ElementRef, useEffect, useRef, useState } from 'react'
 import GlassText from './GlassText'
 import { Colours } from '@/constants/Colours'
+import { useSize } from '@/hooks/useSize'
 
-type Props = {
+
+type GlassVideoFrameProps = {
     file?: StoredFile,
     height?: number
     placeholder?: string
+    fullscreen: boolean,
+    setFullscreen: (value: boolean) => void
 }
 
-const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
+const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFullscreen }: GlassVideoFrameProps) => {
     const { authAction } = useAuth()
 
     const video = useRef<HTMLVideoElement>(null)
@@ -32,6 +36,11 @@ const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
             video.current?.play()
             setPlaying(true)
         }
+    }
+
+    const showFullscreen = async () => {
+        if (!src) await showPreview()
+        setFullscreen(true)
     }
 
     const showPreview = async () => {
@@ -80,7 +89,7 @@ const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
         height: !landscape ? `min(${height * 5}px, 100%)` : height,
     } as CSSProperties
 
-    return <div style={{ position: 'relative', height: '100%', width: '100%', cursor: secondsSinceActive < 3 ? 'auto' : 'none' }} onMouseMove={() => setSecondsSinceActive(0)} onClick={() => setSecondsSinceActive(0)}>
+    return <div style={{ position: 'relative', height: '100%', width: '100%', cursor: secondsSinceActive < 3 ? 'auto' : 'none' }} onMouseMove={() => setSecondsSinceActive(0)}>
         <div style={{ backgroundColor: Colours.black, height: height, minWidth: 300, display: 'flex', justifyContent: 'center' }} onClick={_ => togglePlay()}>
             {!src && placeholder && <div style={{ position: 'relative', height: '100%' }} onClick={showPreview}>
                 <img src={placeholder} height={height + 10} style={{ objectFit: 'contain', ...rotateCss }} />
@@ -90,7 +99,7 @@ const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
                 Your browser does not support the video tag.
             </video>}
         </div>
-        <div style={{ position: 'absolute', bottom: 0, width: '100%', opacity: (4 / secondsSinceActive) - 1 }}>
+        <div style={{ position: 'absolute', bottom: 0, width: '100%', opacity: (5 / (secondsSinceActive + 1)) - 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 <div>
                     {playing && <IconButton onClick={_ => changeTime(-10)} color='primary'>
@@ -111,6 +120,12 @@ const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
                     <IconButton onClick={_ => setRotation(old => (old + 90) % 360)} color='primary'>
                         <Rotate90DegreesCw />
                     </IconButton>
+                    {!fullscreen && <IconButton onClick={_ => showFullscreen()} color='primary'>
+                        <Fullscreen />
+                    </IconButton>}
+                    {fullscreen && <IconButton onClick={_ => setFullscreen(false)} color='primary'>
+                        <FullscreenExit />
+                    </IconButton>}
                 </div>
             </div>
             <div
@@ -146,6 +161,40 @@ const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
             </div>
         </div>
     </div >
+}
+
+type Props = {
+    file?: StoredFile,
+    height?: number
+    placeholder?: string
+}
+
+const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
+    const size = useSize()
+    const [fullscreen, setFullscreen] = useState(false)
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setFullscreen(false)
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [])
+
+    return <>
+        {!fullscreen && <GlassVideoFrame file={file} height={height} placeholder={placeholder} fullscreen={fullscreen} setFullscreen={setFullscreen} />}
+        {fullscreen && <Modal
+            onClose={() => setFullscreen(false)}
+            open={fullscreen}
+            style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+            <GlassVideoFrame file={file} height={size.height} placeholder={placeholder} fullscreen={fullscreen} setFullscreen={setFullscreen} />
+        </Modal>}
+    </>
 }
 
 export default GlassVideo
