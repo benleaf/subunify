@@ -77,7 +77,9 @@ const OpeningSplash = () => {
                 size="fullscreen"
                 style={{ lineHeight: '1em', fontWeight: 'lighter' }}
                 color="lightGrey"
-            ><b style={{ color: 'red' }}>UN</b>RESTRAINED</GlassText>
+            >
+                <b style={{ color: 'red' }}>UN</b>BOUNDED
+            </GlassText>
         </div>
         <div ref={bottomText} >
             <div style={{ height: '1em' }} />

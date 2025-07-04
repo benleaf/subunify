@@ -17,7 +17,7 @@ type Props = {
     height?: number
 }
 
-const MediaContent = ({ file, height = 200 }: Props) => {
+const MediaContent = ({ file, height = 300 }: Props) => {
     const { authAction } = useAuth()
     const { thumbnails } = useThumbnail()
     const thumbnail = thumbnails[file.id]
@@ -35,15 +35,15 @@ const MediaContent = ({ file, height = 200 }: Props) => {
     }
 
     return <>
+        {videoFiles && <GlassVideo file={file} placeholder={thumbnail} height={height} />}
         {thumbnail && !preview && !videoFiles && <ButtonBase
-            style={{ backgroundColor: Colours.black, height: height + 5, flex: 1, minWidth: 300 }}
+            style={{ backgroundColor: Colours.black, height: height + 5, minWidth: 300 }}
         >
             <div style={{ position: 'relative', width: '100%' }}>
                 <img src={thumbnail} width='100%' height={height + 10} style={{ objectFit: 'contain' }} onClick={_ => showPreview(file)} />
             </div>
         </ButtonBase >}
-        {videoFiles && <div style={{ flex: 1 }}><GlassVideo file={file} placeholder={thumbnail} /></div>}
-        {isAudio && preview && <ButtonBase style={{ backgroundColor: Colours.black, height: height + 5, flex: 1, minWidth: 300 }} >
+        {isAudio && preview && <ButtonBase style={{ backgroundColor: Colours.black, height: height + 5, minWidth: 300 }} >
             <div style={{ position: 'relative', width: '100%', height: '100%' }} onClick={_ => setPreview(null)}>
                 <GlassText size="small" color="primary" style={{ alignSelf: 'center' }}>Some audio clips may not be possible to preview</GlassText>
                 <audio controls autoPlay={true} style={{ width: '90%' }}>

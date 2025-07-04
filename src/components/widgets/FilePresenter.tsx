@@ -15,7 +15,9 @@ type Props = {
 const FilePresenter = ({ file, isRight, message }: Props) => {
     return <GlassCard marginSize="small" paddingSize="small">
         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: CssSizes.small, justifyContent: 'space-between' }}>
-            <MediaContent file={file} />
+            <div style={{ flex: 1 }}>
+                <MediaContent file={file} />
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flex: 1, minWidth: 300 }}>
                 <div>
                     <GlassText size="big">{file.name}</GlassText>

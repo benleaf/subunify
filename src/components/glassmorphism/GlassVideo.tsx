@@ -13,42 +13,58 @@ type GlassVideoFrameProps = {
     file?: StoredFile,
     height?: number
     placeholder?: string
-    fullscreen: boolean,
-    setFullscreen: (value: boolean) => void
+    videoState: VideoState,
+    setVideoState: (value: React.SetStateAction<VideoState>) => void
 }
 
-const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFullscreen }: GlassVideoFrameProps) => {
+const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideoState }: GlassVideoFrameProps) => {
     const { authAction } = useAuth()
-
+    const { rotation, fullscreen, playing, secondsSinceActive, time, src } = videoState
     const video = useRef<HTMLVideoElement>(null)
     const progress = useRef<ElementRef<'div'>>(null)
-    const [rotation, setRotation] = useState(0)
-    const [playing, setPlaying] = useState(false)
-    const [src, setSrc] = useState<string>()
-    const [time, setTime] = useState<number>(0)
-    const [secondsSinceActive, setSecondsSinceActive] = useState<number>(0)
 
-    const togglePlay = () => {
-        if (playing) {
-            video.current?.pause()
-            setPlaying(false)
-        } else {
-            video.current?.play()
-            setPlaying(true)
+    useEffect(() => {
+        if (video.current) {
+            video.current.currentTime = time
         }
+    }, [video])
+
+    useEffect(() => {
+        if (file) {
+            const rotation = localStorage.getItem(`rotate_${file.id}`)
+            setVideoState(old => ({ ...old, rotation: +(rotation ?? '0') }))
+        }
+    }, [file])
+
+    useEffect(() => {
+        updatePlaying()
+    }, [videoState.playing])
+
+    const updatePlaying = async () => {
+        if (!src) await showPreview()
+        if (videoState.playing) {
+            video.current?.play()
+        } else {
+            video.current?.pause()
+        }
+    }
+
+    const updateRotation = () => {
+        const newRotation = (rotation + 90) % 360
+        setVideoState(old => ({ ...old, rotation: newRotation }))
+        if (file) localStorage.setItem(`rotate_${file.id}`, `${newRotation}`)
     }
 
     const showFullscreen = async () => {
         if (!src) await showPreview()
-        setFullscreen(true)
+        setVideoState(old => ({ ...old, fullscreen: true }))
     }
 
     const showPreview = async () => {
         if (!file) return
         const response = await authAction<{ url: string }>(`file-download/${file.id}/LOW`, 'GET')
         if (response && !isError(response)) {
-            setSrc(response.url)
-            setPlaying(true)
+            setVideoState(old => ({ ...old, src: response.url, playing: true }))
         }
     }
 
@@ -56,11 +72,14 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFulls
         const videoRef = video.current
         if (videoRef) {
             const handleTimeUpdate = () => {
-                setTime(videoRef!.currentTime);
+                setVideoState(old => ({ ...old, time: videoRef!.currentTime }))
             }
 
             videoRef.addEventListener('timeupdate', handleTimeUpdate);
-            const intervalId = setInterval(() => setSecondsSinceActive(old => old + 0.01), 10)
+            const intervalId = setInterval(
+                () => setVideoState(old => ({ ...old, secondsSinceActive: old.secondsSinceActive + 0.01 })),
+                10
+            )
 
             return () => {
                 videoRef!.removeEventListener('timeupdate', handleTimeUpdate)
@@ -69,17 +88,19 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFulls
         }
     }, [src]);
 
-    const onProgressBarClicked = (clientX: number) => {
+    const onProgressBarClicked = async (clientX: number) => {
+        if (!video.current) await showPreview()
         const elementRect = progress.current!.getBoundingClientRect();
         const relativeClickX = clientX - elementRect.left;
         const newTime = video.current!.duration * (relativeClickX / elementRect.width)
         video.current!.currentTime = newTime
-        setTime(newTime)
+        setVideoState(old => ({ ...old, time: newTime }))
     }
 
-    const changeTime = (change: number) => {
+    const changeTime = async (change: number) => {
+        if (!video.current) await showPreview()
         video.current!.currentTime += change
-        setTime(old => old += change)
+        setVideoState(old => ({ ...old, time: old.time += change, secondsSinceActive: 0 }))
     }
 
     const landscape = rotation == 0 || rotation == 180
@@ -89,12 +110,19 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFulls
         height: !landscape ? `min(${height * 5}px, 100%)` : height,
     } as CSSProperties
 
-    return <div style={{ position: 'relative', height: '100%', width: '100%', cursor: secondsSinceActive < 3 ? 'auto' : 'none' }} onMouseMove={() => setSecondsSinceActive(0)}>
-        <div style={{ backgroundColor: Colours.black, height: height, minWidth: 300, display: 'flex', justifyContent: 'center' }} onClick={_ => togglePlay()}>
+    return <div
+        style={{ position: 'relative', height: '100%', width: '100%', cursor: secondsSinceActive < 3 ? 'auto' : 'none' }}
+        onMouseMove={() => setVideoState(old => ({ ...old, secondsSinceActive: 0 }))}
+        onMouseLeave={() => setVideoState(old => ({ ...old, secondsSinceActive: 100 }))}
+    >
+        <div
+            style={{ backgroundColor: Colours.black, height: height, minWidth: 300, display: 'flex', justifyContent: 'center' }}
+            onClick={_ => setVideoState(old => ({ ...old, playing: !old.playing }))}
+        >
             {!src && placeholder && <div style={{ position: 'relative', height: '100%' }} onClick={showPreview}>
                 <img src={placeholder} height={height + 10} style={{ objectFit: 'contain', ...rotateCss }} />
             </div>}
-            {src && <video ref={video} autoPlay={true} width='100%' height={height + 10} style={{ objectFit: 'contain', ...rotateCss }}>
+            {src && <video ref={video} autoPlay={playing} width='100%' height={height + 10} style={{ objectFit: 'contain', ...rotateCss }}>
                 <source src={src} type="video/mp4" />
                 Your browser does not support the video tag.
             </video>}
@@ -102,28 +130,28 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFulls
         <div style={{ position: 'absolute', bottom: 0, width: '100%', opacity: (5 / (secondsSinceActive + 1)) - 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 <div>
-                    {playing && <IconButton onClick={_ => changeTime(-10)} color='primary'>
+                    <IconButton onClick={_ => changeTime(-10)} color='primary'>
                         <Replay10 />
-                    </IconButton>}
-                    {playing && <IconButton onClick={_ => togglePlay()} color='primary'>
+                    </IconButton>
+                    {playing && <IconButton onClick={_ => setVideoState(old => ({ ...old, playing: false }))} color='primary'>
                         <Pause />
                     </IconButton>}
-                    {!playing && <IconButton onClick={_ => togglePlay()} color='primary'>
+                    {!playing && <IconButton onClick={_ => setVideoState(old => ({ ...old, playing: true }))} color='primary'>
                         <PlayArrow />
                     </IconButton>}
-                    {playing && <IconButton onClick={_ => changeTime(10)} color='primary'>
+                    <IconButton onClick={_ => changeTime(10)} color='primary'>
                         <Forward10 />
-                    </IconButton>}
+                    </IconButton>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <GlassText size='moderate' color='primary'>{new Date((time ?? 0) * 1000).toISOString().substring(11, 19)}</GlassText>
-                    <IconButton onClick={_ => setRotation(old => (old + 90) % 360)} color='primary'>
+                    <IconButton onClick={_ => updateRotation()} color='primary'>
                         <Rotate90DegreesCw />
                     </IconButton>
                     {!fullscreen && <IconButton onClick={_ => showFullscreen()} color='primary'>
                         <Fullscreen />
                     </IconButton>}
-                    {fullscreen && <IconButton onClick={_ => setFullscreen(false)} color='primary'>
+                    {fullscreen && <IconButton onClick={_ => setVideoState(old => ({ ...old, fullscreen: false }))} color='primary'>
                         <FullscreenExit />
                     </IconButton>}
                 </div>
@@ -143,7 +171,7 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFulls
                             bottom: 0,
                             width: 5,
                             height: 18,
-                            left: `calc(${100 * time / video.current!.duration}% - 2.5px)`,
+                            left: `calc(${Math.min(100, 100 * time / video.current!.duration)}% - 2.5px)`,
                             backgroundColor: Colours.primary,
                             background: `linear-gradient(to top, ${Colours.primary}, #f005)`,
                             borderRadius: '5px 5px 0 0',
@@ -154,7 +182,7 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, fullscreen, setFulls
                             bottom: 0,
                             height: 15,
                             left: 0,
-                            width: `${100 * time / video.current!.duration}%`,
+                            width: `${Math.min(100, 100 * time / video.current!.duration)}%`,
                             background: `linear-gradient(to top, ${Colours.primary}, #0000)`,
                         }} />}
                 </div>
@@ -169,13 +197,29 @@ type Props = {
     placeholder?: string
 }
 
+type VideoState = {
+    src?: string,
+    fullscreen: boolean,
+    playing: boolean,
+    rotation: number,
+    time: number,
+    secondsSinceActive: number
+}
+
 const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
     const size = useSize()
-    const [fullscreen, setFullscreen] = useState(false)
+    const [videoState, setVideoState] = useState<VideoState>({
+        fullscreen: false,
+        playing: false,
+        rotation: 0,
+        time: 0,
+        secondsSinceActive: 0,
+    })
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') setFullscreen(false)
+            console.log(event)
+            if (event.key === 'Escape') setVideoState(old => ({ ...old, fullscreen: false }))
         };
 
         document.addEventListener('keydown', handleKeyDown);
@@ -186,13 +230,13 @@ const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
     }, [])
 
     return <>
-        {!fullscreen && <GlassVideoFrame file={file} height={height} placeholder={placeholder} fullscreen={fullscreen} setFullscreen={setFullscreen} />}
-        {fullscreen && <Modal
-            onClose={() => setFullscreen(false)}
-            open={fullscreen}
+        {!videoState.fullscreen && <GlassVideoFrame file={file} height={height} placeholder={placeholder} videoState={videoState} setVideoState={setVideoState} />}
+        {videoState.fullscreen && <Modal
+            onClose={() => setVideoState(old => ({ ...old, fullscreen: false }))}
+            open={videoState.fullscreen}
             style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
-            <GlassVideoFrame file={file} height={size.height} placeholder={placeholder} fullscreen={fullscreen} setFullscreen={setFullscreen} />
+            <GlassVideoFrame file={file} height={size.height} placeholder={placeholder} videoState={videoState} setVideoState={setVideoState} />
         </Modal>}
     </>
 }
