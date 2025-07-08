@@ -56,7 +56,8 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         if (!isError(projectResult) && projectResult) {
             const bytesUploaded = projectResult.files
                 .filter(file => file.created)
-                .reduce((n, { bytes }) => n + +bytes, 0) ?? 0
+                .map(file => file.bytes + file.proxyFiles.reduce((n, { bytes }) => n + +bytes, 0))
+                .reduce((n, bytes) => n + +bytes, 0) ?? 0
             setDataStored(contingentProjectId, bytesUploaded)
 
             updateProperties({

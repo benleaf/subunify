@@ -12,7 +12,7 @@ import { getFileSize } from "@/helpers/FileSize"
 
 const Download = () => {
     const { downloadAction, authAction } = useAuth()
-    const { properties, loadProject } = useDashboard()
+    const { properties } = useDashboard()
     const [quality, setQuality] = useState<FileQuality>('HIGH')
     const [bytes, setBytes] = useState<number>(0)
 

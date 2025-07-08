@@ -1,3 +1,5 @@
+import { StoredFile } from "@/types/server/ProjectResult"
+
 const kb = 2 ** 10
 
 export const getFileSize = (bytes: number) => {
@@ -10,7 +12,7 @@ export const getFileSize = (bytes: number) => {
     size /= kb
     if (size < kb) return `${(size).toFixed(1)} GB`
     size /= kb
-    if (size < kb) return `${(size).toFixed(1)} TB`
+    return `${(size).toFixed(1)} TB`
 }
 
 export const terabytesToBytes = (terabytes: number) => {
@@ -30,3 +32,12 @@ export const getNumericFileUploadCost = (bytes: number) => {
 }
 
 export const largestSizeForMinPayment = getFileSize((2 ** 40 / 1.5) * 0.6)
+
+export const getFileSizes = (file: StoredFile) => {
+    const sizeOfProxies = file.proxyFiles.reduce((n, { bytes }) => n + +bytes, 0)
+    return {
+        rawSize: getFileSize(file.bytes),
+        proxy: getFileSize(sizeOfProxies),
+        total: getFileSize(file.bytes + sizeOfProxies)
+    }
+}

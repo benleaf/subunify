@@ -6,7 +6,7 @@
 @value colorPrimary: #ff0000;
 @value colorPrimaryDark: #B80300;
 @value colorPrimaryTransparent: #ff742a10;
-@value colorSecondary: #C7EAFF;
+@value colorSecondary: #CCC;
 
 .mediumCircle {
     width: 250px;

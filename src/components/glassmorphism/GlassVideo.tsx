@@ -61,10 +61,12 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
     }
 
     const showPreview = async () => {
-        if (!file) return
-        const response = await authAction<{ url: string }>(`file-download/${file.id}/LOW`, 'GET')
+        const lowResProxy = file?.proxyFiles.find(proxy => proxy.proxyType == 'VIDEO_CODEC_1080P')
+        if (!file || !lowResProxy) return
+
+        const response = await authAction<{ url: string }>(`proxy-file/${lowResProxy.id}/${lowResProxy.proxyType}`, 'GET')
         if (response && !isError(response)) {
-            setVideoState(old => ({ ...old, src: response.url, playing: true }))
+            setVideoState(old => ({ ...old, src: response.url }))
         }
     }
 
@@ -89,11 +91,11 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
     }, [src]);
 
     const onProgressBarClicked = async (clientX: number) => {
-        if (!video.current) await showPreview()
+        if (!video.current) return await showPreview()
         const elementRect = progress.current!.getBoundingClientRect();
         const relativeClickX = clientX - elementRect.left;
         const newTime = video.current!.duration * (relativeClickX / elementRect.width)
-        video.current!.currentTime = newTime
+        video.current.currentTime = newTime
         setVideoState(old => ({ ...old, time: newTime }))
     }
 
@@ -128,6 +130,15 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
             </video>}
         </div>
         <div style={{ position: 'absolute', bottom: 0, width: '100%', opacity: (5 / (secondsSinceActive + 1)) - 1 }}>
+            <div
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    height: 70,
+                    left: 0,
+                    width: `100%`,
+                    background: `linear-gradient(to top, #333F, #6660)`,
+                }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 <div>
                     <IconButton onClick={_ => changeTime(-10)} color='primary'>
@@ -144,7 +155,7 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
                     </IconButton>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <GlassText size='moderate' color='primary'>{new Date((time ?? 0) * 1000).toISOString().substring(11, 19)}</GlassText>
+                    <GlassText style={{ zIndex: 100 }} size='moderate' color='primary'><b>{new Date((time ?? 0) * 1000).toISOString().substring(11, 19)}</b></GlassText>
                     <IconButton onClick={_ => updateRotation()} color='primary'>
                         <Rotate90DegreesCw />
                     </IconButton>

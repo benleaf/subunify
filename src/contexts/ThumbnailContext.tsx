@@ -1,9 +1,9 @@
 import { StoredFile } from "@/types/server/ProjectResult";
 import React, { createContext, useContext, useState } from "react";
-import { useAuth } from "./AuthContext";
 import { isError } from "@/api/isError";
 import { getExtension } from "@/helpers/FileProperties";
 import { VideoFiles as VideoFiles } from "@/constants/VideoFiles";
+import { useAction } from "./actions/infrastructure/ActionContext";
 
 interface ThumbnailType {
     retrieveThumbnails: (files: StoredFile[]) => Promise<void>
@@ -15,7 +15,7 @@ const ThumbnailContext = createContext<ThumbnailType | undefined>(undefined)
 
 export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [thumbnails, setThumbnails] = useState<{ [fileName: string]: string }>({})
-    const { authAction } = useAuth()
+    const { getFileProxyDownloadUrl } = useAction()
 
     const retrieveThumbnails = async (files: StoredFile[]) => {
         const validFiles = files.filter(
@@ -23,8 +23,8 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         )
 
         validFiles.map(file =>
-            authAction<{ url: string }>(`file-download/${file.id}/THUMBNAIL`, 'GET')
-                .then(result => isError(result) ? console.error(result) : addThumbnail(file.id, result.url))
+            getFileProxyDownloadUrl(file, 'VIDEO_THUMBNAIL')
+                .then(result => !result || isError(result) ? console.error(result) : addThumbnail(file.id, result.url))
         )
     }
 

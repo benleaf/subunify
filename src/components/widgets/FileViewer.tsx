@@ -1,7 +1,7 @@
-import { getFileSize } from "@/helpers/FileSize"
+import { getFileSize, getFileSizes } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { PlayArrow } from "@mui/icons-material"
-import { Stack, Divider } from "@mui/material"
+import { InfoRounded, PlayArrow } from "@mui/icons-material"
+import { Stack, Divider, Tooltip, IconButton } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassText from "../glassmorphism/GlassText"
 import BaseModal from "../modal/BaseModal"
@@ -72,10 +72,15 @@ const FileViewer = ({ thumbnail, file, height = 60, containerWidth }: Props) => 
                         </div>
                     </>}
                     <Divider orientation="vertical" style={{ height: height / 2, marginInline: 10 }} />
-                    <div style={{ minWidth: height - 20 }}>
-                        <GlassText size="small">RAW Size</GlassText>
-                        <GlassText size="moderate">{getFileSize(file.bytes)}</GlassText>
-                    </div>
+                    <Tooltip enterTouchDelay={0} title={<>
+                        <p>File Size: {getFileSizes(file).rawSize}</p>
+                        <p>Thumbnails/Proxies: {getFileSizes(file).proxy}</p>
+                    </>}>
+                        <div style={{ minWidth: height - 20 }}>
+                            <GlassText size="small">Size</GlassText>
+                            <GlassText size="moderate">{getFileSizes(file).total}</GlassText>
+                        </div>
+                    </Tooltip>
                 </div>}
             </div>
         </ColorGlassCard>

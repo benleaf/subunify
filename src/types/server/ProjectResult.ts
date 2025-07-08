@@ -1,5 +1,6 @@
-import { VideoCodecs } from "@/contexts/VideoCodecs"
+import { VideoCodecs } from "@/constants/VideoCodecs"
 import { User } from "../User"
+import { ProxySettingTypes } from "./ProxySettingTypes"
 
 export type ProjectResult = {
     files: StoredFile[]
@@ -13,6 +14,14 @@ export type ClusterResult = {
     fileCount: number
 }
 
+export type ProxyResult = {
+    id: string;
+    created: Date;
+    proxyType: ProxySettingTypes;
+    transformation: keyof typeof VideoCodecs;
+    bytes: string | number;
+}
+
 export type StoredFile = {
     id: string,
     name: string,
@@ -23,7 +32,8 @@ export type StoredFile = {
     location: 'INSTANT' | 'SHALLOW' | 'DEEP',
     available?: Date,
     bytes: number,
-    proxyState: "NA" | "PROCESSING" | "COMPLETE" | "ARCHIVED"
+    proxyState: "NA" | "PROCESSING" | "COMPLETE" | "ARCHIVED",
+    proxyFiles: ProxyResult[]
 }
 
 export type ProjectPreviewResult = {
@@ -43,11 +53,9 @@ export type Project = {
     name: string,
     description: string,
     id: string,
-    projectType: 'large' | 'pro' | 'enterprise'
     collaborators: Partial<User>[],
 }
 
 export type ProjectSettings = {
-    videoCodec?: keyof typeof VideoCodecs
+    [key in ProxySettingTypes]: keyof typeof VideoCodecs | undefined
 }
-
