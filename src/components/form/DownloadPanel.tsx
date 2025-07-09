@@ -57,9 +57,11 @@ export const DownloadPanel = ({ file, projectSettings }: Props) => {
         </div>
     } else if (file.proxyState == 'NA') {
         return <div style={{ display: 'flex', gap: CssSizes.tiny, flexWrap: 'wrap', alignItems: 'center' }}>
-            <ButtonBase onClick={() => download(file, 'RAW')}>
-                <Chip icon={<Download color="primary" />} label='Download' />
-            </ButtonBase>
+            <Tooltip enterTouchDelay={0} title={getFileSize(file.bytes)}>
+                <ButtonBase onClick={() => download(file, 'RAW')}>
+                    <Chip icon={<Download color="primary" />} label='Download' />
+                </ButtonBase>
+            </Tooltip>
             {videoFile && <Chip icon={<Info color="info" />} label='Quality too low to process' />}
         </div>
     } else if (file.proxyState != 'COMPLETE') {
@@ -82,7 +84,7 @@ export const DownloadPanel = ({ file, projectSettings }: Props) => {
                 <Chip icon={<Download color="primary" />} label={ProxySettingLabels[proxy.proxyType]} />
             </ButtonBase>
         </Tooltip>)}
-        <Tooltip enterTouchDelay={0} title={<>
+        {videoFile && <Tooltip enterTouchDelay={0} title={<>
             <b>PROXIES</b>
             <p>4K: {VideoCodecs[projectSettings?.VIDEO_CODEC_4K ?? 'H_264']} (3840x2160)</p>
             <p>2K: {VideoCodecs[projectSettings?.VIDEO_CODEC_2K ?? 'H_264']} (2560x1440)</p>
@@ -91,7 +93,7 @@ export const DownloadPanel = ({ file, projectSettings }: Props) => {
             <IconButton>
                 <InfoRounded />
             </IconButton>
-        </Tooltip>
+        </Tooltip>}
         <GlassText size="moderate"></GlassText>
     </div>
 }

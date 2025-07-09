@@ -46,14 +46,14 @@ const FileViewer = ({ thumbnail, file, height = 60, containerWidth }: Props) => 
     return <>
         <ColorGlassCard width='100%' paddingSize="tiny" flex={1} onClick={() => setPreview(true)}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height }}>
-                {(isAudio || (videoFiles && thumbnail)) && <>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: Colours.black }} >
+                {(isAudio || thumbnail) && <>
+                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: Colours.black, width: height * 2 + 20 }} >
                         <div style={{ position: 'relative', width: height * 2 + 21 }}>
-                            {videoFiles && <img src={thumbnail} height={height + 20} style={{ objectFit: 'contain' }} />}
+                            <img src={thumbnail} height={height + 20} width={height * 2 + 20} style={{ objectFit: 'contain' }} />
                         </div>
-                        <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />
+                        {videoFiles && <PlayArrow style={{ position: 'absolute', right: 0, bottom: 5, color: Colours.white }} />}
                     </div >
-                    <div style={{ width: height * 2 + 30 }} />
+                    <div style={{ width: height * 2 + 20 }} />
                 </>}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
                     <Stack spacing={1}>

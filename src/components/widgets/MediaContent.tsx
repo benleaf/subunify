@@ -10,6 +10,8 @@ import { VideoFiles } from "@/constants/VideoFiles"
 import { AudioFiles } from "@/constants/AudioFiles"
 import GlassVideo from "../glassmorphism/GlassVideo"
 import { useThumbnail } from "@/contexts/ThumbnailContext"
+import { ImageFiles } from "@/constants/ImageFiles"
+import GlassImage from "../glassmorphism/GlassImage"
 
 type Props = {
     file: StoredFile,
@@ -18,40 +20,25 @@ type Props = {
 }
 
 const MediaContent = ({ file, height = 300 }: Props) => {
-    const { authAction } = useAuth()
     const { thumbnails } = useThumbnail()
     const thumbnail = thumbnails[file.id]
     const [preview, setPreview] = useState<string | null>(null)
 
     const extension = getExtension(file.name).toLocaleLowerCase()
     const videoFiles = file.created != null && VideoFiles.includes(extension)
-    const transcoded = file.proxyState == 'COMPLETE'
     const isAudio = file.created != null && AudioFiles.includes(extension)
-
-    const showPreview = async (file: StoredFile) => {
-        let response
-        if (isAudio || (!transcoded && videoFiles)) response = await authAction<{ url: string }>(`file-download/${file.id}/RAW`, 'GET')
-        if (response && !isError(response)) setPreview(response.url)
-    }
+    const isImage = file.created != null && ImageFiles.includes(extension)
 
     return <>
         {videoFiles && <GlassVideo file={file} placeholder={thumbnail} height={height} />}
-        {thumbnail && !preview && !videoFiles && <ButtonBase
-            style={{ backgroundColor: Colours.black, height: height + 5, minWidth: 300 }}
-        >
-            <div style={{ position: 'relative', width: '100%' }}>
-                <img src={thumbnail} width='100%' height={height + 10} style={{ objectFit: 'contain' }} onClick={_ => showPreview(file)} />
-            </div>
-        </ButtonBase >}
-        {isAudio && preview && <ButtonBase style={{ backgroundColor: Colours.black, height: height + 5, minWidth: 300 }} >
-            <div style={{ position: 'relative', width: '100%', height: '100%' }} onClick={_ => setPreview(null)}>
-                <GlassText size="small" color="primary" style={{ alignSelf: 'center' }}>Some audio clips may not be possible to preview</GlassText>
-                <audio controls autoPlay={true} style={{ width: '90%' }}>
-                    <source src={preview} />
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-        </ButtonBase>}
+        {isImage && <GlassImage src={thumbnail} height={height} />}
+        {isAudio && <div style={{ position: 'relative', width: '100%', height: '100%' }} onClick={_ => setPreview(null)}>
+            <GlassText size="moderate" color="primary" style={{ alignSelf: 'center' }}>Some audio clips may not be possible to preview</GlassText>
+            {preview && <audio controls autoPlay={true} style={{ width: '90%' }}>
+                <source src={preview} />
+                Your browser does not support the audio element.
+            </audio>}
+        </div>}
     </>
 }
 

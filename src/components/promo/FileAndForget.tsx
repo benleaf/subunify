@@ -26,21 +26,21 @@ export function useOnScreen(ref: RefObject<HTMLElement>) {
 }
 
 const Previews = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, proxyState: 'COMPLETE', created: moment().subtract(4, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'INSTANT', modified: new Date(), name: 'A001C001_000001.mov', }} thumbnail={H} />
-    <FileViewer file={{ bytes: 5900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C004_000001.mov', }} thumbnail={D} />
-    <FileViewer file={{ bytes: 8900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C003_000001.mov', available: moment().add(6, 'hours').toDate() }} thumbnail={C} />
-    <FileViewer file={{ bytes: 9000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C002_000001.mov', available: moment().subtract(24, 'hours').toDate() }} thumbnail={B} />
-    <FileViewer file={{ bytes: 7900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C005_000001.mov', }} thumbnail={E} />
+    <FileViewer file={{ bytes: 10000000000, proxyState: 'COMPLETE', created: moment().subtract(4, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'INSTANT', modified: new Date(), proxyFiles: [], name: 'A001C001_000001.mov', }} thumbnail={H} />
+    <FileViewer file={{ bytes: 5900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C004_000001.mov', }} thumbnail={D} />
+    <FileViewer file={{ bytes: 8900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C003_000001.mov', available: moment().add(6, 'hours').toDate() }} thumbnail={C} />
+    <FileViewer file={{ bytes: 9000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C002_000001.mov', available: moment().subtract(24, 'hours').toDate() }} thumbnail={B} />
+    <FileViewer file={{ bytes: 7900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C005_000001.mov', }} thumbnail={E} />
 </Stack>
 
 const PreviewsMedium = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 9000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C002_000001.mov', }} thumbnail={B} />
-    <FileViewer file={{ bytes: 8900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C003_000001.mov', available: moment().add(6, 'hours').toDate() }} thumbnail={C} />
-    <FileViewer file={{ bytes: 9000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C002_000001.mov', available: moment().subtract(24, 'hours').toDate() }} thumbnail={C} />
+    <FileViewer file={{ bytes: 9000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C002_000001.mov', }} thumbnail={B} />
+    <FileViewer file={{ bytes: 8900000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C003_000001.mov', available: moment().add(6, 'hours').toDate() }} thumbnail={C} />
+    <FileViewer file={{ bytes: 9000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C002_000001.mov', available: moment().subtract(24, 'hours').toDate() }} thumbnail={C} />
 </Stack>
 
 const PreviewsSmall = () => <Stack spacing={1}>
-    <FileViewer file={{ bytes: 10000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), name: 'A001C001_000001.mov', }} thumbnail={C} />
+    <FileViewer file={{ bytes: 10000000000, proxyState: 'COMPLETE', created: moment().subtract(44, 'days').toDate(), fileLastModified: new Date(), id: 'test', location: 'DEEP', modified: new Date(), proxyFiles: [], name: 'A001C001_000001.mov', }} thumbnail={C} />
 </Stack>
 
 const FileAndForget = () => {

@@ -1,6 +1,6 @@
 import { getFileSizes } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { Rotate90DegreesCw, Share } from "@mui/icons-material"
+import { Share } from "@mui/icons-material"
 import { Fab } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassSpace from "../glassmorphism/GlassSpace"

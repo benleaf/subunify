@@ -4,6 +4,7 @@ import { isError } from "@/api/isError";
 import { getExtension } from "@/helpers/FileProperties";
 import { VideoFiles as VideoFiles } from "@/constants/VideoFiles";
 import { useAction } from "./actions/infrastructure/ActionContext";
+import { ImageFiles } from "@/constants/ImageFiles";
 
 interface ThumbnailType {
     retrieveThumbnails: (files: StoredFile[]) => Promise<void>
@@ -18,12 +19,21 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const { getFileProxyDownloadUrl } = useAction()
 
     const retrieveThumbnails = async (files: StoredFile[]) => {
-        const validFiles = files.filter(
+        const videoFiles = files.filter(
             file => VideoFiles.includes(getExtension(file.name).toLocaleLowerCase())
         )
 
-        validFiles.map(file =>
+        videoFiles.map(file =>
             getFileProxyDownloadUrl(file, 'VIDEO_THUMBNAIL')
+                .then(result => !result || isError(result) ? console.error(result) : addThumbnail(file.id, result.url))
+        )
+
+        const imageFiles = files.filter(
+            file => ImageFiles.includes(getExtension(file.name).toLocaleLowerCase())
+        )
+
+        imageFiles.map(file =>
+            getFileProxyDownloadUrl(file, 'IMAGE_THUMBNAIL')
                 .then(result => !result || isError(result) ? console.error(result) : addThumbnail(file.id, result.url))
         )
     }

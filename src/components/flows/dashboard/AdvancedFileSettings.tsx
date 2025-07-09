@@ -54,7 +54,7 @@ const AdvancedFileSettings = () => {
         <GlassSpace size="small">
             <Stack spacing={1} style={{ maxWidth: 600 }}>
                 <Divider />
-                <GlassSpace size="tiny" style={{ flex: 1 }}>
+                <Stack spacing={1} style={{ maxWidth: 600 }}>
                     <GlassText size="large">
                         Video Codec
                     </GlassText>
@@ -62,24 +62,26 @@ const AdvancedFileSettings = () => {
                         For uploaded video files, select the codec to use for generated proxies.
                     </GlassText>
                     <Alert severity="info">High quality proxies will use more project storage</Alert>
-                    <GlassSpace size="tiny" />
-                    <FormControl style={{ minWidth: 100, flex: 1 }}>
-                        <FormLabel>1080P Transcode (used for web previews)</FormLabel>
+                    <GlassSpace size="hairpin" />
+                    <FormControl style={{ minWidth: 100 }}>
+                        <FormLabel>1080P Transcode (1920 x 1080) (used for web previews)</FormLabel>
                         <Select value={settings?.VIDEO_CODEC_1080P} disabled>
                             <MenuItem value='H_264'>{VideoCodecs['H_264']}</MenuItem>
                         </Select>
-                        <FormLabel>2K Transcode</FormLabel>
+                    </FormControl>
+                    <FormControl style={{ minWidth: 100 }}>
+                        <FormLabel>2K Transcode (2560 x 1440)</FormLabel>
                         <Select value={settings?.VIDEO_CODEC_2K} onChange={e => setSettings(old => ({ ...old, VIDEO_CODEC_2K: e.target.value }))}>
                             {codecs.map(codec => <MenuItem value={codec}>{VideoCodecs[codec]}</MenuItem>)}
-                            <MenuItem value={undefined}>Generate Nothing</MenuItem>
                         </Select>
-                        <FormLabel>4K Transcode</FormLabel>
+                    </FormControl>
+                    <FormControl style={{ minWidth: 100 }}>
+                        <FormLabel>4K Transcode (3840 x 2160)</FormLabel>
                         <Select value={settings?.VIDEO_CODEC_4K} onChange={e => setSettings(old => ({ ...old, VIDEO_CODEC_4K: e.target.value }))}>
                             {codecs.map(codec => <MenuItem value={codec}>{VideoCodecs[codec]}</MenuItem>)}
                         </Select>
                     </FormControl>
-                </GlassSpace>
-                <Divider />
+                </Stack >
                 <div style={{ display: 'flex', justifyContent: 'end' }}>
                     <Button startIcon={<Save />} variant="outlined" style={{ maxWidth: 200 }} onClick={setSetting}>Save</Button>
                 </div>
