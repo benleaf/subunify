@@ -19,6 +19,7 @@ export type ProxyResult = {
     created: Date;
     proxyType: ProxySettingTypes;
     transformation: keyof typeof VideoCodecs;
+    lastFileRestore?: Date;
     bytes: string | number;
 }
 
@@ -30,7 +31,7 @@ export type StoredFile = {
     modified: Date,
     fileLastModified: Date,
     location: 'INSTANT' | 'SHALLOW' | 'DEEP',
-    available?: Date,
+    lastFileRestore?: Date,
     bytes: number,
     proxyState: "NA" | "PROCESSING" | "COMPLETE" | "ARCHIVED",
     proxyFiles: ProxyResult[]
@@ -45,6 +46,7 @@ export type ProjectPreviewResult = {
     created: Date
     modified: Date
     availableTBs: number
+    restoreBytes: number
     inviteAccepted: boolean
     owner: User
 }

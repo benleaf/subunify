@@ -16,7 +16,7 @@ const ThumbnailContext = createContext<ThumbnailType | undefined>(undefined)
 
 export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [thumbnails, setThumbnails] = useState<{ [fileName: string]: string }>({})
-    const { getFileProxyDownloadUrl } = useAction()
+    const { getFileDownloadUrl } = useAction()
 
     const retrieveThumbnails = async (files: StoredFile[]) => {
         const videoFiles = files.filter(
@@ -24,7 +24,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         )
 
         videoFiles.map(file =>
-            getFileProxyDownloadUrl(file, 'VIDEO_THUMBNAIL')
+            getFileDownloadUrl(file, 'VIDEO_THUMBNAIL')
                 .then(result => !result || isError(result) ? console.error(result) : addThumbnail(file.id, result.url))
         )
 
@@ -33,7 +33,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         )
 
         imageFiles.map(file =>
-            getFileProxyDownloadUrl(file, 'IMAGE_THUMBNAIL')
+            getFileDownloadUrl(file, 'IMAGE_THUMBNAIL')
                 .then(result => !result || isError(result) ? console.error(result) : addThumbnail(file.id, result.url))
         )
     }

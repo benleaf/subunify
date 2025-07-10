@@ -22,7 +22,7 @@ type Props = {
 const MediaViewer = ({ file, thumbnail, rotation, playing = true }: Props) => {
     const { width } = useSize()
     const { authAction } = useAuth()
-    const { getFileProxyDownloadUrl } = useAction()
+    const { getFileDownloadUrl } = useAction()
     const [fullscreen, setFullscreen] = useState(false)
     const [preview, setPreview] = useState<string | null>(null)
 
@@ -54,8 +54,8 @@ const MediaViewer = ({ file, thumbnail, rotation, playing = true }: Props) => {
 
     const showPreview = async (file: StoredFile) => {
         let response
-        if (isAudio || (!transcoded && videoFiles)) response = await authAction<{ url: string }>(`file-download/${file.id}/RAW`, 'GET')
-        if (transcoded) response = await getFileProxyDownloadUrl(file, 'VIDEO_CODEC_1080P')
+        if (isAudio || (!transcoded && videoFiles)) response = await authAction<{ url: string }>(`file-download/${file.id}`, 'GET')
+        if (transcoded) response = await getFileDownloadUrl(file, 'VIDEO_CODEC_1080P')
         if (response && !isError(response)) setPreview(response.url)
     }
 

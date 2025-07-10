@@ -26,6 +26,11 @@ const ProjectSummarySubpage = ({ name }: Props) => {
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                 <div>
+                    <GlassText size="large">{getFileSize(properties.selectedProject?.restoreBytes ?? 0)}</GlassText>
+                    <GlassText size="small">Restorable</GlassText>
+                </div>
+                <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                <div>
                     <GlassText size="large">{properties.selectedProject?.availableTBs} TB</GlassText>
                     <GlassText size="small">Available</GlassText>
                 </div>

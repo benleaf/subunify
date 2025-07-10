@@ -15,14 +15,13 @@ import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard";
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
 
 const priceBreakdown = [
-    { message: '1 Month express upload', value: 40 * 1.5 },
-    { message: '1 Month express download', value: 24 * 1.5 },
-    { message: 'Automatic Proxy generation', value: 10 * 1.5 },
-    { message: 'File Management', value: 4 * 1.5 },
+    { message: '1 Month express upload', value: 35.55 },
+    { message: 'Automatic Proxy generation', value: 19.96 },
+    { message: '1TB of archival restorations', value: 12.99 },
 ]
 
 const AddStorage = () => {
-    const { authAction, user } = useAuth()
+    const { authAction, user, setAlert } = useAuth()
     const { properties, updateProperties } = useDashboard()
     const [tbsToAdd, setTbsToAdd] = useState<number>()
     const [paymentModalState, setPaymentModalState] = useState(false)
@@ -43,6 +42,11 @@ const AddStorage = () => {
     }
 
     const payForStorage = async () => {
+        if (!tbsToAdd || tbsToAdd < 1) {
+            setAlert('You must add at least 1 TB of storage.', 'error')
+            return
+        }
+
         const result = await authAction<void>(`stripe/pay-for-terabytes/${properties.selectedProjectId!}/${tbsToAdd}`, 'GET')
         if (!isError(result)) {
             updateProperties({ page: 'project' })
