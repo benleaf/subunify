@@ -8,4 +8,5 @@ export type ActionInput = {
     updateProperties: UpdateProperties
     properties: Partial<DashboardProperties>
     setAlert: (message: string, colour?: AlertColor) => void
+    setLoading: (isLoading: boolean) => void
 }

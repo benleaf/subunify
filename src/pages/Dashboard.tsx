@@ -16,6 +16,7 @@ import AdvancedFileSettings from "@/components/flows/dashboard/AdvancedFileSetti
 import ManageCollaborators from "@/components/flows/dashboard/ManageCollaborators";
 import Bundle from "@/components/flows/dashboard/Bundle";
 import { ActionProvider } from "@/contexts/actions/infrastructure/ActionContext";
+import WipeProject from "@/components/flows/dashboard/WipeProject";
 
 const DashboardWithContext = () => {
     const { properties, loadProject, updateProperties } = useDashboard()
@@ -34,18 +35,6 @@ const DashboardWithContext = () => {
         }
     }, [searchParams])
 
-    // useEffect(() => {
-    //     const handleBeforeUnload = (event: Event) => {
-    //         event.preventDefault()
-    //     };
-
-    //     window.addEventListener('beforeunload', handleBeforeUnload);
-
-    //     return () => {
-    //         window.removeEventListener('beforeunload', handleBeforeUnload);
-    //     };
-    // }, []);
-
     return <DashboardLayout>
         {properties.page == 'projects' && <Projects />}
         {properties.page == 'project' && <Project />}
@@ -59,6 +48,7 @@ const DashboardWithContext = () => {
         {properties.page == 'manageProject' && <ManageProject />}
         {properties.page == 'advancedFileSettings' && <AdvancedFileSettings />}
         {properties.page == 'manageCollaborators' && <ManageCollaborators />}
+        {properties.page == 'wipeProject' && <WipeProject />}
     </DashboardLayout>
 }
 

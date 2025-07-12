@@ -26,5 +26,6 @@ export type DashboardProperties = {
     'download' |
     'manageProject' |
     'advancedFileSettings' |
+    'wipeProject' |
     'manageCollaborators'
 }

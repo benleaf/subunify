@@ -4,6 +4,7 @@ import { IconButton, Divider, Stack } from "@mui/material"
 import GlassText from "../glassmorphism/GlassText"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { useUpload } from "@/contexts/UploadContext"
+import { useThumbnail } from "@/contexts/ThumbnailContext"
 
 type Props = {
     name: string
@@ -11,13 +12,20 @@ type Props = {
 
 const ProjectSummarySubpage = ({ name }: Props) => {
     const { projectDataStored } = useUpload()
-    const { properties, updateProperties } = useDashboard()
+    const { retrieveThumbnails } = useThumbnail()
+    const { properties, updateProperties, loadProject } = useDashboard()
     const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
+
+    const backToProject = async () => {
+        const project = await loadProject(properties.selectedProjectId)
+        await retrieveThumbnails(project?.files ?? [])
+        updateProperties({ page: 'project' })
+    }
 
     return <Stack spacing={1}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton onClick={() => updateProperties({ page: 'project' })} size="large">
+                <IconButton onClick={() => backToProject()} size="large">
                     <ArrowCircleLeft fontSize="large" />
                 </IconButton>
                 <GlassText size="large"><b>{name}</b> {properties.selectedProject?.name}</GlassText>

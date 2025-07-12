@@ -4,7 +4,7 @@ import GlassText from "@/components/glassmorphism/GlassText";
 import { useDashboard } from "@/contexts/DashboardContext";
 import { useUpload } from "@/contexts/UploadContext";
 import { terabytesToBytes } from "@/helpers/FileSize";
-import { Add, Upload, Download, VideoSettings, ManageAccounts } from "@mui/icons-material";
+import { Add, Upload, Download, VideoSettings, ManageAccounts, Delete } from "@mui/icons-material";
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard";
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
 import { CssSizes } from "@/constants/CssSizes";
@@ -75,6 +75,15 @@ const ManageProject = () => {
                     >
                         Manage
                     </Button>
+                </ColorGlassCard>}
+                {amOwner && <ColorGlassCard flex={1} paddingSize="moderate" style={{ minWidth: 350, flexBasis: 0 }}>
+                    <GlassText size="large">Wipe Project</GlassText>
+                    <GlassText size="moderate" style={{ height: '4em' }}>Set available TB to zero, cancel any ongoing payments, and delete all files within project</GlassText>
+                    <Button
+                        variant="contained"
+                        startIcon={<Delete />}
+                        onClick={() => updateProperties({ page: 'wipeProject' })}
+                    >Wipe Project</Button>
                 </ColorGlassCard>}
 
                 {/* Not ideal: This makes sure that any stray cards on their own row have the same width as the others */}

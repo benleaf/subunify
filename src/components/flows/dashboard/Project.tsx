@@ -70,7 +70,7 @@ const Project = () => {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
                             <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
-                            <GlassText size="small">$117/TB</GlassText>
+                            <GlassText size="small">$60.50/TB</GlassText>
                         </div>
                     </div>
                 </ColorGlassCard>

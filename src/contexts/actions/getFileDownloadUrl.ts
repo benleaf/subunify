@@ -14,10 +14,8 @@ export const getFileDownloadUrl = ({ authAction, setAlert }: ActionInput) => asy
         response = await authAction<{ url: string }>(`file-download/${file.id}`, 'GET')
     }
 
-    if (response && !isError(response)) {
-        setAlert('File restoration started', "success")
-    } else {
-        setAlert('Unable to restore file', 'error')
+    if (!response || isError(response)) {
+        setAlert(`Unable to get file url for ${file.name}`, 'error')
     }
 
     return response

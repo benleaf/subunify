@@ -20,26 +20,13 @@ const priceBreakdown = [
     { message: '1TB of archival restorations', value: 12.99 },
 ]
 
+const subscriptionPrice = 1.99
+
 const AddStorage = () => {
     const { authAction, user, setAlert } = useAuth()
     const { properties, updateProperties } = useDashboard()
     const [tbsToAdd, setTbsToAdd] = useState<number>()
     const [paymentModalState, setPaymentModalState] = useState(false)
-    const [project, setProject] = useState<ProjectResult>()
-    const [quote, setQuote] = useState<{ fee: Stripe.Quote, subscription: Stripe.Quote }>()
-
-    const getProject = async (projectId: string) => {
-        const projectResult = await authAction<ProjectResult>(`project/user-project/${projectId}`, 'GET')
-        if (!isError(projectResult)) {
-            setProject(projectResult)
-        }
-    }
-
-    const getQuote = async () => {
-        const quote = await authAction<{ fee: Stripe.Quote, subscription: Stripe.Quote }>(`stripe/quote`, 'GET')
-        console.log(quote)
-        if (!isError(quote)) setQuote(quote)
-    }
 
     const payForStorage = async () => {
         if (!tbsToAdd || tbsToAdd < 1) {
@@ -53,15 +40,7 @@ const AddStorage = () => {
         }
     }
 
-    useEffect(() => {
-        getProject(properties.selectedProjectId!)
-        getQuote()
-    }, [])
-
-    const isTaxActive = true//quote?.fee?.total_details.breakdown?.taxes[0].rate.active
-    const upfrontTax = isTaxActive ? (quote?.fee.computed.upfront.total_details.amount_tax ?? 0) / 100 : 0
-    const recurringTax = isTaxActive ? (quote?.subscription.computed.recurring?.total_details.amount_tax ?? 0) / 100 : 0
-    const total = priceBreakdown.reduce((n, { value }) => n + value, 0) + upfrontTax
+    const total = priceBreakdown.reduce((n, { value }) => n + value, 0)
 
     return <>
         <ProjectSummarySubpage name='Add Storage' />
@@ -83,7 +62,7 @@ const AddStorage = () => {
                     <div style={{ flex: 1 }}>
                         <GlassCard marginSize="tiny" paddingSize="tiny">
                             <GlassText size="large">
-                                {!quote && "(Pre Tax) "}Line Items
+                                (Pre Tax) Line Items
                             </GlassText>
                             <GlassSpace size="tiny">
                                 {priceBreakdown.map(price => <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -94,14 +73,6 @@ const AddStorage = () => {
                                         ${Math.ceil((tbsToAdd ?? 0) * price.value)}
                                     </GlassText>
                                 </div>)}
-                                {quote && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <GlassText size="moderate">
-                                        Tax:
-                                    </GlassText>
-                                    <GlassText size="moderate">
-                                        ${(Math.ceil(tbsToAdd ?? 0) * upfrontTax).toFixed(2)}
-                                    </GlassText>
-                                </div>}
                                 <GlassSpace size="tiny">
                                     <Divider />
                                 </GlassSpace>
@@ -121,7 +92,7 @@ const AddStorage = () => {
                                         Monthly storage fee (pre tax):
                                     </GlassText>
                                     <GlassText size="moderate">
-                                        ${Math.ceil(tbsToAdd ?? 0) * (2.5)}
+                                        ${(Math.ceil(tbsToAdd ?? 0) * subscriptionPrice).toFixed(2)}
                                     </GlassText>
                                 </div>
                                 <GlassSpace size="tiny">

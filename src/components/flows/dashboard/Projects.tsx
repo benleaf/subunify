@@ -64,7 +64,7 @@ const Projects = () => {
                         <GlassText size="moderate">{item.description}</GlassText>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
-                        {isBundle(item) && <Stack direction='row' spacing={2} alignItems='center'>
+                        {isBundle(item) && <Stack direction='row' spacing={1} alignItems='center'>
                             {item.isOwner && <Chip icon={<Info />} label='Owner' />}
                             <Chip icon={<People />} label='Share Bundle' />
                             <Divider orientation="vertical" style={{ height: 50 }} />
@@ -78,7 +78,8 @@ const Projects = () => {
                                 <GlassText size="small">Recipients</GlassText>
                             </div>
                         </Stack>}
-                        {isProject(item) && item.inviteAccepted && <>
+                        {isProject(item) && item.inviteAccepted && <Stack direction='row' spacing={1} alignItems='center'>
+                            {item.owner.id == user.id && <Chip icon={<Info />} label='Owner' />}
                             <Chip icon={<Collections />} label='Project' />
                             <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                             <div>
@@ -90,7 +91,7 @@ const Projects = () => {
                                 <GlassText size="large">{item.collaborators}</GlassText>
                                 <GlassText size="small">Collaborators</GlassText>
                             </div>
-                        </>}
+                        </Stack>}
                         {isProject(item) && !item.inviteAccepted && <>
                             <Chip icon={<Info />} label='Invitation Pending' />
                             <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />

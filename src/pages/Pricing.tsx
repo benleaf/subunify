@@ -35,7 +35,7 @@ const TermsOfService = () => {
                         </TableHead>
                         <TableBody>
                             <TableRow >
-                                <TableCell>$117 per TB</TableCell>
+                                <TableCell>$60.50 per TB</TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -72,12 +72,12 @@ const TermsOfService = () => {
                         <TableRow >
                             <TableCell>First Month</TableCell>
                             <TableCell>Instant</TableCell>
-                            <TableCell>$117 (one time)</TableCell>
+                            <TableCell>$60.50 (one time)</TableCell>
                         </TableRow>
                         <TableRow >
                             <TableCell>After First Month</TableCell>
                             <TableCell>12 Hour</TableCell>
-                            <TableCell>$2.50 (per month)</TableCell>
+                            <TableCell>$1.99 (per month)</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

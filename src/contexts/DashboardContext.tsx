@@ -9,7 +9,7 @@ import { UpdateProperties } from "@/types/actions/UpdateProperties";
 import { DashboardProperties } from "@/types/actions/DashboardProperties";
 
 interface DashboardType {
-    loadProject: (projectId?: string) => Promise<void>
+    loadProject: (projectId?: string) => Promise<ProjectResult | undefined>
     loadProjects: () => Promise<void>
     updateProperties: UpdateProperties,
     properties: Partial<DashboardProperties>
@@ -66,6 +66,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             })
 
             await getCollaborators(projectResult.id)
+            return projectResult
         }
     }
 

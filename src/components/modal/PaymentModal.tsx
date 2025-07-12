@@ -21,6 +21,7 @@ const PaymentModal = ({ state, onClose, projectId, volume = 1 }: Props) => {
 
   useEffect(() => {
     const getSession = async () => {
+      setOptions(undefined)
       if (!state) return
       const result = await authAction<Stripe.Checkout.Session>(
         `stripe/start-storage-session/${projectId}/${volume}`,
