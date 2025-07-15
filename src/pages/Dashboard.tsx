@@ -18,6 +18,9 @@ import Bundle from "@/components/flows/dashboard/Bundle";
 import { ActionProvider } from "@/contexts/actions/infrastructure/ActionContext";
 import WipeProject from "@/components/flows/dashboard/WipeProject";
 import Billing from "@/components/flows/dashboard/Billing";
+import TutorialModal from "@/components/modal/TutorialModal";
+import GlassText from "@/components/glassmorphism/GlassText";
+import GlassSpace from "@/components/glassmorphism/GlassSpace";
 
 const DashboardWithContext = () => {
     const { properties, loadProject, updateProperties } = useDashboard()
@@ -51,6 +54,17 @@ const DashboardWithContext = () => {
         {properties.page == 'advancedFileSettings' && <AdvancedFileSettings />}
         {properties.page == 'manageCollaborators' && <ManageCollaborators />}
         {properties.page == 'wipeProject' && <WipeProject />}
+
+        <TutorialModal modalName="introToDashboard">
+            <GlassSpace size="small">
+                <GlassText size="big" style={{ textAlign: 'center' }}>
+                    Welcome to the <b>Dashboard</b>!
+                </GlassText>
+                <GlassText size="moderate" style={{ textAlign: 'center' }}>
+                    Create or join a project to get started. Invite collaborators, upload footage, and manage your footage all in one place.
+                </GlassText>
+            </GlassSpace>
+        </TutorialModal>
     </DashboardLayout>
 }
 

@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Typography, FormControl, IconButton, InputAdornment, Chip, TextField } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import React from "react";
 import { cognitoSignUp } from "./AuthService";
 import { Credentials } from "@/types/Credentials";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSearchParams } from "react-router";
 
 type Props = {
     goToConformation: (credentials: Credentials) => void
@@ -14,6 +15,13 @@ const Signup = ({ goToConformation }: Props) => {
     const { setAlert, setLoading } = useAuth()
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+
+    const [searchParams] = useSearchParams();
+    const urlEmail = searchParams.get('email')
+    useEffect(() => {
+        setEmail(urlEmail ?? "")
+    }, [urlEmail])
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -41,13 +49,12 @@ const Signup = ({ goToConformation }: Props) => {
     };
 
     return <>
-        <FormControl variant="standard">
-            <TextField
-                label="Email"
-                onChange={(e) => setEmail(e.target.value)}
-                type='text'
-            />
-        </FormControl>
+        <TextField
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type='text'
+        />
         <FormControl variant="standard">
             <TextField
                 label="Password"

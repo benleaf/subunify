@@ -2,19 +2,22 @@ import { Alert, Stack } from "@mui/material";
 import GlassSpace from "../../glassmorphism/GlassSpace";
 import GlassText from "../../glassmorphism/GlassText";
 import { useAuth } from "@/contexts/AuthContext";
-import GlassCard from "../../glassmorphism/GlassCard";
 import LimitedText from "../../form/LimitedText";
-import ProfileUpload from "../../form/ProfileUpload";
+import { CssSizes } from "@/constants/CssSizes";
 
 const Attributes = () => {
     const { setUserAttributes, user } = useAuth()
 
     return <>
-        <GlassText size='massive' style={{}}>
-            <b>Illuminate</b> Your Creativity
+        <GlassText size='massive' style={{ lineHeight: CssSizes.moderate }}>
+            <b>Collaborative.</b>
         </GlassText>
+        <GlassText size='moderate'>
+            For clients, creators, and teams
+        </GlassText>
+        <GlassSpace size="tiny" />
         <GlassText size='large' style={{}}>
-            Give others a glimpse of your world
+            SUBUNIFY is a home for collaboration, give people an idea of what <b>your</b> about
         </GlassText>
         <GlassSpace size='small' />
         <Stack spacing={1}>
@@ -45,15 +48,6 @@ const Attributes = () => {
                         setUserAttributes({ color: color.hex });
                     }}
                 /> */}
-                <GlassCard marginSize="moderate" paddingSize="moderate" flex={1}>
-                    <Stack direction="row" spacing={2}>
-                        {/* <ProfileUpload /> */}
-                        <div>
-                            <GlassText size="big">{user.firstName} {user.lastName}</GlassText>
-                            <GlassText size="moderate">{user.tagLine}</GlassText>
-                        </div>
-                    </Stack>
-                </GlassCard>
             </div>
         </Stack>
     </>

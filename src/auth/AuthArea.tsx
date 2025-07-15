@@ -14,6 +14,7 @@ type Props = {
 }
 
 const AuthArea = ({ defaultPage = 'signup' }: Props) => {
+
     const { user, logout } = useAuth()
     const [credentials, setCredentials] = useState<Credentials>()
     const [authPage, setAuthPage] = useState<'login' | 'signup' | 'confirm' | 'forgotPassword' | 'alreadyLoggedIn'>(defaultPage)
@@ -21,7 +22,6 @@ const AuthArea = ({ defaultPage = 'signup' }: Props) => {
     useEffect(() => {
         setAuthPage(user.email_verified ? 'alreadyLoggedIn' : defaultPage)
     }, [user])
-
 
     const goToConformation = (userCredentials: Credentials) => {
         setCredentials(userCredentials)
@@ -48,7 +48,7 @@ const AuthArea = ({ defaultPage = 'signup' }: Props) => {
                 <Confirm credentials={credentials} />
             </>}
             {authPage == 'alreadyLoggedIn' && <>
-                <Alert severity="success">Already logged in!</Alert>
+                <Alert severity="success">Logged in!</Alert>
                 <Button onClick={logout}>Logout</Button>
             </>}
         </Stack>
