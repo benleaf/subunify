@@ -17,6 +17,7 @@ import ManageCollaborators from "@/components/flows/dashboard/ManageCollaborator
 import Bundle from "@/components/flows/dashboard/Bundle";
 import { ActionProvider } from "@/contexts/actions/infrastructure/ActionContext";
 import WipeProject from "@/components/flows/dashboard/WipeProject";
+import Billing from "@/components/flows/dashboard/Billing";
 
 const DashboardWithContext = () => {
     const { properties, loadProject, updateProperties } = useDashboard()
@@ -37,6 +38,7 @@ const DashboardWithContext = () => {
 
     return <DashboardLayout>
         {properties.page == 'projects' && <Projects />}
+        {properties.page == 'billing' && <Billing />}
         {properties.page == 'project' && <Project />}
         {properties.page == 'download' && <Download />}
         {properties.page == 'cluster' && <Cluster />}

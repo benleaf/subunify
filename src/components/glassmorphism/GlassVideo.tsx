@@ -124,7 +124,7 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
             {!src && placeholder && <div style={{ position: 'relative', height: '100%' }} onClick={showPreview}>
                 <img src={placeholder} height={height + 10} style={{ objectFit: 'contain', ...rotateCss }} />
             </div>}
-            {src && <video ref={video} autoPlay={playing} width='100%' height={height + 10} style={{ objectFit: 'contain', ...rotateCss }}>
+            {src && <video ref={video} autoPlay={playing} preload="auto" width='100%' height={height + 10} style={{ objectFit: 'contain', ...rotateCss }}>
                 <source src={src} type="video/mp4" />
                 Your browser does not support the video tag.
             </video>}
@@ -242,13 +242,13 @@ const GlassVideo = ({ file, height = 400, placeholder }: Props) => {
 
     return <>
         {!videoState.fullscreen && <GlassVideoFrame file={file} height={height} placeholder={placeholder} videoState={videoState} setVideoState={setVideoState} />}
-        {videoState.fullscreen && <Modal
+        <Modal
             onClose={() => setVideoState(old => ({ ...old, fullscreen: false }))}
             open={videoState.fullscreen}
             style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
             <GlassVideoFrame file={file} height={size.height} placeholder={placeholder} videoState={videoState} setVideoState={setVideoState} />
-        </Modal>}
+        </Modal>
     </>
 }
 

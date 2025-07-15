@@ -6,13 +6,19 @@ import { ComponentSizes } from "@/constants/ComponentSizes"
 import { CssSizes } from "@/constants/CssSizes"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { useAuth } from "@/contexts/AuthContext"
+import { Time } from "@/helpers/Time"
 
 const Sidebar = () => {
     const { setAlert } = useAuth()
-    const { updateProperties, properties } = useDashboard()
+    const { updateProperties, properties, loadProject } = useDashboard()
     const { height } = useSize()
 
-    const orderedProjects = properties.projects?.sort((a, b) => b.daysToArchive - a.daysToArchive).slice(0, 5)
+    const orderedProjects = properties.projects?.sort((a, b) => Time.compare(b.modified, a.modified)).slice(0, 5)
+
+    const setProject = (projectId: string) => {
+        loadProject(projectId)
+        updateProperties({ page: 'project', selectedProjectId: projectId })
+    }
 
     return <div style={{
         height: height - ComponentSizes.topBar,
@@ -25,7 +31,7 @@ const Sidebar = () => {
             <List dense>
                 {orderedProjects?.map(project =>
                     <ListItem disablePadding>
-                        <ListItemButton onClick={() => updateProperties({ page: 'project', selectedProjectId: project.id })}>
+                        <ListItemButton onClick={() => setProject(project.id)}>
                             <ListItemIcon>
                                 <Folder color="error" />
                             </ListItemIcon>
@@ -64,7 +70,7 @@ const Sidebar = () => {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => setAlert('This area is coming soon! Contact us at product@subunify.com', 'info')}>
+                    <ListItemButton onClick={() => updateProperties({ page: 'billing' })}>
                         <ListItemIcon>
                             <Payment />
                         </ListItemIcon>
@@ -72,7 +78,7 @@ const Sidebar = () => {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => setAlert('This area is coming soon! Contact us at product@subunify.com', 'info')}>
+                    <ListItemButton onClick={() => updateProperties({ page: 'account' })}>
                         <ListItemIcon>
                             <Settings />
                         </ListItemIcon>

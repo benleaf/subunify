@@ -20,8 +20,8 @@ const AdvancedFileSettings = () => {
     const codecs = Object.keys(VideoCodecs) as (keyof typeof VideoCodecs)[]
     const [settings, setSettings] = useState<Omit<Settings, 'RAW' | 'IMAGE_THUMBNAIL'>>({
         VIDEO_CODEC_1080P: 'H_264',
-        VIDEO_CODEC_2K: 'H_264',
-        VIDEO_CODEC_4K: 'H_264',
+        VIDEO_CODEC_2K: 'NONE',
+        VIDEO_CODEC_4K: 'NONE',
     })
 
     useEffect(() => {
