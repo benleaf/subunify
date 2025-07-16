@@ -23,8 +23,7 @@ const GridLayout = ({ files }: Props) => {
     const sorted = files.sort((a, b) => moment(a.fileLastModified).diff(b.fileLastModified))
     const [containerWidth, setContainerWidth] = useState(0)
     const [preview, setPreview] = useState<StoredFile>()
-    const targetWidth = 115
-    const imageWidth = 113
+    const targetWidth = 75
 
     useEffect(() => {
         const el = containerRef.current
@@ -39,29 +38,30 @@ const GridLayout = ({ files }: Props) => {
 
     const columns = Math.max(1, Math.floor(containerWidth / targetWidth))
     const rowCount = Math.ceil(sorted.length / columns)
-    const totalWidth = columns * targetWidth
+    const imageWidth = containerWidth / columns
+    const containerHeight = Math.ceil(rowCount * imageWidth)
 
     const rowVirtualizer = useVirtualizer({
         count: rowCount,
-        estimateSize: () => targetWidth,
+        estimateSize: () => imageWidth,
         getScrollElement: () => window as any,
         observeElementRect: observeWindowRect,
         observeElementOffset: observeWindowOffset,
-        overscan: 2,
+        overscan: 10,
     })
 
     const colVirtualizer = useVirtualizer({
         horizontal: true,
         count: columns,
-        estimateSize: () => targetWidth,
+        estimateSize: () => imageWidth,
         getScrollElement: () => window as any,
         observeElementRect: observeWindowRect,
         observeElementOffset: observeWindowOffset,
-        overscan: 2,
+        overscan: 10,
     })
 
     return <div ref={containerRef} style={{ display: 'flex', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', width: totalWidth }}>
+        <div style={{ position: 'relative', width: '100%', height: containerHeight }}>
             {rowVirtualizer.getVirtualItems().map((vr) =>
                 colVirtualizer.getVirtualItems().map((vc) => {
                     const idx = vr.index * columns + vc.index
@@ -70,10 +70,8 @@ const GridLayout = ({ files }: Props) => {
                         position: 'absolute',
                         top: vr.start,
                         left: vc.start,
-                        margin: 5,
-                        backgroundColor: Colours.lightGrey
                     }} onClick={_ => setPreview(files[idx])}>
-                        <img src={getUrl(files[idx])} height={imageWidth} width={imageWidth} style={{ objectFit: 'cover' }} />
+                        <img src={getUrl(files[idx])} height={imageWidth} width={imageWidth} style={{ objectFit: 'cover', padding: 1 }} />
                     </ButtonBase >
                 })
             )}
