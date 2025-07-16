@@ -31,7 +31,7 @@ const MediaContent = ({ file, height = 300 }: Props) => {
 
     return <>
         {videoFiles && <GlassVideo file={file} placeholder={thumbnail} height={height} />}
-        {isImage && <GlassImage src={thumbnail} height={height} />}
+        {thumbnail && isImage && <GlassImage src={thumbnail} height={height} />}
         {isAudio && <div style={{ position: 'relative', width: '100%', height: '100%' }} onClick={_ => setPreview(null)}>
             <GlassText size="moderate" color="primary" style={{ alignSelf: 'center' }}>Some audio clips may not be possible to preview</GlassText>
             {preview && <audio controls autoPlay={true} style={{ width: '90%' }}>
