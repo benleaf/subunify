@@ -23,7 +23,7 @@ const GridLayout = ({ files }: Props) => {
     const sorted = files.sort((a, b) => moment(a.fileLastModified).diff(b.fileLastModified))
     const [containerWidth, setContainerWidth] = useState(0)
     const [preview, setPreview] = useState<StoredFile>()
-    const targetWidth = 75
+    const targetWidth = 100
 
     useEffect(() => {
         const el = containerRef.current
