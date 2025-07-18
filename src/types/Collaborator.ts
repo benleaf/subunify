@@ -9,4 +9,5 @@ export type Collaborator = {
     tagLine: string,
     about: string,
     role: keyof typeof CollaboratorRoles
+    lastActive: Date | null,
 }

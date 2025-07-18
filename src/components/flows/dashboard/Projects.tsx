@@ -26,14 +26,18 @@ const Projects = () => {
     const navigate = useNavigate()
 
     const bundles = properties.bundles?.map(
-        bundle => ({
-            ...bundle,
-            isOwner: bundle.bundleUsers?.find(bundleUser => bundleUser.user.id == user.id)?.isOwner ?? false
-        })
+        bundle => {
+            const usersBundle = bundle.bundleUsers?.find(bundleUser => bundleUser.user.id == user.id)
+            return {
+                ...bundle,
+                isOwner: usersBundle?.isOwner ?? false,
+                lastActive: usersBundle?.lastActive,
+            }
+        }
     ) ?? []
 
     const items = [...properties.projects ?? [], ...bundles]
-        .sort((a, b) => moment(b.modified).diff(a.modified))
+        .sort((a, b) => moment(b.lastActive ?? b.modified).diff(a.lastActive ?? a.modified))
 
     const onSelectItem = (item: typeof items[number]) => {
         if (isProject(item) && item.inviteAccepted) updateProperties({ page: 'project', selectedProjectId: item.id })

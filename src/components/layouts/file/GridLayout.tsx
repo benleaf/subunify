@@ -8,7 +8,6 @@ import { StoredFile } from "@/types/server/ProjectResult"
 import { ButtonBase } from "@mui/material"
 import moment from "moment"
 import { useEffect, useRef, useState } from 'react';
-import { Colours } from '@/constants/Colours'
 import BaseModal from '@/components/modal/BaseModal'
 import FileViewerTall from '@/components/widgets/FileViewerTall'
 

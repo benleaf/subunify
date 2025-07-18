@@ -6,6 +6,6 @@ export type Bundle = {
     name?: string,
     description?: string,
     modified?: Date,
-    bundleUsers?: { id: string, user: User, isOwner: boolean }[]
+    bundleUsers?: { id: string, user: User, isOwner: boolean, lastActive: Date | null }[]
     bundleFiles?: { id: string, file: StoredFile, message: string }[]
 }

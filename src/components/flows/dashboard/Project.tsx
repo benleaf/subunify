@@ -31,7 +31,7 @@ const Project = () => {
 
     useEffect(() => {
         retrieveThumbnails(files)
-    }, [properties.selectedProject?.id])
+    }, [properties.selectedProject?.id, files])
 
     return <Stack spacing={1}>
         <ProjectSummary />

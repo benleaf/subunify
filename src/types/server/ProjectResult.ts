@@ -48,6 +48,7 @@ export type ProjectPreviewResult = {
     availableTBs: number
     restoreBytes: number
     inviteAccepted: boolean
+    lastActive: Date | null
     owner: User
 }
 

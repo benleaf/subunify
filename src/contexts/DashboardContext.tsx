@@ -73,7 +73,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     useEffect(() => {
         loadProjects()
         loadBundles()
-    }, [])
+    }, [project.page == 'projects'])
 
 
     return <DashboardContext.Provider
