@@ -34,7 +34,13 @@ const DownloadItem = ({ file, lastFileRestore, proxyType, bytes, transformation 
         }
 
         const { url } = response
-        window.open(url, '_self');
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
     const isArchived = file.location === 'DEEP'
