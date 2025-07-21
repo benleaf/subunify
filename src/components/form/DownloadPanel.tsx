@@ -114,6 +114,6 @@ export const DownloadPanel = ({ file, projectSettings }: Props) => {
                 <InfoRounded />
             </IconButton>
         </Tooltip>}
-        {videoFile && file.proxyState == 'NA' && <Chip icon={<Info color="info" />} label='Quality too low to process' />}
+        {videoFile && file.proxyState == 'NA' && <Chip icon={<Info color="info" />} label='Exceeded Processing Limit' />}
     </div>
 }

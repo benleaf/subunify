@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Divider, Stack, TextField } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
@@ -6,27 +6,25 @@ import { useDashboard } from "@/contexts/DashboardContext";
 import GlassCard from "@/components/glassmorphism/GlassCard";
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import PaymentModal from "@/components/modal/PaymentModal";
-import { ProjectResult } from "@/types/server/ProjectResult";
 import { isError } from "@/api/isError";
 import { useAuth } from "@/contexts/AuthContext";
-import Stripe from "stripe";
 import BaseModal from "@/components/modal/BaseModal";
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard";
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
-
-const priceBreakdown = [
-    { message: '1 Month express upload', value: 35.55 },
-    { message: 'Automatic Proxy generation', value: 19.96 },
-    { message: '1TB of archival restorations', value: 12.99 },
-]
-
-const subscriptionPrice = 1.99
 
 const AddStorage = () => {
     const { authAction, user, setAlert } = useAuth()
     const { properties, updateProperties } = useDashboard()
     const [tbsToAdd, setTbsToAdd] = useState<number>()
     const [paymentModalState, setPaymentModalState] = useState(false)
+
+    const priceBreakdown = [
+        { message: '1 Month express upload', value: 35.55 },
+        { message: `${(tbsToAdd ?? 0) * 2} hours of video processing`, value: 19.96 },
+        { message: `${(tbsToAdd ?? 0)}TB of archival restorations`, value: 12.99 },
+    ]
+
+    const subscriptionPrice = 1.99
 
     const payForStorage = async () => {
         if (!tbsToAdd || tbsToAdd < 1) {

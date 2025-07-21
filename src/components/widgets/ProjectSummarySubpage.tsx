@@ -34,6 +34,11 @@ const ProjectSummarySubpage = ({ name }: Props) => {
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
                 <div>
+                    <GlassText size="large">{Math.floor((properties.selectedProject?.availableTranscodeSeconds ?? 0) / 60)} Minutes</GlassText>
+                    <GlassText size="small">Processable Video</GlassText>
+                </div>
+                <Divider orientation="vertical" style={{ height: 50, marginInline: 10 }} />
+                <div>
                     <GlassText size="large">{getFileSize(properties.selectedProject?.restoreBytes ?? 0)}</GlassText>
                     <GlassText size="small">Restorable</GlassText>
                 </div>
