@@ -7,6 +7,8 @@ import { CSSProperties, ElementRef, useEffect, useRef, useState } from 'react'
 import GlassText from './GlassText'
 import { Colours } from '@/constants/Colours'
 import { useSize } from '@/hooks/useSize'
+import { getExtension } from '@/helpers/FileProperties'
+import { VideoFiles } from '@/constants/VideoFiles'
 
 
 type GlassVideoFrameProps = {
@@ -22,6 +24,7 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
     const { rotation, fullscreen, playing, secondsSinceActive, time, src } = videoState
     const video = useRef<HTMLVideoElement>(null)
     const progress = useRef<ElementRef<'div'>>(null)
+    const unprocessed = file && !file.proxyFiles.length
 
     useEffect(() => {
         if (video.current) {
@@ -62,11 +65,18 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
 
     const showPreview = async () => {
         const lowResProxy = file?.proxyFiles.find(proxy => proxy.proxyType == 'VIDEO_CODEC_1080P')
-        if (!file || !lowResProxy) return
-
-        const response = await authAction<{ url: string }>(`proxy-file/${lowResProxy.id}/${lowResProxy.proxyType}`, 'GET')
-        if (response && !isError(response)) {
-            setVideoState(old => ({ ...old, src: response.url }))
+        if (!lowResProxy && !file) {
+            return
+        } else if (unprocessed && VideoFiles.includes(getExtension(file.name))) {
+            const response = await authAction<{ url: string }>(`file-download/${file.id}`, 'GET')
+            if (response && !isError(response)) {
+                setVideoState(old => ({ ...old, src: response.url }))
+            }
+        } else if (lowResProxy) {
+            const response = await authAction<{ url: string }>(`proxy-file/${lowResProxy.id}/${lowResProxy.proxyType}`, 'GET')
+            if (response && !isError(response)) {
+                setVideoState(old => ({ ...old, src: response.url }))
+            }
         }
     }
 
@@ -121,10 +131,10 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
             style={{ backgroundColor: Colours.black, height: height, minWidth: 300, display: 'flex', justifyContent: 'center' }}
             onClick={_ => setVideoState(old => ({ ...old, playing: !old.playing }))}
         >
-            {!src && placeholder && <div style={{ position: 'relative', height: '100%' }} onClick={showPreview}>
+            {!src && placeholder && !unprocessed && <div style={{ position: 'relative', height: '100%' }} onClick={showPreview}>
                 <img src={placeholder} height={height + 10} style={{ objectFit: 'contain', ...rotateCss }} />
             </div>}
-            {src && <video ref={video} autoPlay={playing} preload="auto" width='100%' height={height + 10} style={{ objectFit: 'contain', ...rotateCss }}>
+            {src && <video ref={video} autoPlay={playing} preload="true" width='100%' height={height + 10} style={{ objectFit: 'contain', ...rotateCss }}>
                 <source src={src} type="video/mp4" />
                 Your browser does not support the video tag.
             </video>}

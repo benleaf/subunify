@@ -13,7 +13,7 @@ import { getFileSize } from "@/helpers/FileSize"
 const Download = () => {
     const { downloadAction, authAction } = useAuth()
     const { properties } = useDashboard()
-    const [quality, setQuality] = useState<FileQuality>('HIGH')
+    const [quality, setQuality] = useState<FileQuality>('RAW')
     const [bytes, setBytes] = useState<number>(0)
 
     useEffect(() => {
@@ -46,9 +46,6 @@ const Download = () => {
                             onChange={e => setQuality(e.target.value as FileQuality)}
                         >
                             <MenuItem value='RAW'>Raw</MenuItem>
-                            <MenuItem value='HIGH'>High</MenuItem>
-                            <MenuItem value='MEDIUM'>Medium</MenuItem>
-                            <MenuItem value='LOW'>Low</MenuItem>
                         </Select>
                     </FormControl>
                     <GlassText size="moderate">

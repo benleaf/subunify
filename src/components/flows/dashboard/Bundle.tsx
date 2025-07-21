@@ -60,7 +60,7 @@ const Cluster = () => {
         </ColorGlassCard>
         <Stack spacing={1} height='100%'>
             {properties.selectedBundle?.bundleFiles?.map((bundleFile, index) =>
-                <FilePresenter file={bundleFile.file} message={bundleFile.message} isRight={index % 2 == 0} />
+                <FilePresenter file={bundleFile.file} message={bundleFile.message} isRight={index % 2 == 0} downloadType={bundleFile.downloadProxyType} />
             )}
         </Stack>
     </Stack>

@@ -1,5 +1,5 @@
 import { StoredFile } from "@/types/server/ProjectResult"
-import { Stack, TextField, Button, Fab, Autocomplete, Chip, IconButton, createFilterOptions, Divider, Tooltip } from "@mui/material"
+import { Stack, TextField, Button, Fab, Autocomplete, Chip, IconButton, createFilterOptions, Divider, Tooltip, Select, MenuItem, InputLabel, FormControl } from "@mui/material"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import BaseModal from "./BaseModal"
 import { Add, Close, Done, FolderShared, Warning } from "@mui/icons-material"
@@ -15,6 +15,7 @@ import Profile from "../form/Profile"
 import { useThumbnail } from "@/contexts/ThumbnailContext"
 import { User } from "@/types/User"
 import { Bundle } from "@/types/Bundle"
+import { ProxySettingLabels } from "@/constants/ProxySettingLabels"
 
 type Props = {
     file: StoredFile
@@ -32,6 +33,7 @@ const AddMessage = ({ file, onNext, bundle }: AddMessageProps) => {
     const { authAction } = useAuth()
     const { getUrl } = useThumbnail()
     const [message, setMessage] = useState<string>()
+    const [downloadType, setDownloadType] = useState<string>('RAW')
 
     const createBundle = async () => {
         if (!bundle?.id) {
@@ -41,7 +43,8 @@ const AddMessage = ({ file, onNext, bundle }: AddMessageProps) => {
         const updatedBundle = await authAction<Bundle[]>('bundle/file', 'POST', JSON.stringify({
             bundleId: bundle.id,
             fileId: file.id,
-            message
+            message,
+            downloadProxyType: downloadType
         }))
 
         console.log(updatedBundle)
@@ -53,6 +56,13 @@ const AddMessage = ({ file, onNext, bundle }: AddMessageProps) => {
         <img src={getUrl(file)} height={200} width='100%' style={{ objectFit: 'cover', position: 'absolute', top: 0, left: 0, right: 0, borderStartStartRadius: 15 }} />
         <div style={{ height: 150 }} />
         <GlassText size='moderate' >Adding {file.name} to {bundle?.name ?? 'bundle'}</GlassText>
+        <FormControl style={{ minWidth: 100 }}>
+            <InputLabel>Download Type</InputLabel>
+            <Select<string> onChange={e => setDownloadType(e.target.value)} label='Download Type'>
+                <MenuItem value='RAW'>RAW</MenuItem>
+                {file.proxyFiles.map(proxyFile => <MenuItem value={proxyFile.proxyType}>{ProxySettingLabels[proxyFile.proxyType]}</MenuItem>)}
+            </Select>
+        </FormControl>
         <TextField onChange={e => setMessage(e.target.value)} label='Add File Message' minRows={3} multiline />
         <Stack direction='row' spacing={2}>
             <Button
