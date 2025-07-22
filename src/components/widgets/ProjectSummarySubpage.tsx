@@ -12,13 +12,12 @@ type Props = {
 
 const ProjectSummarySubpage = ({ name }: Props) => {
     const { projectDataStored } = useUpload()
-    const { retrieveThumbnails } = useThumbnail()
-    const { properties, updateProperties, loadProject } = useDashboard()
+    const { setProjectThumbnails } = useThumbnail()
+    const { properties, updateProperties } = useDashboard()
     const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
 
     const backToProject = async () => {
-        const project = await loadProject(properties.selectedProjectId)
-        await retrieveThumbnails(project?.files ?? [])
+        if (properties.selectedProjectId) await setProjectThumbnails(properties.selectedProjectId)
         updateProperties({ page: 'project' })
     }
 

@@ -7,6 +7,7 @@ import { useAction } from "./actions/infrastructure/ActionContext";
 import { ImageFiles } from "@/constants/ImageFiles";
 
 interface ThumbnailType {
+    setProjectThumbnails: (projectId: string) => Promise<void>
     retrieveThumbnails: (files: StoredFile[]) => Promise<void>
     getUrl: (file: StoredFile) => string | undefined
     thumbnails: { [fileName: string]: string; }
@@ -16,7 +17,14 @@ const ThumbnailContext = createContext<ThumbnailType | undefined>(undefined)
 
 export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [thumbnails, setThumbnails] = useState<{ [fileName: string]: string }>({})
-    const { getFileDownloadUrl } = useAction()
+    const { getFileDownloadUrl, getProjectThumbnails } = useAction()
+
+    const setProjectThumbnails = async (projectId: string) => {
+        const thumbnails = await getProjectThumbnails(projectId)
+        for (const thumbnail of thumbnails) {
+            addThumbnail(thumbnail.fileId, thumbnail.url)
+        }
+    }
 
     const retrieveThumbnails = async (files: StoredFile[]) => {
         const videoFiles = files.filter(
@@ -47,7 +55,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return thumbnails[file.id]
     }
 
-    return <ThumbnailContext.Provider value={{ retrieveThumbnails, getUrl, thumbnails }}>
+    return <ThumbnailContext.Provider value={{ setProjectThumbnails, retrieveThumbnails, getUrl, thumbnails }}>
         {children}
     </ThumbnailContext.Provider>;
 };

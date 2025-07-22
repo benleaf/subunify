@@ -17,7 +17,7 @@ const Download = () => {
     const [bytes, setBytes] = useState<number>(0)
 
     useEffect(() => {
-        authAction<number>(`file-download/project/${properties.selectedProjectId}/${quality}`, 'GET').then(result => {
+        authAction<number>(`file-download/project-bytes/${properties.selectedProjectId}/${quality}`, 'GET').then(result => {
             if (!isError(result)) setBytes(result)
         })
 
@@ -26,7 +26,7 @@ const Download = () => {
     const downloadProject = async () => {
         if (isError(bytes)) throw new Error("Unable to get bytes in project");
 
-        await downloadAction(`file-download/project/${properties.selectedProjectId}/${quality}`, bytes)
+        await downloadAction(`file-download/project-download/${properties.selectedProjectId}/${quality}`, bytes)
     }
 
     return <Stack spacing={1}>

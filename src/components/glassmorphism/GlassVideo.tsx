@@ -9,6 +9,7 @@ import { Colours } from '@/constants/Colours'
 import { useSize } from '@/hooks/useSize'
 import { getExtension } from '@/helpers/FileProperties'
 import { VideoFiles } from '@/constants/VideoFiles'
+import { useAction } from '@/contexts/actions/infrastructure/ActionContext'
 
 
 type GlassVideoFrameProps = {
@@ -20,7 +21,7 @@ type GlassVideoFrameProps = {
 }
 
 const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideoState }: GlassVideoFrameProps) => {
-    const { authAction } = useAuth()
+    const { getFileDownloadUrl } = useAction()
     const { rotation, fullscreen, playing, secondsSinceActive, time, src } = videoState
     const video = useRef<HTMLVideoElement>(null)
     const progress = useRef<ElementRef<'div'>>(null)
@@ -67,13 +68,8 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
         const lowResProxy = file?.proxyFiles.find(proxy => proxy.proxyType == 'VIDEO_CODEC_1080P')
         if (!lowResProxy && !file) {
             return
-        } else if (unprocessed && VideoFiles.includes(getExtension(file.name))) {
-            const response = await authAction<{ url: string }>(`file-download/${file.id}`, 'GET')
-            if (response && !isError(response)) {
-                setVideoState(old => ({ ...old, src: response.url }))
-            }
-        } else if (lowResProxy) {
-            const response = await authAction<{ url: string }>(`proxy-file/${lowResProxy.id}/${lowResProxy.proxyType}`, 'GET')
+        } else if (file) {
+            const response = await getFileDownloadUrl(file, lowResProxy?.proxyType)
             if (response && !isError(response)) {
                 setVideoState(old => ({ ...old, src: response.url }))
             }

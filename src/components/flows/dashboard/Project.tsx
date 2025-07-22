@@ -14,7 +14,7 @@ import GridLayout from "@/components/layouts/file/GridLayout"
 type Layouts = 'cluster' | 'list' | 'grid'
 
 const Project = () => {
-    const { retrieveThumbnails } = useThumbnail()
+    const { setProjectThumbnails } = useThumbnail()
     const { properties, updateProperties, loadProject } = useDashboard()
     const oldLayoutType = localStorage.getItem('fileLayoutType') as Layouts
     const [layout, setLayout] = useState<Layouts>(oldLayoutType ?? 'list')
@@ -30,7 +30,7 @@ const Project = () => {
     const files = properties.selectedProject?.files ?? []
 
     useEffect(() => {
-        retrieveThumbnails(files)
+        if (properties.selectedProject?.id) setProjectThumbnails(properties.selectedProject.id)
     }, [properties.selectedProject?.id, files])
 
     return <Stack spacing={1}>

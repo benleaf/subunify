@@ -54,7 +54,7 @@ const MediaViewer = ({ file, thumbnail, rotation, playing = true }: Props) => {
 
     const showPreview = async (file: StoredFile) => {
         let response
-        if (isAudio || (!transcoded && videoFiles)) response = await authAction<{ url: string }>(`file-download/${file.id}`, 'GET')
+        if (isAudio || (!transcoded && videoFiles)) response = await getFileDownloadUrl(file)
         if (transcoded) response = await getFileDownloadUrl(file, 'VIDEO_CODEC_1080P')
         if (response && !isError(response)) setPreview(response.url)
     }

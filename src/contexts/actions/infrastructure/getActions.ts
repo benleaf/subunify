@@ -5,6 +5,7 @@ import { getFileDownloadUrl } from "../getFileDownloadUrl";
 import { restoreFile } from "../restoreFile";
 import { wipeProject } from "../wipeProject";
 import { getUserPayments } from "../getUserPayments";
+import { getProjectThumbnails } from "../getProjectThumbnails";
 
 export const getActions = (injection: ActionInput) => ({
     respondToProjectInvite: respondToProjectInvite(injection),
@@ -13,4 +14,5 @@ export const getActions = (injection: ActionInput) => ({
     restoreFile: restoreFile(injection),
     wipeProject: wipeProject(injection),
     getUserPayments: getUserPayments(injection),
+    getProjectThumbnails: getProjectThumbnails(injection),
 })
