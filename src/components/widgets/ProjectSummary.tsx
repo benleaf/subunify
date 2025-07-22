@@ -10,7 +10,7 @@ const ProjectSummary = () => {
 
     return <ColorGlassCard paddingSize="small">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: CssSizes.moderate }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flex: 2, minWidth: 300 }}>
+            <div style={{ display: 'flex', alignItems: 'center', flex: 2, minWidth: 300 }}>
                 <IconButton onClick={() => updateProperties({
                     page: 'projects',
                     selectedProjectId: undefined,
