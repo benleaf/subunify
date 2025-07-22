@@ -2,21 +2,17 @@ import { useAuth } from "@/contexts/AuthContext"
 import GlassSpace from "@/components/glassmorphism/GlassSpace"
 import Account from "@/components/flows/onboarding/Account"
 import Attributes from "@/components/flows/onboarding/Attributes"
-import Collaborators from "@/components/flows/onboarding/Collaborators"
 import Name from "@/components/flows/onboarding/Name"
-import NextSteps from "@/components/flows/onboarding/NextSteps"
 import { CssSizes } from "@/constants/CssSizes"
 import { useSize } from "@/hooks/useSize"
 import { Button } from "@mui/material"
 import { useState } from "react"
 import DoubleExposureGraphic from '@/images/DoubleExposureGraphic.png'
-import { User } from "@/types/User"
-import { isError } from "@/api/isError"
 import { useNavigate } from "react-router"
 import Welcome from "@/components/flows/onboarding/Welcome"
 
 const Onboarding = () => {
-    const { user, authAction, setUserAttributes } = useAuth()
+    const { user } = useAuth()
     const navigate = useNavigate()
     const [step, setStep] = useState(0)
     const { height, width } = useSize()
@@ -26,16 +22,15 @@ const Onboarding = () => {
         user.firstName && user.lastName,
         user.email && user.email_verified,
         user.tagLine,
-        true,
-        false,
     ]
 
     const nextPanel = () => {
         if (step == 3) navigate('/dashboard')
         if (stepInfoValid[step]) setStep(old => ++old)
+    }
 
-        authAction<User>('user', 'POST', JSON.stringify(user))
-            .then(user => !isError(user) && setUserAttributes(user))
+    const previousPanel = () => {
+        setStep(old => --old)
     }
 
     return <div style={{ height, width, display: 'flex', alignItems: 'center' }}>
@@ -56,7 +51,7 @@ const Onboarding = () => {
                     {step == 3 && <Attributes />}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'row', marginTop: CssSizes.hairpin, justifyContent: 'space-between' }}>
-                    {step > 0 && <Button variant="outlined" onClick={() => setStep(old => --old)}>Back</Button>}
+                    {step > 0 && <Button variant="outlined" onClick={previousPanel}>Back</Button>}
                     {step == 0 && <GlassSpace size='hairpin' />}
                     {stepInfoValid[step] && <Button variant="outlined" onClick={nextPanel}>Continue</Button>}
                 </div>

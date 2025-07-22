@@ -72,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         if (user.email && !user.id) setServerUser()
+        if (user.id) authAction<User>('user', 'POST', JSON.stringify(user))
     }, [user])
 
     const setServerUser = async () => {
