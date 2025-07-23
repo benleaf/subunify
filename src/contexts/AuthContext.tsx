@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 return acc;
             }, {} as { [key: string]: string }) || {};
 
-            setUser(attributes)
+            setUser(old => ({ ...old, ...attributes }))
         })
     }
 
@@ -71,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     useEffect(() => {
+        console.log(user)
         if (user.email && !user.id) setServerUser()
         if (user.id) authAction<User>('user', 'POST', JSON.stringify(user))
     }, [user])
@@ -78,7 +79,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const setServerUser = async () => {
         const serverUser = await authAction<User>('user', 'GET')
         if (!isError(serverUser)) {
-            setUserAttributes(serverUser)
+            if (user.firstName) {
+                setUser(prev => ({ ...prev, id: serverUser.id }));
+            } else {
+                setUserAttributes(serverUser)
+            }
         }
     }
 
