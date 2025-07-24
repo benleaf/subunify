@@ -2,10 +2,10 @@
 @value lightGrey: #333;
 @value darkGrey: #111;
 @value black: #000;
-@value colorPrimaryLight: #FF624D;
 @value colorPrimary: #ff0000;
+@value colorPrimaryLight: #ff0000;
 @value colorPrimaryDark: #B80300;
-@value colorPrimaryTransparent: #ff742a10;
+@value colorPrimaryTransparent: #ff000055;
 @value colorSecondary: #CCC;
 
 .mediumCircle {

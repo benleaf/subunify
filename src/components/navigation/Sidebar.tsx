@@ -33,7 +33,7 @@ const Sidebar = () => {
                     <ListItem disablePadding>
                         <ListItemButton onClick={() => setProject(project.id)}>
                             <ListItemIcon>
-                                <Folder color="error" />
+                                <Folder color="primary" />
                             </ListItemIcon>
                             <GlassText size="small">{project.name}</GlassText>
                         </ListItemButton>

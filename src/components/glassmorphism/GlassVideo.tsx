@@ -190,7 +190,7 @@ const GlassVideoFrame = ({ file, height = 400, placeholder, videoState, setVideo
                             height: 18,
                             left: `calc(${Math.min(100, 100 * time / video.current!.duration)}% - 2.5px)`,
                             backgroundColor: Colours.primary,
-                            background: `linear-gradient(to top, ${Colours.primary}, #f005)`,
+                            background: `linear-gradient(to top, ${Colours.primary}, ${Colours.primaryTransparent})`,
                             borderRadius: '5px 5px 0 0',
                         }} />}
                     {video.current && <div
