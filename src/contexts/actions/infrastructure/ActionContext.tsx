@@ -9,10 +9,10 @@ type ActionType = ReturnType<typeof getActions>
 const ActionContext = createContext<ActionType | undefined>(undefined)
 
 export const ActionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { updateProperties, properties } = useDashboard()
+    const { updateProperties, properties, loadProject } = useDashboard()
     const { authAction, setAlert, setLoading } = useAuth()
 
-    const injected: ActionInput = { updateProperties, properties, authAction, setAlert, setLoading }
+    const injected: ActionInput = { updateProperties, properties, authAction, setAlert, setLoading, loadProject }
     const dependencyInjectedActions = getActions(injected)
 
     return <ActionContext.Provider value={dependencyInjectedActions}>

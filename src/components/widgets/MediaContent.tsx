@@ -8,6 +8,7 @@ import GlassVideo from "../glassmorphism/GlassVideo"
 import { useThumbnail } from "@/contexts/ThumbnailContext"
 import { ImageFiles } from "@/constants/ImageFiles"
 import GlassImage from "../glassmorphism/GlassImage"
+import { PermMedia } from "@mui/icons-material"
 
 type Props = {
     file: StoredFile,
@@ -24,6 +25,7 @@ const MediaContent = ({ file, height = 300 }: Props) => {
     const videoFiles = file.created != null && VideoFiles.includes(extension)
     const isAudio = file.created != null && AudioFiles.includes(extension)
     const isImage = file.created != null && ImageFiles.includes(extension)
+    const hasPreview = videoFiles || isAudio || isImage
 
     return <>
         {videoFiles && <GlassVideo file={file} placeholder={thumbnail} height={height} />}
@@ -34,6 +36,9 @@ const MediaContent = ({ file, height = 300 }: Props) => {
                 <source src={preview} />
                 Your browser does not support the audio element.
             </audio>}
+        </div>}
+        {!hasPreview && <div style={{ width: '100%', height: height, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <PermMedia fontSize="large" />
         </div>}
     </>
 }

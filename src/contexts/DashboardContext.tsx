@@ -1,4 +1,4 @@
-import { ClusterResult, ProjectPreviewResult, ProjectResult } from "@/types/server/ProjectResult";
+import { ProjectPreviewResult, ProjectResult } from "@/types/server/ProjectResult";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { isError } from "@/api/isError";
@@ -52,6 +52,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const loadProject = async (projectId?: string) => {
         const contingentProjectId = projectId ?? project.selectedProjectId
         if (!contingentProjectId) return
+
         const projectResult = await authAction<ProjectResult>(`project/user-project/${contingentProjectId}`, 'GET')
         if (!isError(projectResult) && projectResult) {
             const bytesUploaded = projectResult.files

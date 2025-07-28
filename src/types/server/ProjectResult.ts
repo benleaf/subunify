@@ -1,6 +1,7 @@
 import { VideoCodecs } from "@/constants/VideoCodecs"
 import { User } from "../User"
 import { ProxySettingTypes } from "./ProxySettingTypes"
+import { FileAttachment } from "./FileAttachment"
 
 export type ProjectResult = {
     files: StoredFile[]
@@ -34,7 +35,8 @@ export type StoredFile = {
     lastFileRestore?: Date,
     bytes: number,
     proxyState: "NA" | "PROCESSING" | "COMPLETE" | "ARCHIVED",
-    proxyFiles: ProxyResult[]
+    proxyFiles: ProxyResult[],
+    attachedFiles: FileAttachment[]
 }
 
 export type ProjectPreviewResult = {

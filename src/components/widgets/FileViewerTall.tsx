@@ -1,9 +1,8 @@
 import { getFileSizes } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { Share } from "@mui/icons-material"
-import { Fab } from "@mui/material"
+import { AttachFile, ExpandMore, Share } from "@mui/icons-material"
+import { Accordion, AccordionDetails, AccordionSummary, Divider, Fab, Stack } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
-import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useState } from "react"
 import { CssSizes } from "@/constants/CssSizes"
@@ -13,6 +12,7 @@ import { useDashboard } from "@/contexts/DashboardContext"
 import { DownloadPanel } from "../form/DownloadPanel"
 import ShareFile from "../modal/ShareFile"
 import MediaContent from "./MediaContent"
+import AttachAFile from "../modal/AttachAFile"
 
 type Props = {
     thumbnail?: string,
@@ -23,7 +23,7 @@ type Props = {
 
 const FileViewerTall = ({ file }: Props) => {
     const { properties } = useDashboard()
-
+    const [attach, setAttach] = useState(false)
     const [share, setShare] = useState(false)
     const archiveIn = moment.duration(moment(file.created).add(30, 'days').diff(moment())).days()
 
@@ -37,28 +37,60 @@ const FileViewerTall = ({ file }: Props) => {
         }
     }
 
+    const allFiles = properties.selectedProject?.files ?? []
+    const attachedFiles = file.attachedFiles
+        .map(currentFile => allFiles.find(projectFile => projectFile.id == currentFile.attachedFile.id))
+        .filter(file => file !== undefined)
+
     return <>
-        <ColorGlassCard width='100%' paddingSize="tiny">
+        <ColorGlassCard width='100%' paddingSize="moderate">
             {!share && <div style={{ position: 'absolute', left: 0, top: -1, width: '100%' }}>
                 <MediaContent file={file} height={270} />
             </div>}
             <div style={{ height: 260 }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: CssSizes.tiny, gap: CssSizes.tiny }}>
-                <GlassText size="large">{file.name}</GlassText>
-                <Fab onClick={_ => setShare(true)} size='small' >
-                    <Share fontSize="small" />
-                </Fab>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: CssSizes.tiny }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: CssSizes.tiny }}>
+                    <div>
+                        <GlassText size="moderate">{file.name}</GlassText>
+                        <GlassText size="small">{Time.formatDate(file.fileLastModified)}</GlassText>
+                        <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
+                    </div>
+                    <DownloadPanel file={file} projectSettings={properties.selectedProject?.projectSettings} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: CssSizes.tiny }}>
+                    <div style={{ display: 'flex', gap: CssSizes.tiny }}>
+                        <Fab onClick={_ => setAttach(true)} size='small' >
+                            <AttachFile fontSize="small" />
+                        </Fab>
+                        <Fab onClick={_ => setShare(true)} size='small' color="primary" >
+                            <Share fontSize="small" />
+                        </Fab>
+                    </div>
+                    <GlassText size="moderate">{getFileSizes(file).total}</GlassText>
+                </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minWidth: 300 }}>
-                <GlassText size="moderate">{Time.formatDate(file.fileLastModified)}</GlassText>
-                <GlassText size="moderate">{getFileSizes(file).total}</GlassText>
-            </div>
-            <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
-            <GlassSpace size="tiny" style={{ width: '100%', paddingTop: CssSizes.hairpin, overflow: 'hidden' }}>
-                <DownloadPanel file={file} projectSettings={properties.selectedProject?.projectSettings} />
-            </GlassSpace>
+
+            {attachedFiles.length > 0 && <div style={{ paddingTop: CssSizes.tiny }}>
+                <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMore />} >
+                        <GlassText size="moderate">Attached Files</GlassText>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Stack spacing={1}>
+                            {attachedFiles.map(attachedFile => <>
+                                <Divider />
+                                <div>
+                                    <GlassText size="moderate">{attachedFile.name}</GlassText>
+                                    <DownloadPanel file={attachedFile} projectSettings={properties.selectedProject?.projectSettings} />
+                                </div>
+                            </>)}
+                        </Stack>
+                    </AccordionDetails>
+                </Accordion>
+            </div>}
         </ColorGlassCard>
         <ShareFile file={file} state={share} close={() => setShare(false)} />
+        <AttachAFile file={file} state={attach} close={() => setAttach(false)} />
     </>
 }
 

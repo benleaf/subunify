@@ -17,6 +17,7 @@ const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: "95%",
+        position: "relative",
         maxWidth,
     }
 
@@ -24,7 +25,7 @@ const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
         open={state}
         onClose={close}
     >
-        <div style={{ ...style, position: "relative" }}>
+        <div style={style}>
             {close && <Fab
                 color="primary"
                 onClick={close}
@@ -34,7 +35,9 @@ const BaseModal = ({ children, close, state, maxWidth = 500 }: Props) => {
                 <Close />
             </Fab>}
             <GlassCard>
-                {children}
+                <div style={{ maxHeight: '95vh', overflowY: 'scroll', scrollbarWidth: 'none' }}>
+                    {children}
+                </div>
             </GlassCard>
         </div>
     </Modal>

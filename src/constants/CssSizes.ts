@@ -10,5 +10,5 @@ export const CssSizes: { [key in Sizes]: string } = {
     moderate: 'min(5vw, 1em)',
     small: '0.8em',
     tiny: '0.5em',
-    hairpin: '1px'
+    hairpin: '2px'
 }
