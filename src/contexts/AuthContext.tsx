@@ -135,8 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const handleAction = <T,>(result: T) => {
         if (isError(result) && result.error == 'Unauthorized') {
-            logout(false);
-            setAlert('lease login to use this page', 'info')
+            setAlert('You are not authorized to perform that action', 'warning')
         } else if (isError(result) && result.error == 'UserNotSubscribed') {
             setSubscribed(false)
             setAlert('Subscription needed', 'info')
