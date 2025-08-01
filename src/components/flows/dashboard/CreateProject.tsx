@@ -1,26 +1,15 @@
-import { isError } from "@/api/isError"
 import LimitedText from "@/components/form/LimitedText"
 import GlassSpace from "@/components/glassmorphism/GlassSpace"
 import GlassText from "@/components/glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
-import { useAuth } from "@/contexts/AuthContext"
-import { useDashboard } from "@/contexts/DashboardContext"
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
 import { Project } from "@/types/server/ProjectResult"
 import { Button, Stack } from "@mui/material"
 import { useState } from "react"
 
 const CreateProject = () => {
     const [project, setProject] = useState<Partial<Project>>({})
-    const { authAction } = useAuth()
-    const { updateProperties, loadProjects } = useDashboard()
-
-    const createProject = async () => {
-        const newProject = await authAction<Project>('project', 'POST', JSON.stringify(project))
-        if (!isError(newProject) && newProject) {
-            await loadProjects()
-            updateProperties({ page: 'project', selectedProjectId: newProject.id })
-        }
-    }
+    const { createProject } = useAction()
 
     return <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly' }}>
         <Stack spacing={1}>
@@ -47,7 +36,7 @@ const CreateProject = () => {
             </Stack>
         </Stack>
         <div style={{ display: 'flex', flexDirection: 'row', marginTop: CssSizes.hairpin, justifyContent: 'end' }}>
-            {project.name && <Button variant="outlined" onClick={createProject}>Create</Button>}
+            {project.name && <Button variant="outlined" onClick={() => createProject(project)}>Create</Button>}
         </div>
     </div>
 }

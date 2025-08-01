@@ -14,7 +14,6 @@ import { AuthAction } from "@/types/actions/AuthAction";
 interface AuthContextType {
     user: Partial<User>
     setUserAttributes: (attributes: Partial<User>) => void
-    subscribed: boolean
     login: (email: string, password: string) => Promise<void>
     logout: () => void
     authAction: AuthAction
@@ -30,7 +29,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const abortController = new AbortController()
     const { signal } = abortController
     const { uploadManager } = useUpload()
-    const [subscribed, setSubscribed] = useState<any>(true);
     const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
     const [user, setUser] = useState<Partial<User>>({})
     const [alertState, setAlertState] = useState<{ message?: string, severity?: AlertColor }>({})
@@ -134,14 +132,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const handleAction = <T,>(result: T) => {
-        if (isError(result) && result.error == 'Unauthorized') {
-            setAlert('You are not authorized to perform that action', 'warning')
-        } else if (isError(result) && result.error == 'UserNotSubscribed') {
-            setSubscribed(false)
-            setAlert('Subscription needed', 'info')
+        if (isError(result) && result.message) {
+            setAlert(result.message, 'warning')
         }
-
-        setSubscribed(true)
 
         return result;
     }
@@ -155,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     uploadManager.addCallbacks({ authAction })
 
-    return <AuthContext.Provider value={{ user, setUserAttributes, login, logout, authAction, rawAuthAction, subscribed, setAlert, setLoading, downloadAction }}>
+    return <AuthContext.Provider value={{ user, setUserAttributes, login, logout, authAction, rawAuthAction, setAlert, setLoading, downloadAction }}>
         {children}
 
         <Backdrop

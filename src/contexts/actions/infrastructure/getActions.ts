@@ -1,13 +1,17 @@
 import { ActionInput } from "@/types/actions/ActionInput";
-import { respondToProjectInvite } from "../respondToProjectInvite";
+import { addFileAttachment } from "../addFileAttachment";
+import { addProjectStorage } from "../addProjectStorage";
 import { getBundleById } from "../getBundleById";
 import { getFileDownloadUrl } from "../getFileDownloadUrl";
+import { getProjectThumbnails } from "../getProjectThumbnails";
+import { getUserPayments } from "../getUserPayments";
+import { removeFileAttachment } from "../removeFileAttachment";
+import { respondToProjectInvite } from "../respondToProjectInvite";
 import { restoreFile } from "../restoreFile";
 import { wipeProject } from "../wipeProject";
-import { getUserPayments } from "../getUserPayments";
-import { getProjectThumbnails } from "../getProjectThumbnails";
-import { addFileAttachment } from "../addFileAttachment";
-import { removeFileAttachment } from "../removeFileAttachment";
+import { getProjectSettings } from "../getProjectSettings";
+import { setProjectSettings } from "../setProjectSettings";
+import { createProject } from "../createProject";
 
 export const getActions = (injection: ActionInput) => ({
     respondToProjectInvite: respondToProjectInvite(injection),
@@ -19,4 +23,8 @@ export const getActions = (injection: ActionInput) => ({
     getProjectThumbnails: getProjectThumbnails(injection),
     addFileAttachment: addFileAttachment(injection),
     removeFileAttachment: removeFileAttachment(injection),
+    addProjectStorage: addProjectStorage(injection),
+    getProjectSettings: getProjectSettings(injection),
+    setProjectSettings: setProjectSettings(injection),
+    createProject: createProject(injection),
 })

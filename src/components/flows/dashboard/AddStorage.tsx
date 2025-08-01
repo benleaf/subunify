@@ -6,15 +6,16 @@ import { useDashboard } from "@/contexts/DashboardContext";
 import GlassCard from "@/components/glassmorphism/GlassCard";
 import DynamicStack from "@/components/glassmorphism/DynamicStack";
 import PaymentModal from "@/components/modal/PaymentModal";
-import { isError } from "@/api/isError";
 import { useAuth } from "@/contexts/AuthContext";
 import BaseModal from "@/components/modal/BaseModal";
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard";
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext";
 
 const AddStorage = () => {
-    const { authAction, user, setAlert } = useAuth()
-    const { properties, updateProperties } = useDashboard()
+    const { user } = useAuth()
+    const { addProjectStorage } = useAction()
+    const { properties } = useDashboard()
     const [tbsToAdd, setTbsToAdd] = useState<number>()
     const [paymentModalState, setPaymentModalState] = useState(false)
 
@@ -25,18 +26,6 @@ const AddStorage = () => {
     ]
 
     const subscriptionPrice = 1.99
-
-    const payForStorage = async () => {
-        if (!tbsToAdd || tbsToAdd < 1) {
-            setAlert('You must add at least 1 TB of storage.', 'error')
-            return
-        }
-
-        const result = await authAction<void>(`stripe/pay-for-terabytes/${properties.selectedProjectId!}/${tbsToAdd}`, 'GET')
-        if (!isError(result)) {
-            updateProperties({ page: 'project' })
-        }
-    }
 
     const total = priceBreakdown.reduce((n, { value }) => n + value, 0)
 
@@ -124,7 +113,9 @@ const AddStorage = () => {
                     <a href="/privacy-policy" style={{ paddingRight: '1em' }}>Privacy Policy</a>
                     <a href="/terms-of-service">Terms Of Service</a>
                 </GlassSpace>
-                <Button onClick={payForStorage} variant="outlined" >Add Storage!</Button>
+                <Button onClick={() => addProjectStorage(properties.selectedProjectId!, tbsToAdd ?? 0)} variant="outlined" >
+                    Add Storage!
+                </Button>
             </ColorGlassCard>
         </BaseModal>}
     </>

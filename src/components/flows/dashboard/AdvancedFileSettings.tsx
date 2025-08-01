@@ -3,20 +3,18 @@ import { Alert, Button, Divider, FormControl, FormLabel, MenuItem, Select, Stack
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
 import { useDashboard } from "@/contexts/DashboardContext";
-import { isError } from "@/api/isError";
-import { useAuth } from "@/contexts/AuthContext";
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
 import { Save } from "@mui/icons-material";
 import { VideoCodecs } from "@/constants/VideoCodecs";
 import { ProjectSettings } from "@/types/server/ProjectResult";
-import { ProxySettingTypes } from "@/types/server/ProxySettingTypes";
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext";
 
 type Settings = Omit<ProjectSettings, 'VIDEO_THUMBNAIL'>
-type SettingsResult = { id: string, setting: ProxySettingTypes, value: keyof typeof VideoCodecs }
+
 
 const AdvancedFileSettings = () => {
-    const { authAction, setAlert } = useAuth()
     const { properties } = useDashboard()
+    const { getProjectSettings, setProjectSettings } = useAction()
     const codecs = Object.keys(VideoCodecs) as (keyof typeof VideoCodecs)[]
     const [settings, setSettings] = useState<Omit<Settings, 'RAW' | 'IMAGE_THUMBNAIL'>>({
         VIDEO_CODEC_1080P: 'H_264',
@@ -25,28 +23,18 @@ const AdvancedFileSettings = () => {
     })
 
     useEffect(() => {
-        getProjectSettings()
+        getSettings()
     }, [])
 
-
-    const getProjectSettings = async () => {
-        const result = await authAction<SettingsResult[]>(`project-setting/${properties.selectedProjectId!}`, 'GET')
-        if (!isError(result)) {
-            for (const setting of result) {
-                setSettings(old => ({ ...old, [setting.setting]: setting.value }))
-            }
+    const getSettings = async () => {
+        const result = await getProjectSettings(properties.selectedProjectId!)
+        for (const setting of result) {
+            setSettings(old => ({ ...old, [setting.setting]: setting.value }))
         }
     }
 
     const setSetting = async () => {
-        const result = await authAction<Settings>(`project-setting`, 'POST', JSON.stringify({
-            projectId: properties.selectedProjectId!,
-            settings
-        }))
-
-        if (!isError(result)) {
-            setAlert('Successfully updates settings!', 'success')
-        }
+        setProjectSettings(properties.selectedProjectId!, settings)
     }
 
     return <>
