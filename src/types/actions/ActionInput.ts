@@ -5,6 +5,7 @@ import { AlertColor } from "@mui/material"
 import { ProjectResult } from "../server/ProjectResult"
 
 export type ActionInput = {
+    downloadAction: (endpoint: string, bytes: number) => Promise<void>,
     authAction: AuthAction,
     updateProperties: UpdateProperties
     properties: Partial<DashboardProperties>

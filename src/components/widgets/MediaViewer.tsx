@@ -6,7 +6,6 @@ import { useSize } from "@/hooks/useSize"
 import { useState, useEffect, CSSProperties } from "react"
 import { StoredFile } from "@/types/server/ProjectResult"
 import { isError } from "@/api/isError"
-import { useAuth } from "@/contexts/AuthContext"
 import { getExtension } from "@/helpers/FileProperties"
 import { VideoFiles } from "@/constants/VideoFiles"
 import { AudioFiles } from "@/constants/AudioFiles"
@@ -21,7 +20,6 @@ type Props = {
 
 const MediaViewer = ({ file, thumbnail, rotation, playing = true }: Props) => {
     const { width } = useSize()
-    const { authAction } = useAuth()
     const { getFileDownloadUrl } = useAction()
     const [fullscreen, setFullscreen] = useState(false)
     const [preview, setPreview] = useState<string | null>(null)

@@ -12,6 +12,8 @@ import { wipeProject } from "../wipeProject";
 import { getProjectSettings } from "../getProjectSettings";
 import { setProjectSettings } from "../setProjectSettings";
 import { createProject } from "../createProject";
+import { getProjectBytes } from "../getProjectBytes";
+import { downloadProject } from "../downloadProject";
 
 export const getActions = (injection: ActionInput) => ({
     respondToProjectInvite: respondToProjectInvite(injection),
@@ -27,4 +29,6 @@ export const getActions = (injection: ActionInput) => ({
     getProjectSettings: getProjectSettings(injection),
     setProjectSettings: setProjectSettings(injection),
     createProject: createProject(injection),
+    getProjectBytes: getProjectBytes(injection),
+    downloadProject: downloadProject(injection),
 })

@@ -3,31 +3,21 @@ import { useDashboard } from "@/contexts/DashboardContext"
 import { Stack, Button, MenuItem, Select, FormControl, InputLabel } from "@mui/material"
 import { Download as DownloadIcon } from "@mui/icons-material"
 import { useEffect, useState } from "react"
-import { useAuth } from "@/contexts/AuthContext"
-import { FileQuality } from "@/types/FileQuality"
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage"
 import GlassSpace from "@/components/glassmorphism/GlassSpace"
-import { isError } from "@/api/isError"
 import { getFileSize } from "@/helpers/FileSize"
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
+import { ProxySettingTypes } from "@/types/server/ProxySettingTypes"
 
 const Download = () => {
-    const { downloadAction, authAction } = useAuth()
+    const { getProjectBytes, downloadProject } = useAction()
     const { properties } = useDashboard()
-    const [quality, setQuality] = useState<FileQuality>('RAW')
-    const [bytes, setBytes] = useState<number>(0)
+    const [quality, setQuality] = useState<ProxySettingTypes>('RAW')
+    const [bytes, setBytes] = useState<number>()
 
     useEffect(() => {
-        authAction<number>(`file-download/project-bytes/${properties.selectedProjectId}/${quality}`, 'GET').then(result => {
-            if (!isError(result)) setBytes(result)
-        })
-
+        getProjectBytes(properties.selectedProjectId!, quality).then(result => setBytes(result))
     }, [quality])
-
-    const downloadProject = async () => {
-        if (isError(bytes)) throw new Error("Unable to get bytes in project");
-
-        await downloadAction(`file-download/project-download/${properties.selectedProjectId}/${quality}`, bytes)
-    }
 
     return <Stack spacing={1}>
         <ProjectSummarySubpage name="Download" />
@@ -43,19 +33,19 @@ const Download = () => {
                         <Select
                             label='Quality'
                             value={quality}
-                            onChange={e => setQuality(e.target.value as FileQuality)}
+                            onChange={e => setQuality(e.target.value as ProxySettingTypes)}
                         >
                             <MenuItem value='RAW'>Raw</MenuItem>
                         </Select>
                     </FormControl>
                     <GlassText size="moderate">
-                        {getFileSize(bytes)}
+                        {getFileSize(bytes ?? 0)}
                     </GlassText>
                     <Button
                         fullWidth
                         variant="contained"
                         startIcon={<DownloadIcon />}
-                        onClick={() => downloadProject()}
+                        onClick={() => downloadProject(quality, properties.selectedProjectId, bytes)}
                     >
                         Download
                     </Button>
