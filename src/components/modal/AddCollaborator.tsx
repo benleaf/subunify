@@ -3,12 +3,12 @@ import { Stack, TextField, Button, IconButton, MenuItem, Select } from "@mui/mat
 import { useState } from "react"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import BaseModal from "./BaseModal"
-import { Add, PersonAdd, Send, Settings } from "@mui/icons-material"
-import { useAuth } from "@/contexts/AuthContext"
-import { isError } from "@/api/isError"
+import { Add, PersonAdd, Send } from "@mui/icons-material"
 import GlassIconText from "../glassmorphism/GlassIconText"
-import { CollaboratorRoles, CollaboratorRolesManager, CollaboratorRolesOwner, CollaboratorRolesThatCanAdd } from "@/constants/CollaboratorRoles"
+import { CollaboratorRoles, CollaboratorRolesThatCanAdd } from "@/constants/CollaboratorRoles"
 import { getEditableRoles } from "@/helpers/Collaborator"
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
+import { AddCollaboratorSettings } from "@/types/AddCollaboratorSettings"
 
 type Props = {
     project: ProjectResult,
@@ -16,27 +16,13 @@ type Props = {
     buttonType?: 'ICON' | 'TEXT'
 }
 
-type Settings = {
-    projectId: string
-    email?: string
-    role?: keyof typeof CollaboratorRoles
-}
-
 const AddCollaborator = ({ project, role = 'MANAGER', buttonType = 'ICON' }: Props) => {
-    const { authAction, setAlert } = useAuth()
+    const { addProjectCollaborator } = useAction()
     const [addCollaborators, setAddCollaborators] = useState<boolean>(false)
-    const [settings, setSettings] = useState<Settings>({ projectId: project.id, role: 'VIEWER' })
+    const [settings, setSettings] = useState<AddCollaboratorSettings>({ projectId: project.id, role: 'VIEWER' })
 
     const inviteCollaborator = async () => {
-        const result = authAction<Partial<void>>(`project/add-collaborator`, 'POST', JSON.stringify(settings))
-
-        if (isError(result)) {
-            setAlert('Failed to send invitation', 'error')
-            console.error(result)
-        } else {
-            setAlert(`Invitation sent to ${settings.email}`, 'success')
-        }
-
+        await addProjectCollaborator(settings)
         setAddCollaborators(false)
     }
 

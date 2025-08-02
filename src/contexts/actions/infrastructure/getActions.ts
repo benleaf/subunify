@@ -14,6 +14,13 @@ import { setProjectSettings } from "../setProjectSettings";
 import { createProject } from "../createProject";
 import { getProjectBytes } from "../getProjectBytes";
 import { downloadProject } from "../downloadProject";
+import { deleteCollaborator } from "../deleteCollaborator";
+import { updateCollaborator } from "../updateCollaborator";
+import { addProjectCollaborator } from "../addProjectCollaborator";
+import { startStoragePaymentSession } from "../startStoragePaymentSession";
+import { fulfillPaymentSession } from "../fulfillPaymentSession";
+import { createSharedBundle } from "../createSharedBundle";
+import { addFileToSharedBundle } from "../addFileToSharedBundle";
 
 export const getActions = (injection: ActionInput) => ({
     respondToProjectInvite: respondToProjectInvite(injection),
@@ -31,4 +38,11 @@ export const getActions = (injection: ActionInput) => ({
     createProject: createProject(injection),
     getProjectBytes: getProjectBytes(injection),
     downloadProject: downloadProject(injection),
+    deleteCollaborator: deleteCollaborator(injection),
+    updateCollaborator: updateCollaborator(injection),
+    addProjectCollaborator: addProjectCollaborator(injection),
+    startStoragePaymentSession: startStoragePaymentSession(injection),
+    fulfillPaymentSession: fulfillPaymentSession(injection),
+    createSharedBundle: createSharedBundle(injection),
+    addFileToSharedBundle: addFileToSharedBundle(injection),
 })

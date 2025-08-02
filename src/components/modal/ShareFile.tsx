@@ -13,9 +13,11 @@ import { isError } from "@/api/isError"
 import { Collaborator } from "@/types/Collaborator"
 import Profile from "../form/Profile"
 import { useThumbnail } from "@/contexts/ThumbnailContext"
-import { User } from "@/types/User"
 import { Bundle } from "@/types/Bundle"
 import { ProxySettingLabels } from "@/constants/ProxySettingLabels"
+import { validateEmail } from "@/helpers/ValidateEmail"
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
+import { ProxySettingTypes } from "@/types/server/ProxySettingTypes"
 
 type Props = {
     file: StoredFile
@@ -30,35 +32,24 @@ type AddMessageProps = {
 }
 
 const AddMessage = ({ file, onNext, bundle }: AddMessageProps) => {
-    const { authAction } = useAuth()
+    const { addFileToSharedBundle } = useAction()
     const { getUrl } = useThumbnail()
     const [message, setMessage] = useState<string>()
-    const [downloadType, setDownloadType] = useState<string>('RAW')
+    const [downloadType, setDownloadType] = useState<ProxySettingTypes>('RAW')
 
     const createBundle = async () => {
-        if (!bundle?.id) {
-            return
-        }
-
-        const updatedBundle = await authAction<Bundle[]>('bundle/file', 'POST', JSON.stringify({
-            bundleId: bundle.id,
-            fileId: file.id,
-            message,
-            downloadProxyType: downloadType
-        }))
-
-        console.log(updatedBundle)
-        if (!isError(updatedBundle)) {
-            onNext()
-        }
+        if (!bundle?.id) return
+        const success = await addFileToSharedBundle(file.id, downloadType, message, bundle)
+        if (success) onNext()
     }
+
     return <Stack spacing={2} overflow='hidden'>
         <img src={getUrl(file)} height={200} width='100%' style={{ objectFit: 'cover', position: 'absolute', top: 0, left: 0, right: 0, borderStartStartRadius: 15 }} />
         <div style={{ height: 150 }} />
         <GlassText size='moderate' >Adding {file.name} to {bundle?.name ?? 'bundle'}</GlassText>
         <FormControl style={{ minWidth: 100 }}>
             <InputLabel>Download Type</InputLabel>
-            <Select<string> onChange={e => setDownloadType(e.target.value)} label='Download Type'>
+            <Select<string> onChange={e => setDownloadType(e.target.value as ProxySettingTypes)} label='Download Type'>
                 <MenuItem value='RAW'>RAW</MenuItem>
                 {file.proxyFiles.map(proxyFile => <MenuItem value={proxyFile.proxyType}>{ProxySettingLabels[proxyFile.proxyType]}</MenuItem>)}
             </Select>
@@ -189,22 +180,14 @@ const CreateShareBundle = ({ setName, setDescription, onFinished }: CreateShareB
 type InviteToBundleProps = {
     collaborators: Collaborator[]
     selectedBundle: State['selectedBundle']
-    onFinished: (selectedBundle: Required<State['selectedBundle']>) => void
+    onFinished: (selectedBundle: Bundle) => void
 }
 
 const InviteToBundle = ({ collaborators, selectedBundle, onFinished }: InviteToBundleProps) => {
-    const { authAction, user, setAlert } = useAuth()
+    const { createSharedBundle } = useAction()
     const divRef = useRef<ElementRef<'div'>>(null)
     const [recipients, setRecipients] = useState<string[]>([])
     const filter = createFilterOptions<string>();
-
-    const validateEmail = (email: string) => {
-        return String(email)
-            .toLowerCase()
-            .match(
-                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            );
-    };
 
     const onChange = (newRecipients: string[]) => {
         const shouldScrollToBottom = newRecipients.length > recipients.length && divRef.current != null
@@ -218,26 +201,9 @@ const InviteToBundle = ({ collaborators, selectedBundle, onFinished }: InviteToB
     const scrollToBottom = () => divRef.current?.scrollIntoView({ behavior: 'instant' });
 
     const createBundle = async () => {
-        const invalidRecipients = recipients.filter(recipient => !validateEmail(recipient)).length
-        if (invalidRecipients > 0) {
-            setAlert('Invalid email provided for a recipient', 'error')
-            return
-        }
-
-        const newBundle = await authAction<Required<State['selectedBundle']>>('bundle', 'POST', JSON.stringify({
-            name: selectedBundle?.name,
-            description: selectedBundle?.description,
-            recipients: [
-                ...(recipients.map(recipient => ({ email: recipient, isOwner: false }))),
-                { email: user.email, isOwner: true }
-            ]
-        }))
-
-        if (newBundle && !isError(newBundle)) {
+        const newBundle = await createSharedBundle(recipients, selectedBundle)
+        if (newBundle)
             onFinished(newBundle)
-        } else {
-            setAlert('Unable to create bundle', 'error')
-        }
     }
 
     const options = collaborators
@@ -335,7 +301,7 @@ const ShareFile = ({ file, state, close }: Props) => {
         close()
     }
 
-    const onBundleCreate = (selectedBundle: Required<State["selectedBundle"]>) => {
+    const onBundleCreate = (selectedBundle: Bundle) => {
         setShareState(old => ({ ...old, selectedBundle }))
         setStage('message')
     }

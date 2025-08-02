@@ -1,22 +1,17 @@
 import GlassText from "@/components/glassmorphism/GlassText";
 import { useNavigate, useSearchParams } from "react-router";
-import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
-import { isError } from "@/api/isError";
+import { useAction } from "@/contexts/actions/infrastructure/ActionContext";
 
 const Payment = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate()
-    const { authAction } = useAuth()
+    const { fulfillPaymentSession } = useAction()
 
     const confirmPayment = async () => {
-        const project = await authAction<{ projectId: string }>(
-            `stripe/fulfill/${searchParams.get('paymentId')}`,
-            'GET',
-        )
-        if (isError(project)) throw new Error("Failed to fulfill payment");
-
-        navigate(`/dashboard?projectId=${project.projectId}`)
+        const project = await fulfillPaymentSession(searchParams.get('paymentId')!)
+        if (project)
+            navigate(`/dashboard?projectId=${project.projectId}`)
     }
 
     useEffect(() => {
