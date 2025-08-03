@@ -12,7 +12,7 @@ export const addProjectStorage = ({ authAction, updateProperties, setAlert, setL
     setLoading(false)
 
     if (!isError(result)) {
-        setAlert(`${tbsToAdd} TB${tbsToAdd == 1 ? '' : 's'} added to project`, 'error')
+        setAlert(`${tbsToAdd} TB${tbsToAdd == 1 ? '' : 's'} added to project`, 'success')
         updateProperties({ page: 'project' })
     }
 }

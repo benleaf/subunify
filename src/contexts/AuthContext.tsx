@@ -133,7 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const handleAction = <T,>(result: T) => {
         if (isError(result) && result.message) {
-            setAlert(result.message, 'warning')
+            setAlert(result.message, 'error')
         }
 
         return result;
