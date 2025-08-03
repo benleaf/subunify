@@ -2,17 +2,9 @@ import { ScreenWidths } from "@/constants/ScreenWidths"
 import GlassSpace from "../glassmorphism/GlassSpace"
 import GlassText from "../glassmorphism/GlassText"
 import { useSize } from "@/hooks/useSize"
-import { useRef, useLayoutEffect, RefObject, useEffect, useMemo, useState, Fragment } from "react"
-import { gsap } from 'gsap';
-import FileViewer from "../widgets/FileViewer"
-import { Alert, CircularProgress, LinearProgress, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import { B, C, D, E, H } from '@/images/stock'
-import { CssSizes } from "@/constants/CssSizes"
+import { useEffect, useState, Fragment } from "react"
+import { Alert, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import { getFileSize } from "@/helpers/FileSize"
-import { UploadingFileRecord } from "@/helpers/UploadManager"
-
-
-
 
 const HyperSpeedUpload = () => {
     const { width } = useSize()

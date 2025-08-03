@@ -17,10 +17,10 @@ class UploadManager {
     public fileRecords: UploadingFileRecord[] = []
     public isRunning = false
 
-    private uploadSessions: UploadSession[] = []
-    private stagingQueue: UploadObject[] = []
-    private uploadQueue: string[] = []
-    private finished: FileUploadResult[] = []
+    public uploadSessions: UploadSession[] = []
+    public stagingQueue: UploadObject[] = []
+    public uploadQueue: string[] = []
+    public finished: FileUploadResult[] = []
     private errorEncountered = false
     private isAddingToStaging = false
     private isAddingToSessions = false
@@ -142,7 +142,6 @@ class UploadManager {
             this.stagingQueue.push(...uploadObjects)
             this.isAddingToStaging = false
         }
-
     }
 
     private tryEndUpload() {
@@ -159,17 +158,16 @@ class UploadManager {
     }
 
     private async uploadComplete(fileUploadResult: FileUploadResult, fileRecord: UploadingFileRecord) {
-        this.authAction!<{ success: true }>('storage-file/upload/complete', "POST", JSON.stringify(fileUploadResult)).then((result) => {
-            if (isError(result)) {
-                this.finished.unshift(fileUploadResult)
-                console.error(result)
-                this.errorEncountered = true
-            } else {
-                console.log('finished', fileRecord.file.name)
-                this.updateDataStored && this.updateDataStored(fileRecord.projectId, fileRecord.file.size)
-                this.tryEndUpload()
-            }
-        })
+        const result = await this.authAction!<{ success: true }>('storage-file/upload/complete', "POST", JSON.stringify(fileUploadResult))
+        if (isError(result)) {
+            this.finished.unshift(fileUploadResult)
+            console.error(result)
+            this.errorEncountered = true
+        } else {
+            console.log('finished', fileRecord.file.name)
+            this.updateDataStored && this.updateDataStored(fileRecord.projectId, fileRecord.file.size)
+            this.tryEndUpload()
+        }
     }
 
     private async uploadChunk(chunk: Chunk, uploadObj: UploadObject, fileRecord?: UploadingFileRecord) {
@@ -180,7 +178,6 @@ class UploadManager {
                 fileRecord.uploadedChucks++
                 if (fileRecord.uploadedChucks >= fileRecord.chunks) fileRecord.finished = true
             }
-
         }).catch(async () => {
             this.uploadQueue = this.uploadQueue.filter(p => p !== uploadObj.url)
             this.stagingQueue.unshift(uploadObj)
@@ -194,7 +191,7 @@ class UploadManager {
         return { blob: file.slice(start, end), url: uploadUrl, bytes: end - start }
     }
 
-    private checkQueues() {
+    public checkQueues() {
         if (!this.isRunning || this.isAddingToSessions || this.isAddingToStaging) return
         const unUploadedFiles = this.fileRecords.filter(file => !file.started)
 
