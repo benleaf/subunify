@@ -12,43 +12,43 @@ import { getFileSize } from "@/helpers/FileSize"
 import { Time } from "@/helpers/Time"
 import { FileRecord } from "@/helpers/UploadManager"
 import { useSize } from "@/hooks/useSize"
-import { TaggedFile } from "@/pages/FileUpload"
 import { Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Chip, CircularProgress, LinearProgress } from "@mui/material"
-import moment, { Moment } from "moment"
-import { Fragment, useEffect, useState } from "react"
+import moment from "moment"
+import { Fragment, useEffect } from "react"
 
 const Cluster = () => {
     const { setAlert } = useAuth()
-    const { uploadManager, projectDataStored } = useUpload()
+    const { uploadManager, projectDataStored, setUploadStats, uploadStats } = useUpload()
     const { properties, loadProject } = useDashboard()
-    const [totalUploaded, setTotalUploaded] = useState<number>()
-    const [startTime, setStartTime] = useState<Moment>()
-    const [eta, setEta] = useState<string>()
-    const [mbps, setMbps] = useState<number>()
     const { width } = useSize()
 
     useEffect(() => {
         loadProject()
-        uploadManager.addCallbacks({ addUploaded })
     }, [uploadManager])
 
-    useEffect(() => {
-        if (totalUploaded && uploadManager.isRunning) {
-            const secondsElapsed = moment.duration(moment().diff(startTime)).asSeconds()
-            const bitsPerSecond = 8 * totalUploaded / Math.max(1, secondsElapsed)
+    const updateStats = () => {
+        if (uploadStats && uploadManager.isRunning) {
+            const secondsElapsed = moment.duration(moment().diff(uploadStats.startTime)).asSeconds()
+            const bitsPerSecond = 8 * (uploadStats.totalUploaded ?? 0) / Math.max(1, secondsElapsed)
             const newMbps = ((bitsPerSecond) / 1024) / 1024
-            setMbps(newMbps)
             uploadManager.setConcurrentUploads(newMbps ?? 1)
 
-            const remainingBits = (totalSize - totalUploaded) * 8
+            const remainingBits = (totalSize - (uploadStats.totalUploaded ?? 0)) * 8
             const estimatedSecondsLeft = remainingBits / bitsPerSecond
-            setEta(Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds')))
+            const eta = estimatedSecondsLeft == Infinity ?
+                'Waiting on upload server...' :
+                Time.formatDate(moment().add(estimatedSecondsLeft, 'seconds'))
+
+            setUploadStats(old => ({ ...old, eta, mbps: newMbps }))
         } else {
-            setTotalUploaded(undefined)
-            setEta(undefined)
-            setMbps(undefined)
+            setUploadStats({})
         }
-    }, [totalUploaded])
+    }
+
+    useEffect(() => {
+        const intervalId = setInterval(updateStats, 100);
+        return () => clearInterval(intervalId);
+    }, [uploadStats?.totalUploaded])
 
     const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
 
@@ -57,19 +57,15 @@ const Cluster = () => {
         fileRecords.map(fileRecord => fileRecord.file.size)
             .reduce((acc, cur) => acc + cur)
 
-    const totalProgress = ((totalUploaded ?? 0) / totalSize) * 100
+    const totalProgress = ((uploadStats?.totalUploaded ?? 0) / totalSize) * 100
 
-    const addUploaded = (uploaded: number) => {
-        setTotalUploaded(old => (old ?? 0) + uploaded)
-    }
+    const setFiles = (files: File[]) => {
+        if (!uploadStats?.startTime) setUploadStats(old => ({ ...old, startTime: moment() }))
+        setAlert(`${files.length} file${files.length == 1 ? '' : 's'} added to upload queue`, 'success')
 
-    const setTaggedFiles = (taggedFiles: TaggedFile[]) => {
-        if (!startTime) setStartTime(moment())
-        setAlert(`${taggedFiles.length} file${taggedFiles.length == 1 ? '' : 's'} added to upload queue`, 'success')
-
-        const fileRecords: FileRecord[] = taggedFiles.map(file => ({
+        const fileRecords: FileRecord[] = files.map(file => ({
             description: '',
-            file: file.file,
+            file: file,
             projectId: properties.selectedProjectId!,
         }))
 
@@ -80,7 +76,6 @@ const Cluster = () => {
         }
     }
 
-
     const displayableFiles = uploadManager.fileRecords.filter(file => !file.finished)
 
     return <Stack spacing={1}>
@@ -89,7 +84,7 @@ const Cluster = () => {
             <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, flex: 1 }}>
                 <FileAdder
                     totalBytesUploaded={totalBytesUploaded}
-                    setTaggedFiles={setTaggedFiles}
+                    setFiles={setFiles}
                     availableTBs={properties.selectedProject?.availableTBs}
                 />
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -105,9 +100,9 @@ const Cluster = () => {
                                         {totalProgress.toFixed(1)}%
                                     </GlassText>
                                 </Stack>
-                                {mbps != undefined && <>
-                                    <Chip label={`${mbps.toFixed(1)} Mbps`} style={{ marginTop: '1em' }} />
-                                    <Chip label={`Approximately ${eta} remaining`} style={{ marginTop: '1em' }} />
+                                {uploadStats?.mbps != undefined && <>
+                                    <Chip label={`${uploadStats.mbps.toFixed(1)} Mbps`} style={{ marginTop: '1em' }} />
+                                    <Chip label={`Expected finish: ${uploadStats.eta}`} style={{ marginTop: '1em' }} />
                                 </>}
                                 {displayableFiles && <Alert severity='info'>
                                     Upload in progress, please do not close the tab or refresh.

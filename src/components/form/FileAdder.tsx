@@ -1,7 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { getTagsFromFile, getFileExtension } from "@/helpers/FileProperties";
+import { getFileExtension } from "@/helpers/FileProperties";
 import { getFileSize, terabytesToBytes } from "@/helpers/FileSize";
-import { TaggedFile } from "@/pages/FileUpload";
 import { Button } from "@mui/material";
 import { useCallback } from "react";
 import { useDropzone, FileError } from "react-dropzone";
@@ -9,7 +8,7 @@ import { useDropzone, FileError } from "react-dropzone";
 type Props = {
     totalBytesUploaded: number,
     availableTBs?: number,
-    setTaggedFiles: (taggedFiles: TaggedFile[]) => void
+    setFiles: (file: File[]) => void
 }
 
 const BLOCKED_EXTENSIONS = [
@@ -18,18 +17,18 @@ const BLOCKED_EXTENSIONS = [
     'pl', 'rb', 'cgi', 'jar', 'apk', 'swf', 'scr', 'wsf', 'ps1'
 ]
 
-const FileAdder = ({ totalBytesUploaded, availableTBs, setTaggedFiles }: Props) => {
+const FileAdder = ({ totalBytesUploaded, availableTBs, setFiles: setFiles }: Props) => {
     const { setAlert } = useAuth()
 
-    const removeDuplicates = (files: TaggedFile[], availableTBs: number) => {
-        const duplicatesRemoved = files.reduce((unique: TaggedFile[], o) => {
-            if (!unique.some(fileRecord => fileRecord.file.name === o.file.name)) {
+    const removeDuplicates = (files: File[], availableTBs: number) => {
+        const duplicatesRemoved = files.reduce((unique: File[], o) => {
+            if (!unique.some(fileRecord => fileRecord.name === o.name)) {
                 unique.push(o);
             }
             return unique;
         }, [])
 
-        const totalBytes = files.reduce((n, { file }) => n + +file.size, 0) ?? 0
+        const totalBytes = files.reduce((n, file) => n + +file.size, 0) ?? 0
         console.log(getFileSize(totalBytesUploaded + totalBytes), availableTBs)
         if (totalBytesUploaded + totalBytes > terabytesToBytes(availableTBs)) {
             const missing = getFileSize((totalBytesUploaded + totalBytes) - terabytesToBytes(availableTBs))
@@ -46,12 +45,7 @@ const FileAdder = ({ totalBytesUploaded, availableTBs, setTaggedFiles }: Props) 
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
-            setTaggedFiles(removeDuplicates([
-                ...acceptedFiles.map(file => ({
-                    file,
-                    tags: getTagsFromFile(file)
-                }))
-            ], availableTBs ?? 0))
+            setFiles(removeDuplicates(acceptedFiles, availableTBs ?? 0))
         },
         [availableTBs]
     )
