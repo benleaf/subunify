@@ -4,7 +4,7 @@ import { ApiError } from "@/types/server/ApiError"
 import { StoredFile } from "@/types/server/ProjectResult"
 import { ProxySettingTypes } from "@/types/server/ProxySettingTypes"
 
-export const restoreFile = ({ authAction, updateProperties, properties, setAlert }: ActionInput) => async (file: StoredFile, proxyType?: ProxySettingTypes) => {
+export const restoreFile = ({ authAction, setAlert, loadProject }: ActionInput) => async (file: StoredFile, proxyType?: ProxySettingTypes) => {
     const proxy = file.proxyFiles.find(proxy => proxy.proxyType == proxyType)
     let response: StoredFile | Partial<ApiError>
 
@@ -15,10 +15,7 @@ export const restoreFile = ({ authAction, updateProperties, properties, setAlert
     }
 
     if (response && !isError(response)) {
-        if (properties.selectedProject) {
-            const newFiles = properties.selectedProject.files.map(f => f.id === file.id ? response : f)
-            updateProperties({ selectedProject: { ...properties.selectedProject, files: newFiles } })
-        }
+        await loadProject()
         setAlert('File restoration started', "success")
         return response
     }

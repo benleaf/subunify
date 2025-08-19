@@ -1,43 +1,29 @@
-import { StoredFile } from "@/types/server/ProjectResult"
+import { BundleStorageFile, StoredFile } from "@/types/server/ProjectResult"
 import GlassText from "../glassmorphism/GlassText"
 import { CssSizes } from "@/constants/CssSizes"
-import { DownloadPanel } from "../form/DownloadPanel"
 import GlassCard from "../glassmorphism/GlassCard"
 import MediaContent from "./MediaContent"
-import { Button, Divider, Fab } from "@mui/material"
-import { Download } from "@mui/icons-material"
-import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
-import { isError } from "@/api/isError"
 import { ProxySettingTypes } from "@/types/server/ProxySettingTypes"
-import { ProxySettingLabels } from "@/constants/ProxySettingLabels"
+import { DownloadItem } from "../form/DownloadItem"
+import { getDisplayFile } from "@/helpers/FilesForDisplay"
 
 type Props = {
-    file: StoredFile,
+    file: BundleStorageFile,
     message: string,
-    isRight: boolean,
     height?: number,
     downloadType?: ProxySettingTypes
 }
 
-const FilePresenter = ({ file, isRight, message, downloadType }: Props) => {
-    const { getFileDownloadUrl } = useAction()
-
-    const download = async () => {
-        const response = await getFileDownloadUrl(file, downloadType ?? 'RAW')
-
-        if (!response || isError(response)) {
-            console.error(response)
-            return
-        }
-
-        const { url } = response
-        window.open(url, '_self');
-    }
-
+const FilePresenter = ({ file, message, downloadType }: Props) => {
+    const storedFile: StoredFile = getDisplayFile(file)
+    const proxy = storedFile.proxyFiles?.find(proxy => proxy.proxyType === downloadType)
     return <GlassCard marginSize="small" paddingSize="small">
         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: CssSizes.small, justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flex: 1, minWidth: 300 }}>
-                <GlassText size="moderate">{message}</GlassText>
+                <div>
+                    <GlassText size="large">{file.name}</GlassText>
+                    <GlassText size="moderate">{message}</GlassText>
+                </div>
                 <div
                     style={{
                         display: 'flex',
@@ -45,18 +31,25 @@ const FilePresenter = ({ file, isRight, message, downloadType }: Props) => {
                         flexWrap: 'wrap',
                         gap: CssSizes.small,
                         alignItems: 'center',
-                        cursor: 'pointer'
                     }}
-                    onClick={download}
                 >
-                    <Fab size='small' onClick={download} color="primary" >
-                        <Download fontSize="medium" />
-                    </Fab>
-                    <GlassText size="moderate"><u>{file.name} : {ProxySettingLabels[downloadType ?? 'RAW']}</u></GlassText>
+                    {!proxy && <DownloadItem
+                        file={storedFile}
+                        bytes={storedFile.bytes}
+                        proxyType={downloadType}
+                        lastFileRestore={storedFile.lastFileRestore}
+                    />}
+                    {proxy && <DownloadItem
+                        file={storedFile}
+                        bytes={+proxy.bytes}
+                        proxyType={downloadType}
+                        transformation={proxy.transformation}
+                        lastFileRestore={storedFile.lastFileRestore}
+                    />}
                 </div>
             </div>
             <div style={{ flex: 2 }}>
-                <MediaContent file={file} height={400} />
+                <MediaContent file={storedFile} height={400} />
             </div>
         </div>
     </GlassCard>

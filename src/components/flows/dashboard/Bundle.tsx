@@ -4,6 +4,7 @@ import FilePresenter from "@/components/widgets/FilePresenter"
 import { useAction } from "@/contexts/actions/infrastructure/ActionContext"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { useThumbnail } from "@/contexts/ThumbnailContext"
+import { getDisplayFile } from "@/helpers/FilesForDisplay"
 import { Collaborator } from "@/types/Collaborator"
 import { ArrowCircleLeft } from "@mui/icons-material"
 import { Stack, IconButton, Divider } from "@mui/material"
@@ -24,7 +25,7 @@ const Cluster = () => {
                     role: bundleUser.isOwner ? 'OWNER' : 'VIEWER'
                 })) ?? []
                 updateProperties({ selectedBundle: bundle, collaborators: members })
-                retrieveThumbnails(bundle?.bundleFiles?.map(bundleFile => bundleFile.file) ?? [])
+                retrieveThumbnails(bundle?.bundleFiles?.map(bundleFile => getDisplayFile(bundleFile.file)) ?? [])
             })
     }, [properties.selectedBundleId])
 
@@ -59,8 +60,8 @@ const Cluster = () => {
             </div>
         </ColorGlassCard>
         <Stack spacing={1} height='100%'>
-            {properties.selectedBundle?.bundleFiles?.map((bundleFile, index) =>
-                <FilePresenter file={bundleFile.file} message={bundleFile.message} isRight={index % 2 == 0} downloadType={bundleFile.downloadProxyType} />
+            {properties.selectedBundle?.bundleFiles?.map(bundleFile =>
+                <FilePresenter file={bundleFile.file} message={bundleFile.message} downloadType={bundleFile.downloadProxyType} />
             )}
         </Stack>
     </Stack>

@@ -39,6 +39,17 @@ export type StoredFile = {
     attachedFiles: FileAttachment[]
 }
 
+export type BundleStorageFile = {
+    id: string,
+    name: string,
+    proxyState?: "NA" | "PROCESSING" | "COMPLETE" | "ARCHIVED",
+    bytes: number | string,
+    fileLastModified: Date,
+    created: Date,
+    lastFileRestore: Date,
+    proxyFiles?: ProxyResult[],
+}
+
 export type ProjectPreviewResult = {
     id: string
     name: string
