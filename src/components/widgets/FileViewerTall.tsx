@@ -1,6 +1,6 @@
 import { getFileSizes } from "@/helpers/FileSize"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { AttachFile, ExpandMore, Share } from "@mui/icons-material"
+import { AttachFile, ExpandMore, Share, Storage } from "@mui/icons-material"
 import { Accordion, AccordionDetails, AccordionSummary, Divider, Fab, Stack } from "@mui/material"
 import ColorGlassCard from "../glassmorphism/ColorGlassCard"
 import GlassText from "../glassmorphism/GlassText"
@@ -48,17 +48,20 @@ const FileViewerTall = ({ file }: Props) => {
                 <MediaContent file={file} height={270} />
             </div>}
             <div style={{ height: 260 }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: CssSizes.tiny }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: CssSizes.tiny }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: CssSizes.tiny }}>
                     <div>
                         <GlassText size="moderate">{file.name}</GlassText>
-                        <GlassText size="small">{Time.formatDate(file.fileLastModified)}</GlassText>
-                        <GlassText size="small" color="primary">{getArchiveMessage()}</GlassText>
+                        <GlassText color="primary" size="small">{Time.formatDate(file.fileLastModified)}</GlassText>
+                        <div style={{ display: 'flex', gap: CssSizes.tiny, padding: CssSizes.tiny }} >
+                            <Storage fontSize="small" />
+                            <GlassText size="small" color="darkGrey">Backup Copies <b>2</b> USA (Ohio)</GlassText>
+                        </div>
                     </div>
                     <DownloadPanel file={file} projectSettings={properties.selectedProject?.projectSettings} />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: CssSizes.tiny }}>
-                    <div style={{ display: 'flex', gap: CssSizes.tiny }}>
+                <div style={{ display: 'flex', alignItems: 'end', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', gap: CssSizes.tiny, paddingBottom: CssSizes.tiny }}>
                         <Fab onClick={_ => setAttach(true)} size='small' >
                             <AttachFile fontSize="small" />
                         </Fab>
@@ -66,7 +69,10 @@ const FileViewerTall = ({ file }: Props) => {
                             <Share fontSize="small" />
                         </Fab>
                     </div>
-                    <GlassText size="moderate">{getFileSizes(file).total}</GlassText>
+                    <div style={{ textAlign: 'right', paddingRight: CssSizes.hairpin }}>
+                        <GlassText size="moderate">{getFileSizes(file).total}</GlassText>
+                        <GlassText size="small">{getArchiveMessage()}</GlassText>
+                    </div>
                 </div>
             </div>
 

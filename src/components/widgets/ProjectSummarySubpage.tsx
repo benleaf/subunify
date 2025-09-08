@@ -4,7 +4,6 @@ import { IconButton, Divider, Stack } from "@mui/material"
 import GlassText from "../glassmorphism/GlassText"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { useUpload } from "@/contexts/UploadContext"
-import { useThumbnail } from "@/contexts/ThumbnailContext"
 
 type Props = {
     name: string
@@ -12,12 +11,10 @@ type Props = {
 
 const ProjectSummarySubpage = ({ name }: Props) => {
     const { projectDataStored } = useUpload()
-    const { setProjectThumbnails } = useThumbnail()
     const { properties, updateProperties } = useDashboard()
     const totalBytesUploaded = properties.selectedProject ? projectDataStored[properties.selectedProject.id] : 0
 
     const backToProject = async () => {
-        if (properties.selectedProjectId) await setProjectThumbnails(properties.selectedProjectId)
         updateProperties({ page: 'project' })
     }
 

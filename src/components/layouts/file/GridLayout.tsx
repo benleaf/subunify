@@ -40,40 +40,11 @@ const GridLayout = ({ files }: Props) => {
     const imageWidth = containerWidth / columns
     const containerHeight = Math.ceil(rowCount * imageWidth)
 
-    const rowVirtualizer = useVirtualizer({
-        count: rowCount,
-        estimateSize: () => imageWidth,
-        getScrollElement: () => window as any,
-        observeElementRect: observeWindowRect,
-        observeElementOffset: observeWindowOffset,
-        overscan: 10,
-    })
-
-    const colVirtualizer = useVirtualizer({
-        horizontal: true,
-        count: columns,
-        estimateSize: () => imageWidth,
-        getScrollElement: () => window as any,
-        observeElementRect: observeWindowRect,
-        observeElementOffset: observeWindowOffset,
-        overscan: 10,
-    })
-
     return <div ref={containerRef} style={{ display: 'flex', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', width: '100%', height: containerHeight }}>
-            {rowVirtualizer.getVirtualItems().map((vr) =>
-                colVirtualizer.getVirtualItems().map((vc) => {
-                    const idx = vr.index * columns + vc.index
-                    if (idx >= sorted.length) return null
-                    return <ButtonBase style={{
-                        position: 'absolute',
-                        top: vr.start,
-                        left: vc.start,
-                    }} onClick={_ => setPreview(files[idx])}>
-                        <img src={getUrl(files[idx])} height={imageWidth} width={imageWidth} style={{ objectFit: 'cover', padding: 1 }} />
-                    </ButtonBase >
-                })
-            )}
+            {files.map(file => <ButtonBase onClick={_ => setPreview(file)}>
+                <img src={getUrl(file)} height={imageWidth} width={imageWidth} style={{ objectFit: 'cover', padding: 1 }} />
+            </ButtonBase >)}
             <BaseModal state={preview !== undefined} close={_ => setPreview(undefined)}>
                 {preview && <FileViewerTall file={preview} containerWidth={200} thumbnail={getUrl(preview)} />}
             </BaseModal>
