@@ -20,6 +20,7 @@ export const ThumbnailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const { getFileDownloadUrl, getProjectThumbnails } = useAction()
 
     const setProjectThumbnails = async (projectId: string) => {
+        await getProjectThumbnails(projectId) // TODO: when removed images will often fail to load. But only on first load. after refresh they work. Why?
         const thumbnails = await getProjectThumbnails(projectId)
         for (const thumbnail of thumbnails) {
             addThumbnail(thumbnail.fileId, thumbnail.url)
