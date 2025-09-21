@@ -58,13 +58,14 @@ const Billing = () => {
                                 <GlassText size="big">{payment.terabytes} TB</GlassText>
                                 <GlassText size="moderate">Added</GlassText>
                             </div>}
+                            <Divider orientation="vertical" style={{ height: 50 }} />
                             {payment.terabytes < 0 && <div style={{ width: 80, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                                 <GlassText size="big">{-payment.terabytes} TB</GlassText>
                                 <GlassText size="moderate">Removed</GlassText>
                             </div>}
                             <Divider orientation="vertical" style={{ height: 50 }} />
                             {payment.terabytes >= 0 && <div style={{ width: 120, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                                <GlassText size="big">${payment.terabytes * 68.50}</GlassText>
+                                <GlassText size="big">${(payment.amount / 100)}</GlassText>
                                 <GlassText size="moderate">Paid (pre tax)</GlassText>
                             </div>}
                         </div>

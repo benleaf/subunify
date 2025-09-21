@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Divider, Stack, TextField } from "@mui/material";
 import GlassSpace from "@/components/glassmorphism/GlassSpace";
 import GlassText from "@/components/glassmorphism/GlassText";
@@ -11,13 +11,28 @@ import BaseModal from "@/components/modal/BaseModal";
 import ColorGlassCard from "@/components/glassmorphism/ColorGlassCard";
 import ProjectSummarySubpage from "@/components/widgets/ProjectSummarySubpage";
 import { useAction } from "@/contexts/actions/infrastructure/ActionContext";
+import { CssSizes } from "@/constants/CssSizes";
+import { Check } from "@mui/icons-material";
 
 const AddStorage = () => {
     const { user } = useAuth()
-    const { addProjectStorage } = useAction()
+    const { addProjectStorage, getPromoCodePrice } = useAction()
     const { properties } = useDashboard()
+    const [promoCode, setPromoCode] = useState<string>()
     const [tbsToAdd, setTbsToAdd] = useState<number>()
+    const [promoPrice, setPromoPrice] = useState<number>()
     const [paymentModalState, setPaymentModalState] = useState(false)
+
+    useEffect(() => {
+        const third = async () => {
+            if (!promoCode) return setPromoPrice(undefined)
+            const price = await getPromoCodePrice(promoCode ?? '')
+            const priceOfTbs = (price ?? 0) * (tbsToAdd ?? 0)
+            setPromoPrice(priceOfTbs)
+        }
+        third()
+    }, [promoCode])
+
 
     const priceBreakdown = [
         { message: '1 Month express upload', value: 35.55 },
@@ -28,23 +43,37 @@ const AddStorage = () => {
     const subscriptionPrice = 1.99
 
     const total = priceBreakdown.reduce((n, { value }) => n + value, 0)
+    const preDiscountPrice = Math.ceil(tbsToAdd ?? 0) * total
 
     return <>
         <ProjectSummarySubpage name='Add Storage' />
         <GlassSpace size="small">
             <Stack spacing={1}>
                 <DynamicStack>
-                    <GlassSpace size="tiny" style={{ flex: 1 }}>
+                    <GlassSpace size="tiny" style={{ flex: 1, display: 'flex', gap: CssSizes.tiny, flexDirection: 'column' }}>
                         <GlassText size="moderate">
                             Add an integer number of terabytes to this project
                         </GlassText>
-                        <GlassSpace size="tiny" />
                         <TextField
+                            style={{ maxWidth: 250 }}
                             type="number"
                             value={tbsToAdd}
                             onChange={e => setTbsToAdd(e.target.value ? Math.min(+e.target.value, 100) : undefined)}
                             label='TBs to add'
                         />
+                        <TextField
+                            style={{ maxWidth: 300 }}
+                            type="text"
+                            value={promoCode}
+                            onChange={e => setPromoCode(e.target.value ?? undefined)}
+                            label='Promo Code'
+                            slotProps={{
+                                input: {
+                                    endAdornment: (promoPrice ?? Infinity) < preDiscountPrice && <Check />
+                                },
+                            }}
+                        />
+                        <Button disabled={!tbsToAdd} fullWidth variant="outlined" onClick={() => setPaymentModalState(true)}>Add Storage</Button>
                     </GlassSpace>
                     <div style={{ flex: 1 }}>
                         <GlassCard marginSize="tiny" paddingSize="tiny">
@@ -65,10 +94,18 @@ const AddStorage = () => {
                                 </GlassSpace>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <GlassText size="moderate">
+                                        Promo Discount:
+                                    </GlassText>
+                                    <GlassText size="moderate">
+                                        -${(preDiscountPrice - (promoPrice ?? preDiscountPrice)).toFixed(2)}
+                                    </GlassText>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <GlassText size="moderate">
                                         Total:
                                     </GlassText>
                                     <GlassText size="moderate">
-                                        ${(Math.ceil(tbsToAdd ?? 0) * total).toFixed(2)}
+                                        ${(promoPrice ?? preDiscountPrice).toFixed(2)}
                                     </GlassText>
                                 </div>
                                 <GlassSpace size="tiny">
@@ -88,7 +125,6 @@ const AddStorage = () => {
                                 </GlassSpace>
                             </GlassSpace>
                         </GlassCard>
-                        {tbsToAdd && <Button fullWidth variant="outlined" onClick={() => setPaymentModalState(true)}>Add Storage</Button>}
                     </div>
                 </DynamicStack>
             </Stack>
@@ -97,6 +133,7 @@ const AddStorage = () => {
             state={paymentModalState}
             onClose={() => setPaymentModalState(false)}
             volume={tbsToAdd}
+            promoCode={promoCode}
             projectId={properties?.selectedProjectId}
         />}
         {user.stripeSubscriptionId && <BaseModal
@@ -113,7 +150,7 @@ const AddStorage = () => {
                     <a href="/privacy-policy" style={{ paddingRight: '1em' }}>Privacy Policy</a>
                     <a href="/terms-of-service">Terms Of Service</a>
                 </GlassSpace>
-                <Button onClick={() => addProjectStorage(properties.selectedProjectId!, tbsToAdd ?? 0)} variant="outlined" >
+                <Button onClick={() => addProjectStorage(properties.selectedProjectId!, tbsToAdd ?? 0, promoCode)} variant="outlined" >
                     Add Storage!
                 </Button>
             </ColorGlassCard>

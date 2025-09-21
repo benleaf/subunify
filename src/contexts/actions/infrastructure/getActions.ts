@@ -18,9 +18,9 @@ import { deleteCollaborator } from "../deleteCollaborator";
 import { updateCollaborator } from "../updateCollaborator";
 import { addProjectCollaborator } from "../addProjectCollaborator";
 import { startStoragePaymentSession } from "../startStoragePaymentSession";
-import { fulfillPaymentSession } from "../fulfillPaymentSession";
 import { createSharedBundle } from "../createSharedBundle";
 import { addFileToSharedBundle } from "../addFileToSharedBundle";
+import { getPromoCodePrice } from "../getPromoCodePrice";
 
 export const getActions = (injection: ActionInput) => ({
     respondToProjectInvite: respondToProjectInvite(injection),
@@ -42,7 +42,7 @@ export const getActions = (injection: ActionInput) => ({
     updateCollaborator: updateCollaborator(injection),
     addProjectCollaborator: addProjectCollaborator(injection),
     startStoragePaymentSession: startStoragePaymentSession(injection),
-    fulfillPaymentSession: fulfillPaymentSession(injection),
     createSharedBundle: createSharedBundle(injection),
     addFileToSharedBundle: addFileToSharedBundle(injection),
+    getPromoCodePrice: getPromoCodePrice(injection),
 })

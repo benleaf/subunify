@@ -11,10 +11,11 @@ type Props = {
   onClose?: () => void,
   volume?: number
   projectId: string
+  promoCode?: string
 }
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_CLIENT_SECRET, {});
 
-const PaymentModal = ({ state, onClose, projectId, volume = 1 }: Props) => {
+const PaymentModal = ({ state, onClose, projectId, volume = 1, promoCode }: Props) => {
   const [options, setOptions] = useState<Stripe.Checkout.Session>()
   const { startStoragePaymentSession } = useAction()
 
@@ -22,7 +23,7 @@ const PaymentModal = ({ state, onClose, projectId, volume = 1 }: Props) => {
     const getSession = async () => {
       setOptions(undefined)
       if (!state) return
-      const result = await startStoragePaymentSession(projectId, volume)
+      const result = await startStoragePaymentSession(projectId, volume, promoCode)
       setOptions(result)
     }
     getSession()

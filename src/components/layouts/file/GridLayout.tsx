@@ -1,11 +1,6 @@
-import {
-    useVirtualizer,
-    observeWindowRect,
-    observeWindowOffset,
-} from '@tanstack/react-virtual'
 import { useThumbnail } from "@/contexts/ThumbnailContext"
 import { StoredFile } from "@/types/server/ProjectResult"
-import { ButtonBase } from "@mui/material"
+import { ButtonBase, Tooltip } from "@mui/material"
 import moment from "moment"
 import { useEffect, useRef, useState } from 'react';
 import BaseModal from '@/components/modal/BaseModal'
@@ -43,7 +38,9 @@ const GridLayout = ({ files }: Props) => {
     return <div ref={containerRef} style={{ display: 'flex', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', width: '100%', height: containerHeight }}>
             {files.map(file => <ButtonBase onClick={_ => setPreview(file)}>
-                <img src={getUrl(file)} height={imageWidth} width={imageWidth} style={{ objectFit: 'cover', padding: 1 }} />
+                <Tooltip title={file.name}>
+                    <img src={getUrl(file)} height={imageWidth} width={imageWidth} style={{ objectFit: 'cover', padding: 1 }} />
+                </Tooltip>
             </ButtonBase >)}
             <BaseModal state={preview !== undefined} close={_ => setPreview(undefined)}>
                 {preview && <FileViewerTall file={preview} containerWidth={200} thumbnail={getUrl(preview)} />}

@@ -5,6 +5,7 @@ export type PaymentResult = {
     id: string
     session: string
     terabytes: number
+    amount: number
     created: Date
     fulfilled: boolean
     user: User
