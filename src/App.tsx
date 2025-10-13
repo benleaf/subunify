@@ -9,6 +9,7 @@ import Onboarding from './pages/Onboarding';
 import AuthWrapper from './auth/AuthWrapper';
 import Dashboard from './pages/Dashboard';
 import Payment from './pages/Payment';
+import Chords from './pages/chords';
 
 const App = () => {
   return <AuthProvider>
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/payment" element={<AuthWrapper><Payment /></AuthWrapper>} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/chords" element={<Chords />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>
