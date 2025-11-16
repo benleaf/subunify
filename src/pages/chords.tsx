@@ -24,7 +24,7 @@ const Chords = () => {
         includeMajor: true,
         includeMinor: false,
         includeDominant: false,
-        playing: false,
+        playing: true,
         currentChord: null,
         nextChord: null,
     });
@@ -45,7 +45,6 @@ const Chords = () => {
         const pool = buildPool();
         if (pool.length === 0) return null;
         const idx = Math.floor(Math.random() * pool.length);
-        console.log(pool)
         return pool[idx];
     };
 
