@@ -83,11 +83,11 @@ const Chords = () => {
     }, []);
 
     // Render a full UI here and return early (this replaces the later return in file)
-    return <GlassSpace size="tiny" style={{ overflowY: "scroll", height: "83vh", padding: 16, width: "100%" }}>
-        <Stack spacing={2} maxWidth={800} display='flex' justifyContent='center' alignItems='center' margin='auto'>
-            <div style={{ display: "flex", alignItems: "center", lineHeight: 1 }}>
-                <GlassText size="fullscreen">{state.currentChord ? state.currentChord.degree : "-"}</GlassText>
-                <GlassText size="large">{state.currentChord?.quality.toUpperCase()}</GlassText>
+    return <Stack spacing={2} maxWidth="100%" display='flex' justifyContent='center' alignItems='center' margin='auto'>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", height: '100vh', justifyContent: 'center' }}>
+            <div style={{ display: "flex", alignItems: "end", lineHeight: 1 }}>
+                <div style={{ fontSize: 400, lineHeight: -100 }}>{state.currentChord ? state.currentChord.degree : "-"}</div>
+                <div style={{ fontSize: 50, lineHeight: 3 }}>{state.currentChord?.quality.toUpperCase()}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
                 <GlassText size="large">{state.nextChord ? state.nextChord.degree : "-"}</GlassText>
@@ -99,107 +99,107 @@ const Chords = () => {
                 {state.beat >= 2 && <Circle />}
                 {state.beat >= 3 && <Circle />}
             </Stack>
+        </div>
 
-            {/* Controls */}
-            <div style={{ minWidth: 240 }}>
-                <label style={{ display: "block", marginBottom: 8 }}>Tempo (BPM): {state.tempo}</label>
+        {/* Controls */}
+        <div style={{ minWidth: 240 }}>
+            <label style={{ display: "block", marginBottom: 8 }}>Tempo (BPM): {state.tempo}</label>
+            <input
+                type="range"
+                min={30}
+                max={240}
+                value={state.tempo}
+                onChange={(e) => setState(old => ({ ...old, tempo: parseInt(e.target.value, 10) }))}
+                style={{ width: "100%" }}
+            />
+        </div>
+
+        <div style={{ paddingTop: 8 }}>
+            <div style={{ marginBottom: 6 }}>Include chord qualities</div>
+            <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <input
-                    type="range"
-                    min={30}
-                    max={240}
-                    value={state.tempo}
-                    onChange={(e) => setState(old => ({ ...old, tempo: parseInt(e.target.value, 10) }))}
-                    style={{ width: "100%" }}
+                    type="checkbox"
+                    checked={state.includeMajor}
+                    onChange={_ => setState(old => ({ ...old, includeMajor: !old.includeMajor }))}
                 />
-            </div>
+                Major
+            </label>
+            <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <input
+                    type="checkbox"
+                    checked={state.includeMinor}
+                    onChange={_ => setState(old => ({ ...old, includeMinor: !old.includeMinor }))}
+                />
+                Minor
+            </label>
+            <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <input
+                    type="checkbox"
+                    checked={state.includeDominant}
+                    onChange={_ => setState(old => ({ ...old, includeDominant: !old.includeDominant }))}
+                />
+                Dominant
+            </label>
+        </div>
 
-            <div style={{ paddingTop: 8 }}>
-                <div style={{ marginBottom: 6 }}>Include chord qualities</div>
-                <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <input
-                        type="checkbox"
-                        checked={state.includeMajor}
-                        onChange={_ => setState(old => ({ ...old, includeMajor: !old.includeMajor }))}
-                    />
-                    Major
-                </label>
-                <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <input
-                        type="checkbox"
-                        checked={state.includeMinor}
-                        onChange={_ => setState(old => ({ ...old, includeMinor: !old.includeMinor }))}
-                    />
-                    Minor
-                </label>
-                <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <input
-                        type="checkbox"
-                        checked={state.includeDominant}
-                        onChange={_ => setState(old => ({ ...old, includeDominant: !old.includeDominant }))}
-                    />
-                    Dominant
-                </label>
-            </div>
+        {/* Buttons */}
+        <div style={{ display: "flex", gap: 12 }}>
+            <button
+                onClick={() => setState(old => ({ ...old, playing: !old.playing }))}
+                style={{
+                    padding: "8px 12px",
+                    borderRadius: 6,
+                    background: state.playing ? "#ef5350" : "#1976d2",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer"
+                }}
+            >
+                {state.playing ? "Stop" : "Play"}
+            </button>
 
-            {/* Buttons */}
-            <div style={{ display: "flex", gap: 12 }}>
-                <button
-                    onClick={() => setState(old => ({ ...old, playing: !old.playing }))}
-                    style={{
-                        padding: "8px 12px",
-                        borderRadius: 6,
-                        background: state.playing ? "#ef5350" : "#1976d2",
-                        color: "white",
-                        border: "none",
-                        cursor: "pointer"
-                    }}
-                >
-                    {state.playing ? "Stop" : "Play"}
-                </button>
+            <button
+                onClick={nextChord}
+                style={{
+                    padding: "8px 12px",
+                    borderRadius: 6,
+                    background: "#4caf50",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer"
+                }}
+            >
+                Next
+            </button>
 
-                <button
-                    onClick={nextChord}
-                    style={{
-                        padding: "8px 12px",
-                        borderRadius: 6,
-                        background: "#4caf50",
-                        color: "white",
-                        border: "none",
-                        cursor: "pointer"
-                    }}
-                >
-                    Next
-                </button>
+            <button
+                onClick={() => {
+                    setState(old => ({
+                        ...old,
+                        includeMajor: true,
+                        includeMinor: true,
+                        includeDominant: true,
+                        keySignature: "C",
+                    }));
+                    nextChord();
+                }}
+                style={{
+                    padding: "8px 12px",
+                    borderRadius: 6,
+                    background: "#9e9e9e",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer"
+                }}
+            >
+                Reset
+            </button>
+        </div>
 
-                <button
-                    onClick={() => {
-                        setState(old => ({
-                            ...old,
-                            includeMajor: true,
-                            includeMinor: true,
-                            includeDominant: true,
-                            keySignature: "C",
-                        }));
-                        nextChord();
-                    }}
-                    style={{
-                        padding: "8px 12px",
-                        borderRadius: 6,
-                        background: "#9e9e9e",
-                        color: "white",
-                        border: "none",
-                        cursor: "pointer"
-                    }}
-                >
-                    Reset
-                </button>
-            </div>
-
-            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>
-                Tip: Use the checkboxes to include/exclude major, minor and dominant chords. The slider sets the BPM (higher = faster changes).
-            </div>
-        </Stack>
-    </GlassSpace>
+        <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>
+            Tip: Use the checkboxes to include/exclude major, minor and dominant chords. The slider sets the BPM (higher = faster changes).
+        </div>
+    </Stack>
 }
 
 export default Chords
